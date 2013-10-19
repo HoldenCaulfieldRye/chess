@@ -21,3 +21,22 @@ const char *error_description(int code);
 /* presupplied helper function for converting string to Direction enum */
 Direction string_to_direction(const char *token);
 
+bool get_symbol_position(char** map, int height, int width, char target, int& r, int& c);
+
+char get_symbol_for_station_or_line(const char name[]);
+
+int get_length(const char name[]); //used in get_symbol_for_station_or_line
+
+int validate_route(char** map, int height, int width, const char start_station[50], char route[512], char destination[512]);
+
+void cut_up(char route[512], int &n_directions, Direction result[50]); //used in validate_route
+
+/*given a direction, and the coordinates of a starting point, changes these to coordinates of 
+landing point. RETURNS '!' IF OUT OF BOUNDS, '?' IF INVALID DIRECTION RECEIVED.*/
+char get_next_location(char **map, int height, int width, Direction dir, int cur_r, int cur_c, int &nxt_r, int &nxt_c);
+
+void get_name_for_station(char symbol, char station_name[512]); //used in validate_route
+
+bool isLine(char);
+
+bool isLine(char, char);

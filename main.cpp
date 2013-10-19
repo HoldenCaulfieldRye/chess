@@ -52,7 +52,7 @@ int main() {
   else
     cout << "not found.";
   cout << endl << endl;
-
+	
   cout << "====================== Question 2 ======================" << endl << endl;
   
   cout << "The symbol for Victoria station is '" << get_symbol_for_station_or_line("Victoria") << "'" << endl << endl;
@@ -111,6 +111,8 @@ int main() {
   else 
     cout << "is an invalid route (" << error_description(result) << ")" << endl;
   cout << endl;
+
+  delete [] map;
 
   return 0;
 }
