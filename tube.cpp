@@ -120,64 +120,36 @@ bool get_symbol_position(char** map, int height, int width, char target, int& r,
 {
   map = load_map("map.txt",height,width);  //load ASCII map in appropriate dimensions
   
-  for(r=0; r<height; r++)                  //r indexed starting from 0
-    {
-      for(c=0; c<width; c++)               //c indexed starting from 0
-	{                                  //scan in row-by-row fashion
-	  if (map[r][c]==target)
-	    {
-	      return true; 
-	    } 
-	}
+  for(r=0; r<height; r++)  {               //r indexed starting from 0
+    for(c=0; c<width; c++) {               //c indexed starting from 0             
+      if (map[r][c]==target) {             //scan in row-by-row fashion
+	return true; 
+      }
     }
+  }
   r = -1;                                  //reached iif target cannot be found
   c = -1;
   return false;
 }
 
-
-char get_symbol_for_station_or_line(const char name[]) 
+char get_symbol_for_station_or_line(const char name[])
 {
-  int name_length = get_length(name);
-  int chars_found=0;                 //number of (consecutive) discovered char's which match name[]
-  char ch[3];
   ifstream in[2];
-	
-  in[0].open("stations.txt");
-  in[1].open("lines.txt");
-
-  for(int file=0; file<2; file++) {  //look in stations.txt; if fail then look in lines.txt 
-
-    for(int i=0; i<3; i++) {
-      in[file].get(ch[i]);           //ch[] is an array of 3 consecutive characters from lines.txt
-    }
+  string line;
+  in[0].open("stations.txt"); in[1].open("lines.txt");
   
-    while(!in[file].fail()) 
-      {
-	for (chars_found=0; ch[2] == name[chars_found] && name[chars_found] != '\0'; chars_found++) {
-	  in[file].get(ch[2]);
-	}
-	
-	if (chars_found == name_length) {
-	  in[0].close(); in[1].close(); //name[] has just been covered by ch[2], while ch[0] and ch[1] stayed back
-	  return ch[0];                 //so ch[1] is a ' ', and ch[0] contains The Symbol
-	}
-
-	ch[0]=ch[1];                    //ch[] takes 1 step forward for each loop of while()
-	ch[1]=ch[2];
-	in[file].get(ch[2]);
+  for(int i=0; i<2; i++) {                 //look in stations.txt; if fail then look in lines.txt 
+    while (in[i]) {
+      getline(in[i], line);                //extract next line in file
+      if (strcmp(&(line[2]), name)==0) {   //station/line name always starts at character 2 of line
+	in[0].close(); in[1].close();
+	return line[0];                    //station/line symbol always at character 0 of line
       }
+    }
   }
-  in[0].close(); in[1].close();         //name[] is nowhere to be found
+  
+  in[0].close(); in[1].close();            //reach here iif name not found
   return ' ';
-}
-
-
-int get_length(const char name[])
-{
-  int count=1;
-  for(; name[count] != '\0'; count++);
-  return count;
 }
 
 
@@ -193,10 +165,7 @@ int validate_route(char** map, int height, int width, const char start_station[5
   current = get_symbol_for_station_or_line(start_station);        //find out what station's symbol is
   get_symbol_position(map, height, width, current, cur_r, cur_c); //find out its coordinates on map
   cut_up(route, n_directions, directions);                        //from route, create a Direction array of directions
-  prv_r = -1;
-  prv_c = -1;
-  nxt_r = -1;
-  nxt_c = -1;                                                     //default values
+  prv_r = -1; prv_c = -1; nxt_r = -1; nxt_c = -1;                 //setting default values
   line_changes = 0;
 
   /*evaluate starting point*/
@@ -207,34 +176,37 @@ int validate_route(char** map, int height, int width, const char start_station[5
   /*evaluate landing point*/
   for (int i=0; i<n_directions; i++) {                 
     next = get_next_location(map, height, width, directions[i], cur_r, cur_c, nxt_r, nxt_c); //get nxt_r and nxt_c
-      switch(next) {
-      case '!': return ERROR_OUT_OF_BOUNDS;
-      case '?': return ERROR_INVALID_DIRECTION;
-      case ' ': return ERROR_OFF_TRACK;
-      default:
-	if (isLine(current, next) && current != next)
-	  return ERROR_LINE_HOPPING_BETWEEN_STATIONS;
-	else if (isLine(current) && prv_r==nxt_r && prv_c==nxt_c)
-	  return ERROR_BACKTRACKING_BETWEEN_STATIONS;
-	else {
-	  if (isLine(previous, next) && previous != next) //necessary & sufficient conditions for line change
-	    line_changes++;
-	  previous = current;                             //this and following 5 lines make up the updating
-	  current = next;
-	  prv_r = cur_r;
-	  prv_c = cur_c;
-	  cur_r = nxt_r;
-	  cur_c = nxt_c;
-	}
-	break;
+    switch(next) {
+    case '!': return ERROR_OUT_OF_BOUNDS;
+    case '?': return ERROR_INVALID_DIRECTION;
+    case ' ': return ERROR_OFF_TRACK;
+    default:
+      if (isLine(current, next) && current != next)
+	return ERROR_LINE_HOPPING_BETWEEN_STATIONS;
+      else if (isLine(current) && prv_r==nxt_r && prv_c==nxt_c)
+	return ERROR_BACKTRACKING_BETWEEN_STATIONS;
+      else {
+	if (isLine(previous, next) && previous != next) //necessary & sufficient conditions for line change
+	  line_changes++;
+	previous = current;                             //this and following 5 lines make up the updating
+	current = next;
+	prv_r = cur_r;
+	prv_c = cur_c;
+	cur_r = nxt_r;
+	cur_c = nxt_c;
       }
     }
-  get_name_for_station(current, destination);             //reach here iif a valid destination has been reached
+  }
+                                                        //reach here iif endpoint char is a valid line or station...
+  /*evaluate route endpoint*/
+  get_name_for_station(current, destination);
+  if (isLine(current))                                  //...hence testing with isLine() is sufficient, even if there...
+    return ERROR_ROUTE_ENDPOINT_IS_NOT_STATION;         //...exist char that are neither line nor station
   return line_changes;
 }
 
 
-/*from route, creates a Direction array of directions*/
+/*given route, assigns to result an array of directions*/
 void cut_up(char route[512], int &n_directions, Direction result[50])
 {
   /*declaration*/
@@ -244,13 +216,13 @@ void cut_up(char route[512], int &n_directions, Direction result[50])
   /*intialisation*/ 
   strcpy(str,route);
   n_directions = 0;
-  ch = strtok(str, ","); //strtok starts at str[0], copies str[i] until ',' met, returns pointer to this new array...
-                         //...and somehow remembers where it left off on str[]
+  ch = strtok(str, ", "); //strtok starts at str[0], copies str[i] until ',' met, returns pointer to this new array...
+  //...and somehow remembers where it left off on str[]
   /*induction*/
   while (ch != NULL) {   //ch null iif there was nothing for strtok to copy after the previous token iif str has been... 
     n_directions++;      //...entirely covered
     result[n_directions-1] = string_to_direction(ch);
-    ch = strtok(NULL, ","); //when given 'NULL' as arg, strtok starts on str where it last left off
+    ch = strtok(NULL, ", "); //when given 'NULL' as arg, strtok starts on str where it last left off
   }
 
   delete [] ch;
@@ -260,51 +232,43 @@ void cut_up(char route[512], int &n_directions, Direction result[50])
 char get_next_location(char **map, int height, int width, Direction dir, int cur_r, int cur_c, int &nxt_r, int &nxt_c)
 {
   switch(dir) {
-  case 0:                   //North
+  case 0:                 //North
     nxt_r = cur_r - 1;
     nxt_c = cur_c;
     break;
-
-  case 1:                   //South
+  case 1:                 //South
     nxt_r = cur_r + 1;
     nxt_c = cur_c;
     break;
- 
-  case 2:                   //West
+  case 2:                 //West
     nxt_r = cur_r;
     nxt_c = cur_c - 1;
     break;
-
-  case 3:                   //East
+  case 3:                 //East
     nxt_r = cur_r;
     nxt_c = cur_c + 1;
     break;
- 
-  case 4:                   //North-East
+  case 4:                 //North-East
     nxt_r = cur_r - 1;
     nxt_c = cur_c + 1;
     break;
- 
-  case 5:                   //North-West
+  case 5:                 //North-West
     nxt_r = cur_r - 1;
     nxt_c = cur_c - 1;
     break;
- 
-  case 6:                   //South-East
+  case 6:                 //South-East
     nxt_r = cur_r + 1;
     nxt_c = cur_c + 1;
     break;
- 
-  case 7:                   //South-West
+  case 7:                 //South-West
     nxt_r = cur_r + 1;
     nxt_c = cur_c - 1;
     break;
- 
-  default:                  //invalid direction - encompasses 'case 8'
+  default:                //invalid direction - encompasses 'case 8'
     return '?';
   }
   
-  if (nxt_r<0 || nxt_c<0 || nxt_r>height || nxt_c>width)  //out of bounds
+  if (nxt_r<0 || nxt_c<0 || nxt_r>=height || nxt_c>=width)  //out of bounds
     return '!';
 
   return map[nxt_r][nxt_c]; //reach here iif coordinates are valid 
@@ -313,30 +277,21 @@ char get_next_location(char **map, int height, int width, Direction dir, int cur
 
 void get_name_for_station(char symbol, char station_name[512])
 {
-  ifstream in[2]; //one to locate symbol, one to make sure symbol is at the begging of a line in the text file
-  char ch[2];
-  int i=0;
-
-  in[0].open("stations.txt");  
-  in[0].get(ch[0]);
-  in[1].open("stations.txt");  
-  in[1].get(ch[1]); in[1].get(ch[1]);
-
-  while (!in[1].fail() && (ch[1] != symbol || (int) ch[0] != 10)) {  //broken iif: failure or symbol is at the begging...
-    in[0].get(ch[0]);                                                //...of a line in the text file.
-    in[1].get(ch[1]);                                                //in ASCII, 10 corresponds to 'new line'
-  }
-
-  if (ch[1] == symbol) {
-    in[1].get(ch[1]); //skip the ' '
-    for (in[1].get(ch[1]); (int) ch[1] != 10 && i<50; in[1].get(ch[1])) { //copying text to station_name until end of line
-      station_name[i] = ch[1];
-      i++;
+  string line;
+  ifstream in[2];
+  in[0].open("stations.txt"); in[1].open("lines.txt"); 
+	
+  for(int i=0; i<2; i++) {                 //look in stations.txt; if fail then look in lines.txt 
+    while (in[i]) {
+      getline(in[i], line);                //extract next line in file
+      if (symbol==line[0]) {               //station/line symbol always at character 0 of line
+	in[0].close(); in[1].close(); 
+	strcpy(station_name, &(line[2]));  //station/line name always starts at character 2 of line
+	return;
+      }
     }
-    station_name[i]='\0';
-  }
-
-  in[0].close(); in[1].close();
+  }	
+  in[0].close(); in[1].close();            //reach here iif no name found; station_name remains "nowhere"
 }
 
 
