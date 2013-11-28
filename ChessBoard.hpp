@@ -4,34 +4,43 @@
 
 using namespace std;
 
-#define INVALID_POSITION 1
-
 #define topRow 8
 #define bottomRow 1
 
-enum Player {white, black};
+//DYNAMIC MEMORY! DESTRUCTORS!
+
+typedef MapIt = map<string, Piece*>::iterator;
 
 class Piece {  //no Position field, only chessboard need keep track of that
 private:
-  Player whosePiece;
-  Position *possibleMoves;
+  string owner;
+  string *possibleMoves; //SENTINEL IS "'\0'"
+
 public:
   Piece();
-  virtual void genPossibleMoves() = 0;
+  Piece(_owner);
+  void genPossibleMoves() = 0;
+  virtual string getType() = 0;
 };
+
 
 class ChessBoard {
  private:
   map<string, Piece*> boardMap;
-  Player whoseTurn;
+  string whoseTurn;
+
  public:
   ChessBoard();
-  void initiate();
-  void submitMove(const string sourceSquare, const string destSquare);
-  bool isValid();
-  int pieceOnSquare();
+  void   initiate();
+  void   submitMove(const string sourceSquare, const string destSquare);
+  bool   isValid();
+  int    pieceOnSquare(string square);
+  bool   putsOwnKingInCheck(string square);
+  string Player();
   string notPlayer();
-  void resetBoard();
+  void   nextPlayer();
+  bool   canMoveTo(Piece piece, string destSquare);
+  void   resetBoard();
 };
 
 class King : public Piece {
