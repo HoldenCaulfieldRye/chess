@@ -11,16 +11,6 @@ using namespace std;
 
 enum Player {white, black};
 
-class Position { //could have called this Square
-private:
-  string label;
-  int rank;
-  char file;
-public:
-  Position(string _label);
-  int isValid();
-};
-
 class Piece {  //no Position field, only chessboard need keep track of that
 private:
   Player whosePiece;
@@ -37,8 +27,10 @@ class ChessBoard {
  public:
   ChessBoard();
   void initiate();
-  static int errorDescription(int errorCode);
   void submitMove(const string sourceSquare, const string destSquare);
+  bool isValid();
+  int pieceOnSquare();
+  string notPlayer();
   void resetBoard();
 };
 

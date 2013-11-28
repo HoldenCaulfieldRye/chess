@@ -7,19 +7,6 @@ using namespace std;
 #include "ChessBoard.hpp"
 
 
-/*Position definitions*/
-Position::Position(string _label) : label(_label) {}
-
-/*separate validity check from constructor because it will be used when evaluating moves*/
-int Position::isValid() {
-  if ((int) label[0] < 65 || (int) label[0] > 72 || (int) label[1] < 49 || (int) label[1] > 56 || (int) label[2] != '\0')
-    return 1;
-  rank = label[0];
-  file = label[1];
-  return 0;
-}
-/*end of Position definitions*/
-
 
 /*Piece definitions*/
 
@@ -27,6 +14,7 @@ int Position::isValid() {
 
 /*ChessBoard definitions*/
 ChessBoard::ChessBoard() {  //should I make constructor more elaborate?
+  initiate();
 }
 
 void ChessBoard::initiate() {  //should I embed this in constructor?
@@ -65,21 +53,84 @@ void ChessBoard::initiate() {  //should I embed this in constructor?
   boardMap["F8"] = new Bishop;
   boardMap["G8"] = new Knight;
   boardMap["H8"] = new Rook;
+
+  cerr << "A new chess game is started!" << endl;
 }
 
-int ChessBoard::errorDescription(int errorCode) {
-  switch (errorCode) {
-  case 1:
-    cerr << "invalid position given (rank or file not in range)" << endl;
-    return 1;
-  default:
-    cerr << "unknown error" << endl;
-    return -1;
-  }
-}
 
 /*errors can be discovered here, but return type must be void, because this constraint is implicit in main*/
 void ChessBoard::submitMove(const string sourceSquare, const string destSquare) {
+
+  /*check that squares given exist*/
+  if(!isValid(sourceSquare)) {
+    cerr << "invalid source square (rank or file not in range) !" << endl;
+    return;
+  }
+  if(!isValid(destSquare)) {
+    cerr << "invalid destination square (rank or file not in range) !" << endl;
+    return;
+  }
+
+  /*check that there is a piece on source square, that it belongs to player whost turn it is*/
+  switch(pieceOnSquare()) {
+  case 0:
+    return;
+  case 1:
+    cerr << "There is no piece at position" << sourceSquare << "!" << endl;
+    return;
+  case 2:
+    cerr << "It is not" << notPlayer() << "'s turn to move!" << endl;
+    return;
+  default:
+    cerr << "Unknown error!" << endl;
+    return;
+  }
+
+  /*check that piece is allowed to move to destination square*/
+  if (!canMoveTo(Piece piece, string destSquare)) {
+    cerr << whoseTurn << "" << << "" << << endl;
+  }
+
+  /*reach here iif move is valid*/
+  nextPlayer();
+}
+
+bool ChessBoard::isValid(string square) {
+  if ((int) square[0] < 65 || (int) square[0] > 72 || (int) square[1] < 49 || (int) square[1] > 56 || (int) square[2] != '\0') {
+    return false;
+  }
+  return true;
+}
+
+int ChessBoard::pieceOnSquare(string square) {
+
+  /*check whether there exists a piece on square*/
+  MapIt it = boardMap.find(square);
+  if (it == boardMap.end())
+    return 1;
+
+  /*check that piece on square belongs to player whose turn it is*/
+  if (boardMap[square]->whosePiece != whoseTurn)
+    return 2;
+
+  return 0;
+}
+
+void ChessBoard::Player() {
+  if (whoseTurn == white)
+    return "White";
+  return "Black";
+
+void ChessBoard::notPlayer() {
+  if (whoseTurn == white)
+    return "Black";
+  return "White";
+}
+
+void ChessBoard::nextPlayer() {
+  if (whoseTurn == white)
+    whoseTurn = black;
+  whoseTurn = white;
 }
 
 void ChessBoard::resetBoard() {
@@ -90,6 +141,7 @@ void ChessBoard::resetBoard() {
 /*Piece definitions*/
 Piece::Piece() {
 }
+
 /*end of Piece definitions*/
 
 
