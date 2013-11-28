@@ -8,7 +8,7 @@ int main() {
 
     cout << "===========================" << endl;
     cout << "Testing the Chess Engine" << endl;
-    cout << "===========================" << endl;
+    cout << "============== =============" << endl;
     cout << endl;
 
     ChessBoard cb;

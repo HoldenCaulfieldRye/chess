@@ -1,34 +1,35 @@
 #include<iostream>
 #include<map>
+#include<string>
+
 using namespace std;
 
-#include "chess.h"
+#include "ChessBoard.hpp"
 
-Position::Position(int _rank, Letter _file) : rank(_rank), file(_file) {}
 
 /*Position definitions*/
 Position::Position(string _label) : label(_label) {}
 
 /*separate validity check from constructor because it will be used when evaluating moves*/
 int Position::isValid() {
-  if ((int) label[0] <<  || (int) label[0] >> || (int) label[1] << || (int) label[1] >> )
+  if ((int) label[0] < 65 || (int) label[0] > 72 || (int) label[1] < 49 || (int) label[1] > 56 || (int) label[2] != '\0')
     return 1;
   rank = label[0];
-  file = label[1];    
+  file = label[1];
+  return 0;
 }
-
 /*end of Position definitions*/
 
 
 /*Piece definitions*/
-void Piece::genPossibleMoves();
+
 /*end of Piece definitions*/
 
 /*ChessBoard definitions*/
 ChessBoard::ChessBoard() {  //should I make constructor more elaborate?
 }
 
-ChessBoard::initiate() {  //should I embed this in constructor?
+void ChessBoard::initiate() {  //should I embed this in constructor?
   boardMap["A1"] = new Rook;
   boardMap["B1"] = new Knight;
   boardMap["C1"] = new Bishop;
@@ -66,19 +67,65 @@ ChessBoard::initiate() {  //should I embed this in constructor?
   boardMap["H8"] = new Rook;
 }
 
-static int ChessBoard::errorDescription(int errorCode) {
+int ChessBoard::errorDescription(int errorCode) {
   switch (errorCode) {
   case 1:
     cerr << "invalid position given (rank or file not in range)" << endl;
     return 1;
   default:
     cerr << "unknown error" << endl;
-    return;
+    return -1;
   }
 }
 
-void ChessBoard::submitMove(const Square soorSquare, const Square destSquare) {
+/*errors can be discovered here, but return type must be void, because this constraint is implicit in main*/
+void ChessBoard::submitMove(const string sourceSquare, const string destSquare) {
 }
 
-void ChessBoard::resetBoard();
+void ChessBoard::resetBoard() {
+}
 /*end of ChessBoard definitions*/
+
+
+/*Piece definitions*/
+Piece::Piece() {
+}
+/*end of Piece definitions*/
+
+
+/*King definitions*/
+void King::genPossibleMoves() {
+}
+
+/*end of King definitions*/
+
+/*Queen definitions*/
+void  Queen::genPossibleMoves() {
+}
+
+/*end of Queen definitions*/
+
+/* Bishop definitions*/
+void Bishop::genPossibleMoves() {
+}
+
+/*end of Bishop definitions*/
+
+/* Knight definitions*/
+void Knight::genPossibleMoves() {
+}
+
+/*end of Knight definitions*/
+
+/*Rook definitions*/
+void Rook::genPossibleMoves() {
+}
+
+/*end of Rook definitions*/
+
+/*Pawn definitions*/
+void Pawn::genPossibleMoves() {
+}
+
+/*end of Pawn definitions*/
+
