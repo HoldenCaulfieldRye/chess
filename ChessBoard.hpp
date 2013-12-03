@@ -26,15 +26,15 @@ class ChessBoard {
 
  public:
   ChessBoard();
-  void initiate();
-  void submitMove(const string sourceSquare, const string destSquare);
-  bool isValid(const string square) const;
+  void       initiate     ();
+  void       submitMove   (const string sourceSquare, const string destSquare);
+  bool       isValid      (const string square) const;
   WhosePiece pieceOnSquare(const string square);
-  string notPlayer() const;
-  void nextPlayer();
-  bool canMoveTo(const string sourceSquare, const string destSquare);  
-  bool putsOwnKingInCheck(const string square, const string destSquare);
-  void resetBoard();
+  string     notPlayer    () const;
+  void       nextPlayer   ();
+  bool       canMoveTo    (const string sourceSquare, const string destSquare);  
+  bool       putsOwnKingInCheck(const string square, const string destSquare);
+  void       resetBoard   ();
 };
 
 
@@ -50,14 +50,12 @@ private:
 public:
   Piece();
   Piece(string _owner, string _square, ChessBoard *_chboard);
-
-  virtual void genValidMoves(); //EMBED A VIRTUAL FUNCTION
-  void findMoves();
-  void findMoves(Axis, Distance);
-  void findMoves(Axis, Direction, Aggressiveness, Distance);
-
-  string getOwner() const;
-  bool cpyPossibleMove(int i, string &move) const; // --> why not letting me add this?
+  virtual void genValidMoves();
+  void   classifyMoves      (Length length, Direction dir, int& r, int& f, int[2] inc, string& move, int& count);
+  void   increment          (Direction dir, int &coordinate, int inc);
+  void   classifyLastMove   (const string move, int &count);
+  string getOwner           () const;
+  bool   cpyPossibleMove    (int i, string &move) const; // --> why not letting me add this?
   virtual string getType() = 0;
 };
 
