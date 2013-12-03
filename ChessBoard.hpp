@@ -1,6 +1,7 @@
 #include<iostream>
 #include<map>
 #include<string>
+#include<vector>
 
 using namespace std;
 
@@ -16,8 +17,8 @@ enum Length     {SHORT, LONG};
 
 class Piece;
 
-typedef map<string, Piece*>::iterator It;
-
+typedef map<string, Piece*>::iterator MapIt;
+typedef vector<string>::iterator VecIt;
 
 class ChessBoard {
  private:
@@ -25,38 +26,40 @@ class ChessBoard {
   string whoseTurn;
 
  public:
-  ChessBoard();
+  ChessBoard              ();
   void       initiate     ();
   void       submitMove   (const string sourceSquare, const string destSquare);
-  bool       isValid      (const string square) const;
+  bool       isValidSquare(const string square) const;
   WhosePiece pieceOnSquare(const string square);
   string     notPlayer    () const;
   void       nextPlayer   ();
-  bool       canMoveTo    (const string sourceSquare, const string destSquare);  
   bool       putsOwnKingInCheck(const string square, const string destSquare);
   void       resetBoard   ();
 };
 
 
 class Piece {  //no Position field, only chessboard need keep track of that
-private:
+protected:
   string owner;
   string square;
   ChessBoard *chboard;
   char file;
   char rank;
-  string *validMoves; //SENTINEL IS "'\0'"
+  vector<string> validMoves; //SENTINEL IS "'\0'"
 
 public:
-  Piece();
-  Piece(string _owner, string _square, ChessBoard *_chboard);
+  Piece                     ();
+  Piece                     (string _owner, string _square, ChessBoard *_chboard);
   virtual void genValidMoves();
-  void   classifyMoves      (Length length, Direction dir, int& r, int& f, int[2] inc, string& move, int& count);
-  void   increment          (Direction dir, int &coordinate, int inc);
+  void   classifyMoves      (Length length, Direction dir, int* inc, string& move);
+  void   increment          (Direction dir, char &coordinate1, char &coordinate2, int *inc);
   void   classifyLastMove   (const string move, int &count);
+  bool   isValidMove        (string square) const;
+  void   printValidMoves    () const;
   string getOwner           () const;
   bool   cpyPossibleMove    (int i, string &move) const; // --> why not letting me add this?
-  virtual string getType() = 0;
+  virtual string getType() const = 0;
+  ~Piece();
 };
 
 class King : public Piece {
@@ -65,7 +68,8 @@ public:
   King();
   King(string _owner, string _square, ChessBoard *_chboard);
   virtual void genValidMoves(); //EMBED A VIRTUAL FUNCTION
-  string getType();
+  string getType() const;
+  ~King();
 };
 
 class Queen : public Piece {
@@ -74,7 +78,8 @@ public:
   Queen();
   Queen(string _owner, string _square, ChessBoard *_chboard);
   virtual void genValidMoves(); //EMBED A VIRTUAL FUNCTION
-  string getType();
+  string getType() const;
+  ~Queen();
 };
 
 class Bishop : public Piece {
@@ -83,7 +88,8 @@ public:
   Bishop();
   Bishop(string _owner, string _square, ChessBoard *_chboard);
   virtual void genValidMoves(); //EMBED A VIRTUAL FUNCTION
-  string getType();
+  string getType() const;
+  ~Bishop();
 };
 
 class Knight : public Piece {
@@ -92,7 +98,8 @@ public:
   Knight();
   Knight(string _owner, string _square, ChessBoard *_chboard);
   void genValidMoves(); //EMBED A VIRTUAL FUNCTION
-  string getType();
+  string getType() const;
+  ~Knight();
 };
 
 class Rook : public Piece {
@@ -101,7 +108,8 @@ public:
   Rook();
   Rook(string _owner, string _square, ChessBoard *_chboard);
   virtual void genValidMoves(); //EMBED A VIRTUAL FUNCTION
-  string getType();
+  string getType() const;
+  ~Rook();
 };
 
 class Pawn : public Piece {
@@ -110,7 +118,8 @@ public:
   Pawn();
   Pawn(string _owner, string _square, ChessBoard *_chboard);
   virtual void genValidMoves(); //EMBED A VIRTUAL FUNCTION
-  string getType();
+  string getType() const;
+  ~Pawn();
 };
 
 string concat(char ch1, char ch2);

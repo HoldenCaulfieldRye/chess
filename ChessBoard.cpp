@@ -60,17 +60,17 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
   bool attack = false;
 
   /*check that squares given exist*/
-  if(!isValid(sourceSquare)) {
+  if(!isValidSquare(sourceSquare)) {
     cerr << "invalid source square (rank or file not in range) !" << endl;
     return;
   }
-  //else cout << "check 1: source square exists" << endl; 
+  else cerr << "check 1: source square exists" << endl; 
 
-  if(!isValid(destSquare)) {
+  if(!isValidSquare(destSquare)) {
     cerr << "invalid destination square (rank or file not in range) !" << endl;
     return;
   }
-  //else cout << "check 2: destination square valid" << endl; 
+  else cerr << "check 2: destination square valid" << endl; 
 
   /*check that there is a piece on source square, that it belongs to player whose turn it is*/
   switch(pieceOnSquare(sourceSquare)) {
@@ -81,8 +81,7 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
     cerr << "It is not " << notPlayer() << "'s turn to move!" << endl;
     return;
   case FRIEND: 
-    //cout << "check 3: there is one of << whoseTurn << "'s pieces on source square" << endl; 
-    return;
+    cerr << "check 3: there is one of " << whoseTurn << "'s pieces on " << sourceSquare << endl; 
   }
 
   /*check that there is no piece belonging to player whose turn it is on destination square*/
@@ -93,24 +92,26 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
     cerr << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move to" << destSquare << " because he/she would be taking his/her own piece!" << endl;
     return;
   }
-  //else cout << "check 4: no friendly piece on destination square" << endl;
+  else cerr << "check 4: no friendly piece on destination square" << endl;
 
   /*check that piece can theoretically get to destination square*/
-  if (!canMoveTo(sourceSquare, destSquare)) {
+  if (!boardMap(sourceSquare)->isValidMove(destSquare)) {
     cerr << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move to" << destSquare << "!" << endl;
     return;
   }
-  //else cout << "check 5: piece can theoretically get to destination square" << endl;
+  else cerr << "check 5: piece can theoretically get to destination square" << endl;
 
   /*check that King won't be in check after this move*/
   if (putsOwnKingInCheck(sourceSquare, destSquare)) {
     cerr << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move from " << sourceSquare << " because this would put own King in check!" << endl;
     return;
   }
-  //else cout << "check 6 FINAL: King won't be in check after this move" << endl << endl;
+  else cerr << "check 6 FINAL: King won't be in check after this move" << endl << endl;
 
 
   /*reach here iif move is valid*/
+  cout << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " moves from " << sourceSquare << " to " << destSquare << endl;
+
   if (attack)
     boardMap.erase(sourceSquare);
 
@@ -120,7 +121,7 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
 
 
 /*do we need isValid when boardMap.find in pieceSquare will fail if move invalid?*/
-bool ChessBoard::isValid(const string square) const {
+bool ChessBoard::isValidSquare(const string square) const {
   if ((int) square[0] < 65 || (int) square[0] > 72 || (int) square[1] < 49 || (int) square[1] > 56 || (int) square[2] != '\0') {
     return false;
   }
@@ -128,7 +129,7 @@ bool ChessBoard::isValid(const string square) const {
 }
 
 WhosePiece ChessBoard::pieceOnSquare(const string square) {
-  It it = boardMap.find(square);
+  MapIt it = boardMap.find(square);
   if (it == boardMap.end())
     return NOPIECE;
 
@@ -152,20 +153,6 @@ void ChessBoard::nextPlayer() {
   }
   whoseTurn = "White";
   cout << "Black has played, now it's White's turn" << endl;
-}
-
-bool ChessBoard::canMoveTo(const string sourceSquare, const string destSquare)  {
-  int i;
-  string move;
-  boardMap[sourceSquare]->genPossibleMoves();
-  cout << "validMoves generated" << endl;
-
-  for (i=0; boardMap[sourceSquare]->cpyPossibleMove(i, move); i++) {
-    cout << "considering validMoves[" << i << "]" <<endl;
-    if (move == destSquare)
-      return true;
-  }
-  return false;
 }
 
 bool ChessBoard::putsOwnKingInCheck(const string square, const string destSquare) {
