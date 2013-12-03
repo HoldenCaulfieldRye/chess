@@ -6,12 +6,11 @@ using namespace std;
 
 #define SINTINEL 10
 
-enum WhosePiece     {NOPIECE, FRIEND, FOE};
+enum WhosePiece {NOPIECE, FRIEND, FOE};
 
-enum Axis           {VERTICAL, DIAGONAL, HORIZONTAL};
-enum Direction      {FRONT_OR_BACK, FRONT};
-enum Aggressiveness {ATTACK_OR_MOVE, ATTACK, MOVE};
-enum Distance       {SHORT, LONG};
+enum Direction  {FORWARDS, BACKWARDS};
+enum Length     {SHORT, LONG};
+
 
 //DYNAMIC MEMORY! DESTRUCTORS!
 

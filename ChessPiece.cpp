@@ -25,440 +25,470 @@ void Piece::genValidMoves() { //even if empty, need to keep it, because need it 
   validMoves[4] = "'\0'";
 }
 
-void Piece::findMoves() {
-  int i, r[8], f[8];
-  string move;
-  for(i=0; validMoves[i] != "'\0'"; i++);
-
-  cerr << "genValidMoves about to run; currently " << i << " possible moves known" << endl;
-
-  for(int j=-3; j<4; j+=2) {
-
-    if (j<0)
-      r[j+3] = f[j+4] = -2;
-    else r[j+3] = f[j+4] = 2;
-
-    f[j+3] = r[j+4] = j - r[j+3];
-
-    for(int k=3; k<5; k++) {
-      move = concat(r[j+k], f[j+k]);
-      if (chboard->pieceOnSquare(move) != FRIEND && chboard->isValid(move)) {
-	validMoves[i] = move;
-	i++;
-      } } }
+void Piece::classifyMoves(Length length, Direction dir, int& r, int& f, int[2] inc, string& move, int& count) {
+  int r=rank, f=file;
+  do {
+    increment(dir, r, inc[0]);
+    increment(dir, f, inc[1]);
+    move = concat(r, f);
+    if (chboard->isValid(move) && chboard->pieceOnSquare(move) == NOPIECE && (dir == FRONT_OR_BACK || axis == STRAIGHT)) { //last condition to make sure !pawn_attack
+      validMoves[count] = move;
+      count++;
+    }
+    else {
+      //cout << "for " << getType() << " at (" << r << ", " << f << "), no valid position past " << move << " in " << dir << " direction" << endl;
+      return;
+    }
+  } while (length == LONG);
 }
 
+void Piece::increment(Direction dir, int &coordinate, int inc) {
+  if (dir = FORWARDS)
+    coordinate += inc;
+  else coordinate -= inc;
+}
 
-void Piece::findMoves(Axis axis, Distance dist) {
-  int i, r, f;
-  string move;
-  for(i=0; validMoves[i] != "'\0'"; i++);
-
-  cerr << "genValidMoves about to run; currently " << i << " possible moves known" << endl;
-
-  if (axis == HORIZONTAL && dist == LONG) {
-    /*right*/
-    r = rank;
-    f = file + 1;
-    move = concat(r, f);
-
-    while (chboard->pieceOnSquare(move) == NOPIECE && chboard->isValid(move)) {
-      validMoves[i] = move;
-      //r++;
-      f++; 
-      i++;
-      move = concat(r, f);
-    }
-    if(chboard->pieceOnSquare(move) == FOE) {
-      validMoves[i] = move;
-      i++;
-    }
-
-    /*left*/
-    r = rank;
-    f = file - 1;
-    move = concat(r, f);
-
-    while (chboard->pieceOnSquare(move) == NOPIECE && chboard->isValid(move)) { 
-      validMoves[i] = move;
-      //r--;
-      f--; 
-      i++;
-      move = concat(r, f);
-    }
-    if(chboard->pieceOnSquare(move) == FOE) {
-      validMoves[i] = move;
-      i++;
-    }
-  }
-
-  if (axis == HORIZONTAL && dist == SHORT) {
-    /*right*/
-    r = rank;
-    f = file + 1;
-    move = concat(r, f);
-
-    if /*while*/ (chboard->pieceOnSquare(move) == NOPIECE && chboard->isValid(move)) { 
-      validMoves[i] = move;
-      //r++;
-      //f++; 
-      i++;
-      //move = concat(r, f);
-    }
-    if(chboard->pieceOnSquare(move) == FOE) {
-      validMoves[i] = move;
-      i++;
-    }
-
-    /*left*/
-    r = rank;
-    f = file - 1;
-    move = concat(r, f);
-
-    if /*while*/ (chboard->pieceOnSquare(move) == NOPIECE && chboard->isValid(move)) { 
-      validMoves[i] = move;
-      //r--;
-      //f--; 
-      i++;
-      //move = concat(r, f);
-    }
-    if(chboard->pieceOnSquare(move) == FOE) {
-      validMoves[i] = move;
-      i++;
-    }
+void Piece::classifyLastMove(string move, int &count) {
+  if (chboard->isValid(move) && chboard->pieceOnSquare(move) == FOE {   //last position to make sure !pawn_move
+    validMoves[count] = move;
+    count++;
   }
 }
 
+// void Piece::findMoves() {
+//   int i, r[8], f[8];
+//   string move;
+//   for(i=0; validMoves[i] != "'\0'"; i++);
 
-void Piece::findMoves(Axis axis, Direction dir, Aggressiveness aggr, Distance dist) {
+//   cerr << "genValidMoves about to run; currently " << i << " possible moves known" << endl;
 
-  int i, r, f;
-  string move;
-  for(i=0; validMoves[i] != "'\0'"; i++);
+//   for(int j=-3; j<4; j+=2) {
 
-  cerr << "genValidMoves about to run; currently" << i << "possible moves known" << endl;
+//     if (j<0)
+//       r[j+3] = f[j+4] = -2;
+//     else r[j+3] = f[j+4] = 2;
 
-  if (axis == VERTICAL && dir == FRONT_OR_BACK && aggr == ATTACK_OR_MOVE && dist == LONG) {
-    /*front*/
+//     f[j+3] = r[j+4] = j - r[j+3];
 
-    //step 1
-     r = rank + 1; //diff
-     f = file;
-    move = concat(r, f);
-
-    //step 2
-    while (chboard->pieceOnSquare(move) == NOPIECE && chboard->isValid(move)) { 
-      validMoves[i] = move;
-      r++;
-      i++;
-      move = concat(r, f);
-    }
-    if(chboard->pieceOnSquare(move) == FOE) {
-      validMoves[i] = move;
-      i++;
-    }
-
-    /*back*/
-    r = rank - 1; //diff
-    f = file;
-    move = concat(r, f);
-
-    while (chboard->pieceOnSquare(move) == NOPIECE && chboard->isValid(move)) { 
-      validMoves[i] = move;
-      r--; //r++;       
-      i++;
-      move = concat(r, f);
-    }
-    if(chboard->pieceOnSquare(move) == FOE) {
-      validMoves[i] = move;
-      i++;
-    }
-  }
+//     for(int k=3; k<5; k++) {
+//       move = concat(r[j+k], f[j+k]);
+//       if (chboard->pieceOnSquare(move) != FRIEND && chboard->isValid(move)) {
+// 	validMoves[i] = move;
+// 	i++;
+//       } } }
+// }
 
 
-  if (axis == VERTICAL && dir == FRONT_OR_BACK && aggr == ATTACK_OR_MOVE && dist == SHORT) {
-    /*front*/
-    r = rank + 1;
-     f = file;
-    move = concat(r, f);
+// void Piece::findMoves(Axis axis, Distance dist) {
+//   int i, r, f;
+//   string move;
+//   for(i=0; validMoves[i] != "'\0'"; i++);
 
-    if /*while*/ (chboard->pieceOnSquare(move) == NOPIECE && chboard->isValid(move)) { 
-      validMoves[i] = move;
-      //r++;
-      i++;
-      //move = concat(r, f);
-    }
-    if(chboard->pieceOnSquare(move) == FOE) {
-      validMoves[i] = move;
-      i++;
-    }
+//   cerr << "genValidMoves about to run; currently " << i << " possible moves known" << endl;
 
-    /*back*/
-    r = rank - 1;
-    f = file;
-    move = concat(r, f);
+//   if (axis == HORIZONTAL && dist == LONG) {
+//     /*right*/
+//     r = rank;
+//     f = file + 1;
+//     move = concat(r, f);
 
-    if /*while*/ (chboard->pieceOnSquare(move) == NOPIECE && chboard->isValid(move)) { 
-      validMoves[i] = move;
-      //r--;
-      i++;
-      //move = concat(r, f);
-    }
-    if(chboard->pieceOnSquare(move) == FOE) {
-      validMoves[i] = move;
-      i++;
-    }
-  }
+//     while (chboard->pieceOnSquare(move) == NOPIECE && chboard->isValid(move)) {
+//       validMoves[i] = move;
+//       //r++;
+//       f++; 
+//       i++;
+//       move = concat(r, f);
+//     }
+//     if(chboard->pieceOnSquare(move) == FOE) {
+//       validMoves[i] = move;
+//       i++;
+//     }
 
+//     /*left*/
+//     r = rank;
+//     f = file - 1;
+//     move = concat(r, f);
 
-  if (axis == DIAGONAL && dir == FRONT_OR_BACK && aggr == ATTACK_OR_MOVE && dist == LONG) {
-    /*front right*/
-    r = rank + 1; //diff
-    f = file + 1; //diff
-    move = concat(r, f);
+//     while (chboard->pieceOnSquare(move) == NOPIECE && chboard->isValid(move)) { 
+//       validMoves[i] = move;
+//       //r--;
+//       f--; 
+//       i++;
+//       move = concat(r, f);
+//     }
+//     if(chboard->pieceOnSquare(move) == FOE) {
+//       validMoves[i] = move;
+//       i++;
+//     }
+//   }
 
-    while (chboard->pieceOnSquare(move) == NOPIECE && chboard->isValid(move)) { 
-      validMoves[i] = move;
-      r++;
-      f++; //diff
-      i++;
-      move = concat(r, f);
-    }
-    if(chboard->pieceOnSquare(move) == FOE) {
-      validMoves[i] = move;
-      i++;
-    }
+//   if (axis == HORIZONTAL && dist == SHORT) {
+//     /*right*/
+//     r = rank;
+//     f = file + 1;
+//     move = concat(r, f);
 
-    /*back left*/
-    r = rank - 1; //diff
-    f = file - 1; //diff
-    move = concat(r, f);
+//     if /*while*/ (chboard->pieceOnSquare(move) == NOPIECE && chboard->isValid(move)) { 
+//       validMoves[i] = move;
+//       //r++;
+//       //f++; 
+//       i++;
+//       //move = concat(r, f);
+//     }
+//     if(chboard->pieceOnSquare(move) == FOE) {
+//       validMoves[i] = move;
+//       i++;
+//     }
 
-    while (chboard->pieceOnSquare(move) == NOPIECE && chboard->isValid(move)) { 
-      validMoves[i] = move;
-      r--;      //r++;
-      f--;      //diff
-      i++;
-      move = concat(r, f);
-    }
-    if(chboard->pieceOnSquare(move) == FOE) {
-      validMoves[i] = move;
-      i++;
-    }
+//     /*left*/
+//     r = rank;
+//     f = file - 1;
+//     move = concat(r, f);
 
-    /*front left*/
-    r = rank + 1; //diff
-    f = file - 1; //diff
-    move = concat(r, f);
-
-    while (chboard->pieceOnSquare(move) == NOPIECE && chboard->isValid(move)) { 
-      validMoves[i] = move;
-      r++;
-      f--; //diff
-      i++;
-      move = concat(r, f);
-    }
-    if(chboard->pieceOnSquare(move) == FOE) {
-      validMoves[i] = move;
-      i++;
-    }
-
-    /*back right*/
-    r = rank - 1; //diff
-    f = file + 1; //diff
-    move = concat(r, f);
-
-    while (chboard->pieceOnSquare(move) == NOPIECE && chboard->isValid(move)) { 
-      validMoves[i] = move;
-      r--;      //r++;
-      f++;      //diff
-      i++;
-      move = concat(r, f);
-    }
-    if(chboard->pieceOnSquare(move) == FOE) {
-      validMoves[i] = move;
-      i++;
-    }
-  }
+//     if /*while*/ (chboard->pieceOnSquare(move) == NOPIECE && chboard->isValid(move)) { 
+//       validMoves[i] = move;
+//       //r--;
+//       //f--; 
+//       i++;
+//       //move = concat(r, f);
+//     }
+//     if(chboard->pieceOnSquare(move) == FOE) {
+//       validMoves[i] = move;
+//       i++;
+//     }
+//   }
+// }
 
 
-  if (axis == DIAGONAL && dir == FRONT_OR_BACK && aggr == ATTACK_OR_MOVE && dist == SHORT) {
-    /*front right*/
-    r = rank + 1;   //diff
-    f = file + 1;   //diff
-    move = concat(r, f);
+// void Piece::findMoves(Axis axis, Direction dir, Aggressiveness aggr, Distance dist) {
 
-    if /*while*/ (chboard->pieceOnSquare(move) == NOPIECE && chboard->isValid(move)) { 
-      validMoves[i] = move;
-      //r++;
-      //f++; 
-      i++;
-      //move = concat(r, f);
-    }
-    if(chboard->pieceOnSquare(move) == FOE) {
-      validMoves[i] = move;
-      i++;
-    }
+//   int i, r, f;
+//   string move;
+//   for(i=0; validMoves[i] != "'\0'"; i++);
 
-    /*back left*/
-    r = rank - 1;   //diff
-    f = file - 1;   //diff
-    move = concat(r, f);
+//   cerr << "genValidMoves about to run; currently" << i << "possible moves known" << endl;
 
-    if /*while*/ (chboard->pieceOnSquare(move) == NOPIECE && chboard->isValid(move)) { 
-      validMoves[i] = move;
-      //r--;
-      //f--; 
-      i++;
-      //move = concat(r, f);
-    }
-    if(chboard->pieceOnSquare(move) == FOE) {
-      validMoves[i] = move;
-      i++;
-    }
+//   if (axis == VERTICAL && dir == FRONT_OR_BACK && aggr == ATTACK_OR_MOVE && dist == LONG) {
+//     /*front*/
 
-    /*front left*/
-    r = rank + 1;   //diff
-    f = file - 1;   //diff
-    move = concat(r, f);
+//     //step 1
+//      r = rank + 1; //diff
+//      f = file;
+//     move = concat(r, f);
 
-    if /*while*/ (chboard->pieceOnSquare(move) == NOPIECE && chboard->isValid(move)) { 
-      validMoves[i] = move;
-      //r++;
-      //f++; 
-      i++;
-      //move = concat(r, f);
-    }
-    if(chboard->pieceOnSquare(move) == FOE) {
-      validMoves[i] = move;
-      i++;
-    }
+//     //step 2
+//     while (chboard->pieceOnSquare(move) == NOPIECE && chboard->isValid(move)) { 
+//       validMoves[i] = move;
+//       r++;
+//       i++;
+//       move = concat(r, f);
+//     }
+//     if(chboard->pieceOnSquare(move) == FOE) {
+//       validMoves[i] = move;
+//       i++;
+//     }
 
-    /*back right*/
-    r = rank - 1;   //diff
-    f = file + 1;   //diff
-    move = concat(r, f);
+//     /*back*/
+//     r = rank - 1; //diff
+//     f = file;
+//     move = concat(r, f);
 
-    if /*while*/ (chboard->pieceOnSquare(move) == NOPIECE && chboard->isValid(move)) { 
-      validMoves[i] = move;
-      //r--;
-      //f--; 
-      i++;
-      //move = concat(r, f);
-    }
-    if(chboard->pieceOnSquare(move) == FOE) {
-      validMoves[i] = move;
-      i++;
-    }
-  }
+//     while (chboard->pieceOnSquare(move) == NOPIECE && chboard->isValid(move)) { 
+//       validMoves[i] = move;
+//       r--; //r++;       
+//       i++;
+//       move = concat(r, f);
+//     }
+//     if(chboard->pieceOnSquare(move) == FOE) {
+//       validMoves[i] = move;
+//       i++;
+//     }
+//   }
 
 
+//   if (axis == VERTICAL && dir == FRONT_OR_BACK && aggr == ATTACK_OR_MOVE && dist == SHORT) {
+//     /*front*/
+//     r = rank + 1;
+//      f = file;
+//     move = concat(r, f);
 
-  if (axis == VERTICAL && dir == FRONT && aggr == MOVE && dist == SHORT) {
-    /*front*/
-    int r = rank + 1;
-    char f = file;
-    move = concat(r, f);
+//     if /*while*/ (chboard->pieceOnSquare(move) == NOPIECE && chboard->isValid(move)) { 
+//       validMoves[i] = move;
+//       //r++;
+//       i++;
+//       //move = concat(r, f);
+//     }
+//     if(chboard->pieceOnSquare(move) == FOE) {
+//       validMoves[i] = move;
+//       i++;
+//     }
 
-    if /*while*/ (chboard->pieceOnSquare(move) == NOPIECE && chboard->isValid(move)) { 
-      validMoves[i] = move;
-      //r++;
-      i++;
-      //move = concat(r, f);
-    }
-    //if(chboard->pieceOnSquare(move) == FOE) {
-    //  validMoves[i] = move;
-    //  i++;
-    //}
+//     /*back*/
+//     r = rank - 1;
+//     f = file;
+//     move = concat(r, f);
 
-    /*back*/
-    // r = rank - 1;
-    // f = file;
-    // move = concat(r, f);
-
-    // if /*while*/ (chboard->pieceOnSquare(move) == NOPIECE && move[j][0] < 'I' && move[j][0] >= 'A' && move[j][1] < '9' && move[j][1] > '0') {
-    //   validMoves[i] = move;
-    //   //r--;
-    //   i++;
-    //   //move = concat(r, f);
-    // }
-    // if(chboard->pieceOnSquare(move) == FOE) {
-    //   validMoves[i] = move;
-    //   i++;
-    // }
-  }
+//     if /*while*/ (chboard->pieceOnSquare(move) == NOPIECE && chboard->isValid(move)) { 
+//       validMoves[i] = move;
+//       //r--;
+//       i++;
+//       //move = concat(r, f);
+//     }
+//     if(chboard->pieceOnSquare(move) == FOE) {
+//       validMoves[i] = move;
+//       i++;
+//     }
+//   }
 
 
-  if (axis == DIAGONAL && dir == FRONT && aggr == ATTACK && dist == SHORT) { 
-    /*front right*/
-    r = rank + 1;   //diff
-    f = file + 1;   //diff
-    move = concat(r, f);
+//   if (axis == DIAGONAL && dir == FRONT_OR_BACK && aggr == ATTACK_OR_MOVE && dist == LONG) {
+//     /*front right*/
+//     r = rank + 1; //diff
+//     f = file + 1; //diff
+//     move = concat(r, f);
 
-    // if /*while*/ (chboard->pieceOnSquare(move) == NOPIECE && move[j][0] < 'I' && move[j][0] >= 'A' && move[j][1] < '9' && move[j][1] > '0') {
-    //   validMoves[i] = move;
-    //   //r++;
-    //   //f++; 
-    //   i++;
-    //   //move = concat(r, f);
-    // }
-    if(chboard->pieceOnSquare(move) == FOE) {
-      validMoves[i] = move;
-      i++;
-    }
+//     while (chboard->pieceOnSquare(move) == NOPIECE && chboard->isValid(move)) { 
+//       validMoves[i] = move;
+//       r++;
+//       f++; //diff
+//       i++;
+//       move = concat(r, f);
+//     }
+//     if(chboard->pieceOnSquare(move) == FOE) {
+//       validMoves[i] = move;
+//       i++;
+//     }
 
-    // /*back left*/
-    // r = rank - 1;   //diff
-    // f = file - 1;   //diff
-    // move = concat(r, f);
+//     /*back left*/
+//     r = rank - 1; //diff
+//     f = file - 1; //diff
+//     move = concat(r, f);
 
-    // if /*while*/ (chboard->pieceOnSquare(move) == NOPIECE && move[j][0] < 'I' && move[j][0] >= 'A' && move[j][1] < '9' && move[j][1] > '0') {
-    //   validMoves[i] = move;
-    //   //r--;
-    //   //f--; 
-    //   i++;
-    //   //move = concat(r, f);
-    // }
-    // if(chboard->pieceOnSquare(move) == FOE) {
-    //   validMoves[i] = move;
-    //   i++;
-    // }
+//     while (chboard->pieceOnSquare(move) == NOPIECE && chboard->isValid(move)) { 
+//       validMoves[i] = move;
+//       r--;      //r++;
+//       f--;      //diff
+//       i++;
+//       move = concat(r, f);
+//     }
+//     if(chboard->pieceOnSquare(move) == FOE) {
+//       validMoves[i] = move;
+//       i++;
+//     }
 
-    /*front left*/
-    r = rank + 1;   //diff
-    f = file - 1;   //diff
-    move = concat(r, f);
+//     /*front left*/
+//     r = rank + 1; //diff
+//     f = file - 1; //diff
+//     move = concat(r, f);
 
-    // if /*while*/ (chboard->pieceOnSquare(move) == NOPIECE && move[j][0] < 'I' && move[j][0] >= 'A' && move[j][1] < '9' && move[j][1] > '0') {
-    //   validMoves[i] = move;
-    //   //r++;
-    //   //f--; 
-    //   i++;
-    //   //move = concat(r, f);
-    // }
-    if(chboard->pieceOnSquare(move) == FOE) {
-      validMoves[i] = move;
-      i++;
-    }
+//     while (chboard->pieceOnSquare(move) == NOPIECE && chboard->isValid(move)) { 
+//       validMoves[i] = move;
+//       r++;
+//       f--; //diff
+//       i++;
+//       move = concat(r, f);
+//     }
+//     if(chboard->pieceOnSquare(move) == FOE) {
+//       validMoves[i] = move;
+//       i++;
+//     }
 
-    // /*back right*/
-    // r = rank - 1;   //diff
-    // f = file + 1;   //diff
-    // move = concat(r, f);
+//     /*back right*/
+//     r = rank - 1; //diff
+//     f = file + 1; //diff
+//     move = concat(r, f);
 
-    // if /*while*/ (chboard->pieceOnSquare(move) == NOPIECE && move[j][0] < 'I' && move[j][0] >= 'A' && move[j][1] < '9' && move[j][1] > '0') {
-    //   validMoves[i] = move;
-    //   //r--;
-    //   //f++; 
-    //   i++;
-    //   //move = concat(r, f);
-    // }
-    // if(chboard->pieceOnSquare(move) == FOE) {
-    //   validMoves[i] = move;
-    //   i++;
-    // }
-  }
-}
+//     while (chboard->pieceOnSquare(move) == NOPIECE && chboard->isValid(move)) { 
+//       validMoves[i] = move;
+//       r--;      //r++;
+//       f++;      //diff
+//       i++;
+//       move = concat(r, f);
+//     }
+//     if(chboard->pieceOnSquare(move) == FOE) {
+//       validMoves[i] = move;
+//       i++;
+//     }
+//   }
+
+
+//   if (axis == DIAGONAL && dir == FRONT_OR_BACK && aggr == ATTACK_OR_MOVE && dist == SHORT) {
+//     /*front right*/
+//     r = rank + 1;   //diff
+//     f = file + 1;   //diff
+//     move = concat(r, f);
+
+//     if /*while*/ (chboard->pieceOnSquare(move) == NOPIECE && chboard->isValid(move)) { 
+//       validMoves[i] = move;
+//       //r++;
+//       //f++; 
+//       i++;
+//       //move = concat(r, f);
+//     }
+//     if(chboard->pieceOnSquare(move) == FOE) {
+//       validMoves[i] = move;
+//       i++;
+//     }
+
+//     /*back left*/
+//     r = rank - 1;   //diff
+//     f = file - 1;   //diff
+//     move = concat(r, f);
+
+//     if /*while*/ (chboard->pieceOnSquare(move) == NOPIECE && chboard->isValid(move)) { 
+//       validMoves[i] = move;
+//       //r--;
+//       //f--; 
+//       i++;
+//       //move = concat(r, f);
+//     }
+//     if(chboard->pieceOnSquare(move) == FOE) {
+//       validMoves[i] = move;
+//       i++;
+//     }
+
+//     /*front left*/
+//     r = rank + 1;   //diff
+//     f = file - 1;   //diff
+//     move = concat(r, f);
+
+//     if /*while*/ (chboard->pieceOnSquare(move) == NOPIECE && chboard->isValid(move)) { 
+//       validMoves[i] = move;
+//       //r++;
+//       //f++; 
+//       i++;
+//       //move = concat(r, f);
+//     }
+//     if(chboard->pieceOnSquare(move) == FOE) {
+//       validMoves[i] = move;
+//       i++;
+//     }
+
+//     /*back right*/
+//     r = rank - 1;   //diff
+//     f = file + 1;   //diff
+//     move = concat(r, f);
+
+//     if /*while*/ (chboard->pieceOnSquare(move) == NOPIECE && chboard->isValid(move)) { 
+//       validMoves[i] = move;
+//       //r--;
+//       //f--; 
+//       i++;
+//       //move = concat(r, f);
+//     }
+//     if(chboard->pieceOnSquare(move) == FOE) {
+//       validMoves[i] = move;
+//       i++;
+//     }
+//   }
+
+
+
+//   if (axis == VERTICAL && dir == FRONT && aggr == MOVE && dist == SHORT) {
+//     /*front*/
+//     int r = rank + 1;
+//     char f = file;
+//     move = concat(r, f);
+
+//     if /*while*/ (chboard->pieceOnSquare(move) == NOPIECE && chboard->isValid(move)) { 
+//       validMoves[i] = move;
+//       //r++;
+//       i++;
+//       //move = concat(r, f);
+//     }
+//     //if(chboard->pieceOnSquare(move) == FOE) {
+//     //  validMoves[i] = move;
+//     //  i++;
+//     //}
+
+//     /*back*/
+//     // r = rank - 1;
+//     // f = file;
+//     // move = concat(r, f);
+
+//     // if /*while*/ (chboard->pieceOnSquare(move) == NOPIECE && move[j][0] < 'I' && move[j][0] >= 'A' && move[j][1] < '9' && move[j][1] > '0') {
+//     //   validMoves[i] = move;
+//     //   //r--;
+//     //   i++;
+//     //   //move = concat(r, f);
+//     // }
+//     // if(chboard->pieceOnSquare(move) == FOE) {
+//     //   validMoves[i] = move;
+//     //   i++;
+//     // }
+//   }
+
+
+//   if (axis == DIAGONAL && dir == FRONT && aggr == ATTACK && dist == SHORT) { 
+//     /*front right*/
+//     r = rank + 1;   //diff
+//     f = file + 1;   //diff
+//     move = concat(r, f);
+
+//     // if /*while*/ (chboard->pieceOnSquare(move) == NOPIECE && move[j][0] < 'I' && move[j][0] >= 'A' && move[j][1] < '9' && move[j][1] > '0') {
+//     //   validMoves[i] = move;
+//     //   //r++;
+//     //   //f++; 
+//     //   i++;
+//     //   //move = concat(r, f);
+//     // }
+//     if(chboard->pieceOnSquare(move) == FOE) {
+//       validMoves[i] = move;
+//       i++;
+//     }
+
+//     // /*back left*/
+//     // r = rank - 1;   //diff
+//     // f = file - 1;   //diff
+//     // move = concat(r, f);
+
+//     // if /*while*/ (chboard->pieceOnSquare(move) == NOPIECE && move[j][0] < 'I' && move[j][0] >= 'A' && move[j][1] < '9' && move[j][1] > '0') {
+//     //   validMoves[i] = move;
+//     //   //r--;
+//     //   //f--; 
+//     //   i++;
+//     //   //move = concat(r, f);
+//     // }
+//     // if(chboard->pieceOnSquare(move) == FOE) {
+//     //   validMoves[i] = move;
+//     //   i++;
+//     // }
+
+//     /*front left*/
+//     r = rank + 1;   //diff
+//     f = file - 1;   //diff
+//     move = concat(r, f);
+
+//     // if /*while*/ (chboard->pieceOnSquare(move) == NOPIECE && move[j][0] < 'I' && move[j][0] >= 'A' && move[j][1] < '9' && move[j][1] > '0') {
+//     //   validMoves[i] = move;
+//     //   //r++;
+//     //   //f--; 
+//     //   i++;
+//     //   //move = concat(r, f);
+//     // }
+//     if(chboard->pieceOnSquare(move) == FOE) {
+//       validMoves[i] = move;
+//       i++;
+//     }
+
+//     // /*back right*/
+//     // r = rank - 1;   //diff
+//     // f = file + 1;   //diff
+//     // move = concat(r, f);
+
+//     // if /*while*/ (chboard->pieceOnSquare(move) == NOPIECE && move[j][0] < 'I' && move[j][0] >= 'A' && move[j][1] < '9' && move[j][1] > '0') {
+//     //   validMoves[i] = move;
+//     //   //r--;
+//     //   //f++; 
+//     //   i++;
+//     //   //move = concat(r, f);
+//     // }
+//     // if(chboard->pieceOnSquare(move) == FOE) {
+//     //   validMoves[i] = move;
+//     //   i++;
+//     // }
+//   }
+// }
 
 
 string Piece::getOwner() const {
@@ -479,14 +509,21 @@ King::King() {}
 King::King(string _owner, string _square, ChessBoard *_chboard) : Piece::Piece(_owner, _square, _chboard) {}
 
 void King::genValidMoves() {
-  int vertical[2][2]   = {{1, 0}, {-1, 0}};
-  int horizontal[2][2] = {{0, 1}, { 0,-1}};
-  int diag1[2][2]   = {{1, 1}, {-1,-1}};
-  int diag2[2][2]   = {{1,-1}, {-1,1}};
+  int count=0;
+  string move;
+  int incr[5][2]  ={{1, 0},      //vertical
+		    {0, 1},      //horizontal
+		    {1, 1},      //diagonal1
+		    {1,-1},      //diagonal2
+		    {SINTINEL}};
 
-  findMoves(vertical, ATTACK_OR_MOVE, SHORT);
-  findMoves(horizontal, ATTACK_OR_MOVE, SHORT);
-  findMoves(diagonal, ATTACK_OR_MOVE, SHORT);
+  for(int i=0; incr[i][0] != SINTINEL; i++) {
+    classifyMoves(SHORT, FORWARDS, r, f, incr[i], move, count);
+    classifyLastMove(move, count);
+    classifyMoves(SHORT, BACKWARDS, r, f, incr[i], move, count);
+    classifyLastMove(move, count);
+  }
+  validMoves[count] = "'\0'";
 }
 
 string King::getType() {
@@ -499,14 +536,21 @@ Queen::Queen() {}
 Queen::Queen(string _owner, string _square, ChessBoard *_chboard) : Piece::Piece(_owner, _square, _chboard) {}
 
 void Queen::genValidMoves() {
-  int vertical[2][2]   = {{1, 0}, {-1, 0}};
-  int horizontal[2][2] = {{0, 1}, { 0,-1}};
-  int diag1[2][2]   = {{1, 1}, {-1,-1}};
-  int diag2[2][2]   = {{1,-1}, {-1,1}};
+  int count=0;
+  string move;
+  int incr[5][2] = {{1, 0},      //vertical
+		    {0, 1},      //horizontal
+		    {1, 1},      //diagonal1
+		    {1,-1},      //diagonal2
+		    {SINTINEL}};
 
-  findMoves(vertical, ATTACK_OR_MOVE, LONG);
-  findMoves(horizontal, ATTACK_OR_MOVE,LONG);
-  findMoves(diagonal, ATTACK_OR_MOVE,LONG);
+  for(int i=0; incr[i][0] != SINTINEL; i++) {
+    classifyMoves(LONG, FORWARDS, r, f, incr[i], move, count);
+    classifyLastMove(move, count);
+    classifyMoves(LONG, BACKWARDS, r, f, incr[i], move, count);
+    classifyLastMove(move, count);
+  }
+  validMoves[count] = "'\0'";
 }
 
 string Queen::getType() {
@@ -519,9 +563,17 @@ Bishop::Bishop() {}
 Bishop::Bishop(string _owner, string _square, ChessBoard *_chboard) : Piece::Piece(_owner, _square, _chboard) {}
 
 void Bishop::genValidMoves() {
-  int diag1[2][2]   = {{1, 1}, {-1,-1}};
-  int diag2[2][2]   = {{1,-1}, {-1,1}};
-  findMoves(diagonal, ATTACK_OR_MOVE,LONG);
+  int incr[3][2] = {{1, 1},      //diagonal1
+		    {1,-1},      //diagonal2
+		    {SINTINEL}};
+
+  for(int i=0; incr[i][0] != SINTINEL; i++) {
+    classifyMoves(LONG, FORWARDS, r, f, incr[i], move, count);
+    classifyLastMove(move, count);
+    classifyMoves(LONG, BACKWARDS, r, f, incr[i], move, count);
+    classifyLastMove(move, count);
+  }
+  validMoves[count] = "'\0'";
 }
 
 string Bishop::getType() {
@@ -535,7 +587,24 @@ Knight::Knight(string _owner, string _square, ChessBoard *_chboard) : Piece::Pie
 
 void Knight::genValidMoves() {
   //ENTER CODE HERE, DONT USE FINDMOVES, KNIGHT HAS NOTHING TO SHARE;
-  findMoves();
+  int i, r[8], f[8];
+  string move;
+
+  for(int j=-3; j<4; j+=2) {
+    if (j<0)
+      r[j+3] = f[j+4] = -2;
+    else r[j+3] = f[j+4] = 2;
+
+    f[j+3] = r[j+4] = j - r[j+3];
+
+    for(int k=3; k<5; k++) {
+      move = concat(r[j+k], f[j+k]);
+      if (chboard->pieceOnSquare(move) != FRIEND && chboard->isValid(move)) {
+	validMoves[i] = move;
+	i++;
+      }
+    } 
+  }
 }
 
 string Knight::getType() {
@@ -548,11 +617,17 @@ Rook::Rook() {}
 Rook::Rook(string _owner, string _square, ChessBoard *_chboard) : Piece::Piece(_owner, _square, _chboard) {}
 
 void Rook::genValidMoves() {
-  int vertical[2][2]   = {{1, 0}, {-1, 0}};
-  int horizontal[2][2] = {{0, 1}, { 0,-1}};
+  int incr[3][2] = {{1, 0},      //vertical
+		    {0, 1},      //horizontal
+		    {SINTINEL}};
 
-  findMoves(vertical, ATTACK_OR_MOVE, LONG);
-  findMoves(horizontal, ATTACK_OR_MOVE, LONG);
+  for(int i=0; incr[i][0] != SINTINEL; i++) {
+    classifyMoves(LONG, FORWARDS, r, f, incr[i], move, count);
+    classifyLastMove(move, count);
+    classifyMoves(LONG, BACKWARDS, r, f, incr[i], move, count);
+    classifyLastMove(move, count);
+  }
+  validMoves[count] = "'\0'";
 }
 
 string Rook::getType() {
@@ -567,12 +642,20 @@ Pawn::Pawn(string _owner, string _square, ChessBoard *_chboard) : Piece(_owner, 
 }
 
 void Pawn::genValidMoves() {
-  int vertical[2][2]= {{1, 0}, {SINTINEL}};
-  int diag1[2][2]   = {{1, 1}, {SINTINEL}};
-  int diag2[2][2]   = {{1,-1}, {SINTINEL}};
+  int incr[4][2] = {{1, 0},      //vertical
+		    {1, 1},      //horizontal
+		    {1,-1},
+		    {SINTINEL}};
 
-  findMoves(vertical, MOVE, SHORT);
-  findMoves(diagonal, ATTACK, SHORT);
+  classifyMoves(SHORT, FORWARDS, r, f, incr[0], move, count);  //vertical move
+
+  for(int i=1; incr[i][0] != SINTINEL; i++) {                  //diagonal attacks
+    increment(dir, r, inc[0]);
+    increment(dir, f, inc[1]);
+    move = concat(r, f);
+    classifyLastMove(move, count);
+  }
+  validMoves[count] = "'\0'";
 }
 
 string Pawn::getType() {
