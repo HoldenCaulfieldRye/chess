@@ -27,7 +27,7 @@ class ChessBoard {
   string whoseTurn;
 
  public:
-  ChessBoard              ();
+  ChessBoard();
   void       initiate     ();
   void       submitMove   (const string sourceSquare, const string destSquare);
   bool       isValidSquare(const string square) const;
@@ -36,7 +36,7 @@ class ChessBoard {
   void       nextPlayer   ();
   bool       putsOwnKingInCheck(const string square, const string destSquare);
   void       resetBoard   ();
-  ~ChessBoard             ();
+  ~ChessBoard();
 };
 
 
