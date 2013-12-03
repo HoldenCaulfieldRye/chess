@@ -38,7 +38,7 @@ void Piece::classifyMoves(Length length, Direction dir, int *inc, string& move) 
 
 /*helper function for classifyMoves*/
 void Piece::increment(Direction dir, char &coordinate1, char &coordinate2, int *inc) {
-  if (dir == FORWARDS) {
+  if ( (dir == FORWARDS && owner == "White") || (dir == BACKWARDS && owner == "Black") ) {
     coordinate1 += inc[0];
     coordinate2 += inc[1];
   }
@@ -166,20 +166,26 @@ Knight::Knight(string _owner, string _square, ChessBoard *_chboard) : Piece::Pie
 
 void Knight::genValidMoves() {
   cerr << "genValidMoves called" << endl;
-  int r[8], f[8];
+  char r[8] = {rank}, f[8] = {file};
   string move;
 
-  for(int j=-3; j<4; j+=2) {
+  for(char j=-3; j<4; j+=2) {
     if (j<0)
-      r[j+3] = f[j+4] = -2;
-    else r[j+3] = f[j+4] = 2;
+      r[j+3] = f[j+4] -= 2;
+    else r[j+3] = f[j+4] += 2;
 
     f[j+3] = r[j+4] = j - r[j+3];
 
     for(int k=3; k<5; k++) {
       move = concat(r[j+k], f[j+k]);
-      if (chboard->pieceOnSquare(move) != FRIEND && chboard->isValidSquare(move)==0)
+      cerr << "checking if Knight can reach " << move << " from " << file << rank << endl;
+      if (chboard->pieceOnSquare(move) != FRIEND && chboard->isValidSquare(move)) {
+	cerr << move << " is a valid move for " << getType() << " from " << square << endl;
 	validMoves.insert(validMoves.begin(), move);
+      }
+      else {
+	cerr << "for " << getType() << ", "  << move << " is an invalid move from " << file << rank << " because pieceOnSquare(move) = " << chboard->pieceOnSquare(move) << " or because chboard->isValidSquare(move) = " << chboard->isValidSquare(move) << endl;
+      }
     } 
   }
 }
