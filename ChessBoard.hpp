@@ -53,13 +53,12 @@ public:
   virtual void genValidMoves();
   void   classifyMoves      (Length length, Direction dir, int* inc, string& move);
   void   increment          (Direction dir, char &coordinate1, char &coordinate2, int *inc);
-  void   classifyLastMove   (const string move, int &count);
-  bool   isValidMove        (string square) const;
-  void   printValidMoves    () const;
+  void   classifyLastMove   (const string move);
+  bool   isValidMove        (string square);
+  void   printValidMoves    ();
   string getOwner           () const;
   bool   cpyPossibleMove    (int i, string &move) const; // --> why not letting me add this?
   virtual string getType() const = 0;
-  ~Piece();
 };
 
 class King : public Piece {
@@ -69,7 +68,6 @@ public:
   King(string _owner, string _square, ChessBoard *_chboard);
   virtual void genValidMoves(); //EMBED A VIRTUAL FUNCTION
   string getType() const;
-  ~King();
 };
 
 class Queen : public Piece {
@@ -79,7 +77,6 @@ public:
   Queen(string _owner, string _square, ChessBoard *_chboard);
   virtual void genValidMoves(); //EMBED A VIRTUAL FUNCTION
   string getType() const;
-  ~Queen();
 };
 
 class Bishop : public Piece {
@@ -89,7 +86,6 @@ public:
   Bishop(string _owner, string _square, ChessBoard *_chboard);
   virtual void genValidMoves(); //EMBED A VIRTUAL FUNCTION
   string getType() const;
-  ~Bishop();
 };
 
 class Knight : public Piece {
@@ -99,7 +95,6 @@ public:
   Knight(string _owner, string _square, ChessBoard *_chboard);
   void genValidMoves(); //EMBED A VIRTUAL FUNCTION
   string getType() const;
-  ~Knight();
 };
 
 class Rook : public Piece {
@@ -109,17 +104,17 @@ public:
   Rook(string _owner, string _square, ChessBoard *_chboard);
   virtual void genValidMoves(); //EMBED A VIRTUAL FUNCTION
   string getType() const;
-  ~Rook();
 };
 
 class Pawn : public Piece {
 private:
+  bool firstMoveMade;
+
 public:
   Pawn();
   Pawn(string _owner, string _square, ChessBoard *_chboard);
   virtual void genValidMoves(); //EMBED A VIRTUAL FUNCTION
   string getType() const;
-  ~Pawn();
 };
 
 string concat(char ch1, char ch2);

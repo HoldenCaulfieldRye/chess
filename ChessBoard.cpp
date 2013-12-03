@@ -95,7 +95,7 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
   else cerr << "check 4: no friendly piece on destination square" << endl;
 
   /*check that piece can theoretically get to destination square*/
-  if (!boardMap(sourceSquare)->isValidMove(destSquare)) {
+  if (boardMap[sourceSquare]->isValidMove(destSquare) == false) {
     cerr << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move to" << destSquare << "!" << endl;
     return;
   }
@@ -106,7 +106,7 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
     cerr << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move from " << sourceSquare << " because this would put own King in check!" << endl;
     return;
   }
-  else cerr << "check 6 FINAL: King won't be in check after this move" << endl << endl;
+  else cerr << "check 6 FINAL: King won't be in check after this move" << endl;
 
 
   /*reach here iif move is valid*/
@@ -122,7 +122,7 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
 
 /*do we need isValid when boardMap.find in pieceSquare will fail if move invalid?*/
 bool ChessBoard::isValidSquare(const string square) const {
-  if ((int) square[0] < 65 || (int) square[0] > 72 || (int) square[1] < 49 || (int) square[1] > 56 || (int) square[2] != '\0') {
+  if (square[0]<'A' || square[0]>'H' || square[1]<'1' || square[1]>'8' || square[2]!='\0') {
     return false;
   }
   return true;
@@ -132,11 +132,9 @@ WhosePiece ChessBoard::pieceOnSquare(const string square) {
   MapIt it = boardMap.find(square);
   if (it == boardMap.end())
     return NOPIECE;
-
-  /*which player does the piece on square belong to?*/
   if (boardMap[square]->getOwner() == whoseTurn)
     return FRIEND;
-  else return FOE;
+  return FOE;
 }
 
 string ChessBoard::notPlayer() const {
@@ -147,12 +145,12 @@ string ChessBoard::notPlayer() const {
 
 void ChessBoard::nextPlayer() {
   if (whoseTurn == "White") {
-    cout << "White has played, now it's Black's turn" << endl;
+    cerr << endl << "White has played, now it's Black's turn" << endl << endl;
     whoseTurn = "Black";
     return;
   }
   whoseTurn = "White";
-  cout << "Black has played, now it's White's turn" << endl;
+  cout << endl << "Black has played, now it's White's turn" << endl << endl;
 }
 
 bool ChessBoard::putsOwnKingInCheck(const string square, const string destSquare) {
@@ -167,5 +165,6 @@ bool ChessBoard::putsOwnKingInCheck(const string square, const string destSquare
 }
 
 void ChessBoard::resetBoard() {
+  initiate();
 }
 /*end of ChessBoard definitions*/

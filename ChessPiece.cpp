@@ -19,21 +19,21 @@ void Piece::genValidMoves() { //even if empty, need to keep it, because need it 
 
 /*helper function for genValidMoves*/
 void Piece::classifyMoves(Length length, Direction dir, int *inc, string& move) {
-  char r=rank, f=file;
+  char r=rank, f=file; 
+  //int count=0;
   do {
     increment(dir, r, f, inc);
     move = concat(r, f);
-    if (chboard->isValid(move)==0 && chboard->pieceOnSquare(move) == NOPIECE) { //last condition to make sure !pawn_attack
+    //count++;
+    if (chboard->isValidSquare(move) && chboard->pieceOnSquare(move) == NOPIECE) {
       cerr << move << " is a valid move for " << getType() << " from " << square << endl;
-      cout << "assigning " << move << " to validMoves[" << count << "]" << endl; 
       validMoves.insert(validMoves.end(), move);
-      count++;
     }
     else {
-      cerr << "for " << getType() << " at " << file << rank << ", no valid position from " << move << " in " << dir << " direction because isValid(" << move << ") = " << chboard->isValid(move) << " and pieceOnSquare(" << move << ") = " << chboard->pieceOnSquare(move) << endl;
+      cerr << "for " << getType() << " at " << file << rank << ", no valid position from " << move << " in " << dir << " direction" << endl;
       return;
     }
-  } while (length == LONG);
+  } while (length == LONG /*&& count<20*/);
 }
 
 /*helper function for classifyMoves*/
@@ -49,21 +49,24 @@ void Piece::increment(Direction dir, char &coordinate1, char &coordinate2, int *
 }
 
 /*helper function for classifyMoves*/
-void Piece::classifyLastMove(const string move, int &count) {
-  if (chboard->isValid(move)==0 && chboard->pieceOnSquare(move) == FOE)
+void Piece::classifyLastMove(const string move) {
+  if (chboard->isValidSquare(move)==0 && chboard->pieceOnSquare(move) == FOE)
     validMoves.insert(validMoves.begin(), move);
 }
 
-void Piece::printValidMoves() const {
+void Piece::printValidMoves() {
   for(VecIt it=validMoves.begin(); it!=validMoves.end(); it++)
     cout << *it << ", ";
   cout << endl;
 }
 
-bool Piece::isValidMove(string square) const {
+bool Piece::isValidMove(string square) {
+  genValidMoves();
   for (VecIt it = validMoves.begin(); it != validMoves.end(); it++) {
-    if(*it == square)
+    if(*it == square) {
+      cerr << "move is valid" << endl;
       return true;
+    }
   }
   return false;
 }
@@ -78,12 +81,6 @@ bool Piece::cpyPossibleMove(int i, string &move) const {
   move = validMoves[i];
   return true;
 }
-
-Piece::~Piece() {
-  if (validMoves)
-    delete [] validMoves;
-  validMoves = NULL;
-}
 /*end of Piece definitions*/
 
 
@@ -94,20 +91,18 @@ King::King(string _owner, string _square, ChessBoard *_chboard) : Piece::Piece(_
 void King::genValidMoves() {
   cerr << "genValidMoves called" << endl;
   string move;
-  int count=0, incr[5][2] = {{1, 0},      //vertical
-			     {0, 1},      //horizontal
-			     {1, 1},      //diagonal1
-			     {1,-1},      //diagonal2
-			     {SINTINEL}};
+  int incr[5][2] = {{1, 0},      //vertical
+		    {0, 1},      //horizontal
+		    {1, 1},      //diagonal1
+		    {1,-1},      //diagonal2
+		    {SINTINEL}};
 
   for(int i=0; incr[i][0] != SINTINEL; i++) {
     classifyMoves(SHORT, FORWARDS, incr[i], move);
-    classifyLastMove(move, count);
+    classifyLastMove(move);
     classifyMoves(SHORT, BACKWARDS, incr[i], move);
-    classifyLastMove(move, count);
+    classifyLastMove(move);
   }
-  validMoves = new string;
-  validMoves[count] = "'\0'";
 }
 
 string King::getType() const {
@@ -122,20 +117,18 @@ Queen::Queen(string _owner, string _square, ChessBoard *_chboard) : Piece::Piece
 void Queen::genValidMoves() {
   cerr << "genValidMoves called" << endl;
   string move;
-  int count=0, incr[5][2] = {{1, 0},      //vertical
-			     {0, 1},      //horizontal
-			     {1, 1},      //diagonal1
-			     {1,-1},      //diagonal2
-			     {SINTINEL}};
+  int incr[5][2] = {{1, 0},      //vertical
+		    {0, 1},      //horizontal
+		    {1, 1},      //diagonal1
+		    {1,-1},      //diagonal2
+		    {SINTINEL}};
 
   for(int i=0; incr[i][0] != SINTINEL; i++) {
-    classifyMoves(LONG, FORWARDS, incr[i], move, count);
-    classifyLastMove(move, count);
-    classifyMoves(LONG, BACKWARDS, incr[i], move, count);
-    classifyLastMove(move, count);
+    classifyMoves(LONG, FORWARDS, incr[i], move);
+    classifyLastMove(move);
+    classifyMoves(LONG, BACKWARDS, incr[i], move);
+    classifyLastMove(move);
   }
-  validMoves = new string;
-  validMoves[count] = "'\0'";
 }
 
 string Queen::getType() const {
@@ -150,18 +143,16 @@ Bishop::Bishop(string _owner, string _square, ChessBoard *_chboard) : Piece::Pie
 void Bishop::genValidMoves() {
   cerr << "genValidMoves called" << endl;
   string move;
-  int count=0, incr[3][2] = {{1, 1},      //diagonal1
-			     {1,-1},      //diagonal2
-			     {SINTINEL}};
+  int incr[3][2] = {{1, 1},      //diagonal1
+		    {1,-1},      //diagonal2
+		    {SINTINEL}};
 
   for(int i=0; incr[i][0] != SINTINEL; i++) {
-    classifyMoves(LONG, FORWARDS, incr[i], move, count);
-    classifyLastMove(move, count);
-    classifyMoves(LONG, BACKWARDS, incr[i], move, count);
-    classifyLastMove(move, count);
+    classifyMoves(LONG, FORWARDS, incr[i], move);
+    classifyLastMove(move);
+    classifyMoves(LONG, BACKWARDS, incr[i], move);
+    classifyLastMove(move);
   }
-  validMoves = new string;
-  validMoves[count] = "'\0'";
 }
 
 string Bishop::getType() const {
@@ -175,7 +166,7 @@ Knight::Knight(string _owner, string _square, ChessBoard *_chboard) : Piece::Pie
 
 void Knight::genValidMoves() {
   cerr << "genValidMoves called" << endl;
-  int i, r[8], f[8];
+  int r[8], f[8];
   string move;
 
   for(int j=-3; j<4; j+=2) {
@@ -187,11 +178,8 @@ void Knight::genValidMoves() {
 
     for(int k=3; k<5; k++) {
       move = concat(r[j+k], f[j+k]);
-      if (chboard->pieceOnSquare(move) != FRIEND && chboard->isValid(move)==0) {
-	validMoves = new string;
-	validMoves[i] = move;
-	i++;
-      }
+      if (chboard->pieceOnSquare(move) != FRIEND && chboard->isValidSquare(move)==0)
+	validMoves.insert(validMoves.begin(), move);
     } 
   }
 }
@@ -208,18 +196,16 @@ Rook::Rook(string _owner, string _square, ChessBoard *_chboard) : Piece::Piece(_
 void Rook::genValidMoves() {
   cerr << "genValidMoves called" << endl;
   string move;
-  int count=0, incr[3][2] = {{1, 0},      //vertical
-			     {0, 1},      //horizontal
-			     {SINTINEL}};
+  int incr[3][2] = {{1, 0},      //vertical
+		    {0, 1},      //horizontal
+		    {SINTINEL}};
 
   for(int i=0; incr[i][0] != SINTINEL; i++) {
-    classifyMoves(LONG, FORWARDS, incr[i], move, count);
-    classifyLastMove(move, count);
-    classifyMoves(LONG, BACKWARDS, incr[i], move, count);
-    classifyLastMove(move, count);
+    classifyMoves(LONG, FORWARDS, incr[i], move);
+    classifyLastMove(move);
+    classifyMoves(LONG, BACKWARDS, incr[i], move);
+    classifyLastMove(move);
   }
-  validMoves = new string;
-  validMoves[count] = "'\0'";
 }
 
 string Rook::getType() const {
@@ -231,27 +217,41 @@ string Rook::getType() const {
 Pawn::Pawn() {}
 
 Pawn::Pawn(string _owner, string _square, ChessBoard *_chboard) : Piece(_owner, _square, _chboard) {
+  firstMoveMade = false;
 }
 
 void Pawn::genValidMoves() {
   cerr << "genValidMoves called" << endl;
   string move;
-  char r, f;
+  char r=rank, f=file;
   int count=0, incr[4][2] = {{1, 0},      //vertical
 			     {1, 1},      //diagonal1
 			     {1,-1},      //diagonal2
 			     {SINTINEL}};
+  do {
+    increment(FORWARDS, r, f, incr[0]);
+    move = concat(r, f);
+    count++;
+    if (chboard->isValidSquare(move) && chboard->pieceOnSquare(move) == NOPIECE) {
+      cerr << move << " is a valid move for " << getType() << " from " << square << endl;
+      validMoves.insert(validMoves.end(), move);
+    }
+    else {
+      cerr << "for " << getType() << " at " << file << rank << ", no valid position from " << move << " in 0 direction" << endl;
+      return;
+    }
+  } while (!firstMoveMade && count<2);
 
-  classifyMoves(SHORT, FORWARDS, incr[0], move, count);  //vertical move
+  firstMoveMade = true;               //more elegant if only set once; improve
 
-  for(int i=1; incr[i][0] != SINTINEL; i++) {            //diagonal attacks
+
+  //diagonal attacks
+  for(int i=1; incr[i][0] != SINTINEL; i++) {     
     r=rank, f=file;
     increment(FORWARDS, r, f, incr[i]);
     move = concat(r, f);
-    classifyLastMove(move, count);
+    classifyLastMove(move);
   }
-  validMoves = new string;
-  validMoves[count] = "'\0'";
 }
 
 string Pawn::getType() const {
