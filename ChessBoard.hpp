@@ -36,6 +36,7 @@ class ChessBoard {
   void       nextPlayer   ();
   bool       putsOwnKingInCheck(const string square, const string destSquare);
   void       resetBoard   ();
+  ~ChessBoard             ();
 };
 
 
@@ -56,9 +57,9 @@ public:
   void   increment          (Direction dir, char &coordinate1, char &coordinate2, int *inc);
   void   classifyLastMove   (const string move);
   bool   isValidMove        (string square);
+  void   setPosition        (string square);
   void   printValidMoves    ();
   string getOwner           () const;
-  bool   cpyPossibleMove    (int i, string &move) const; // --> why not letting me add this?
   virtual string getType() const = 0;
 };
 

@@ -61,51 +61,57 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
 
   /*check that squares given exist*/
   if(!isValidSquare(sourceSquare)) {
-    cerr << "invalid source square (rank or file not in range) !" << endl;
+    cerr << "invalid source square (rank or file not in range) !" << endl << endl;
     return;
   }
   else cerr << "check 1: source square exists" << endl; 
 
   if(!isValidSquare(destSquare)) {
-    cerr << "invalid destination square (rank or file not in range) !" << endl;
+    cerr << "invalid destination square (rank or file not in range) !" << endl << endl;
     return;
   }
   else cerr << "check 2: destination square valid" << endl; 
 
+  if(boardMap[destSquare])
+    cerr << "before we begin check 3, there is a " << boardMap[destSquare]->getType() << " on " << destSquare << " belonging to " << boardMap[destSquare]->getOwner() << "!" << endl;
+
   /*check that there is a piece on source square, that it belongs to player whose turn it is*/
   switch(pieceOnSquare(sourceSquare)) {
   case NOPIECE:
-    cerr << "There is no piece at position " << sourceSquare << "!" << endl;
+    cerr << "There is no piece at position " << sourceSquare << "!" << endl << endl;
     return;
   case FOE:
-    cerr << "It is not " << notPlayer() << "'s turn to move!" << endl;
+    cerr << "It is not " << notPlayer() << "'s turn to move!" << endl << endl;
     return;
   case FRIEND: 
     cerr << "check 3: there is one of " << whoseTurn << "'s pieces on " << sourceSquare << endl; 
   }
 
   /*check that there is no piece belonging to player whose turn it is on destination square*/
+  //if(boardMap[destSquare])
+  //cerr << "before we begin pieceOnSquare(destSquare), there is a " << boardMap[destSquare]->getType() << " on " << destSquare << " belonging to " << boardMap[destSquare]->getOwner() << "!" << endl;
   WhosePiece wpiece = pieceOnSquare(destSquare);
   if (wpiece == FOE) {
     cerr << "attack!" << endl;
     attack = true;
   }
   if (wpiece == FRIEND) {
-    cerr << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move to" << destSquare << " because he/she would be taking his/her own piece!" << endl;
+    cerr << "it's a friend" << endl;
+    cerr << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move to " << destSquare << " because the " << boardMap[destSquare]->getType() << " on there belongs to " << boardMap[destSquare]->getOwner() << "!" << endl << endl;
     return;
   }
   else cerr << "check 4: no friendly piece on destination square" << endl;
 
   /*check that piece can theoretically get to destination square*/
   if (boardMap[sourceSquare]->isValidMove(destSquare) == false) {
-    cerr << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move to" << destSquare << "!" << endl;
+    cerr << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move to " << destSquare << "!" << endl << endl;
     return;
   }
   else cerr << "check 5: piece can theoretically get to destination square" << endl;
 
   /*check that King won't be in check after this move*/
   if (putsOwnKingInCheck(sourceSquare, destSquare)) {
-    cerr << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move from " << sourceSquare << " because this would put own King in check!" << endl;
+    cerr << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move from " << sourceSquare << " because this would put own King in check!" << endl << endl;
     return;
   }
   else cerr << "check 6 FINAL: King won't be in check after this move" << endl;
@@ -114,11 +120,13 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
   /*reach here iif move is valid*/
   cout << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " moves from " << sourceSquare << " to " << destSquare;
 
+  boardMap[sourceSquare]->setPosition(destSquare);
 
   if (attack) {
-    cout << " taking " << notPlayer() << "'s " << boardMap[destSquare]->getType() << endl;
+    cout << " taking " << notPlayer() << "'s " << boardMap[destSquare]->getType(); 
     delete [] boardMap[destSquare];
   }
+  cout << endl;
 
   boardMap[destSquare] = boardMap[sourceSquare];
   boardMap.erase(sourceSquare);
@@ -139,9 +147,15 @@ WhosePiece ChessBoard::pieceOnSquare(const string square) {
   MapIt it = boardMap.find(square);
   if (it == boardMap.end())
     return NOPIECE;
-  if (boardMap[square]->getOwner() == whoseTurn)
-    return FRIEND;
-  return FOE;
+
+  else if (it->first == square) {
+    cerr << "found smth!!" << endl;
+    if (/*boardMap[square]->getOwner()*/ (it->second)->getOwner() == whoseTurn) {
+      cerr << "it's " << whoseTurn << "'s turn to play, and on " << square << " is his/her piece" << endl;
+      return FRIEND;
+    }
+  }
+   return FOE;
 }
 
 string ChessBoard::notPlayer() const {
@@ -173,5 +187,13 @@ bool ChessBoard::putsOwnKingInCheck(const string square, const string destSquare
 
 void ChessBoard::resetBoard() {
   initiate();
+}
+
+ChessBoard::~ChessBoard() {
+  MapIt it = boardMap.begin();
+  for (; it!=boardMap.end(); it++) {
+    delete [] it->second;
+    it->second = NULL;
+  }
 }
 /*end of ChessBoard definitions*/
