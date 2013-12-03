@@ -29,23 +29,20 @@ void Piece::findMoves(int[2][2] increment, Direction dir, Length length) {
   validMoves[count] = "'\0'";
 }
 
+/*YOU KNOW WHAT, USE THE "START AS FAR BACK AS POSSIBLE AND GO AS FAR FORWARD AS POSSIBLE" TECHNIQUE.
+you can easily customise it with the initialisation and condition components of a for loop; it will be very clean.*/
+
 void Piece::classifyMoves(int& r, int& f, string& move, int incr_r, int incr_f, int& count) {
   do {
-    setMove(axis, r, f, move, incr_r, incr_f);
-    if (chboard->isValid(move) && chboard->pieceOnSquare(move) == NOPIECE && (dir == FRONT_OR_BACK || axis == STRAIGHT)) { //last condition to make sure !paw_attack
+  r += incr_r;
+  f += incr_f;
+  move = concat(r, f);
+    if (chboard->isValid(move) && chboard->pieceOnSquare(move) == NOPIECE && (dir == FRONT_OR_BACK || axis == STRAIGHT)) { //last condition to make sure !pawn_attack
       validMoves[count] = move;
       count++;
     }
     else break;
   } while (length == LONG);
-}
-
-void Piece::setMove(Axis axis, int& r, int& f, string& move, int incr_r, int incr_f) {
-  r += incr_r;
-  if (axis == DIAGONAL)
-    f += incr_f;
-  else f = rank;
-  move = concat(r, f);
 }
 
 void Piece::classifyLastMove() {
