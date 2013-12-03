@@ -86,8 +86,10 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
 
   /*check that there is no piece belonging to player whose turn it is on destination square*/
   WhosePiece wpiece = pieceOnSquare(destSquare);
-  if (wpiece == FOE)
+  if (wpiece == FOE) {
+    cerr << "attack!" << endl;
     attack = true;
+  }
   if (wpiece == FRIEND) {
     cerr << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move to" << destSquare << " because he/she would be taking his/her own piece!" << endl;
     return;
@@ -110,11 +112,16 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
 
 
   /*reach here iif move is valid*/
-  cout << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " moves from " << sourceSquare << " to " << destSquare << endl;
+  cout << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " moves from " << sourceSquare << " to " << destSquare;
 
-  if (attack)
-    boardMap.erase(sourceSquare);
 
+  if (attack) {
+    cout << " taking " << notPlayer() << "'s " << boardMap[destSquare]->getType() << endl;
+    delete [] boardMap[destSquare];
+  }
+
+  boardMap[destSquare] = boardMap[sourceSquare];
+  boardMap.erase(sourceSquare);
   nextPlayer();
   return;
 }

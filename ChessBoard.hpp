@@ -13,7 +13,8 @@ enum Direction  {FORWARDS, BACKWARDS};
 enum Length     {SHORT, LONG};
 
 
-//DYNAMIC MEMORY! DESTRUCTORS!
+//DOES THE MOVE PUT THE KING IN CHECK???
+
 
 class Piece;
 
@@ -41,7 +42,7 @@ class ChessBoard {
 class Piece {  //no Position field, only chessboard need keep track of that
 protected:
   string owner;
-  string square;
+  string position;
   ChessBoard *chboard;
   char file;
   char rank;
@@ -62,7 +63,6 @@ public:
 };
 
 class King : public Piece {
-private:
 public:
   King();
   King(string _owner, string _square, ChessBoard *_chboard);
@@ -71,7 +71,6 @@ public:
 };
 
 class Queen : public Piece {
-private:
 public:
   Queen();
   Queen(string _owner, string _square, ChessBoard *_chboard);
@@ -80,7 +79,6 @@ public:
 };
 
 class Bishop : public Piece {
-private:
 public:
   Bishop();
   Bishop(string _owner, string _square, ChessBoard *_chboard);
@@ -89,7 +87,6 @@ public:
 };
 
 class Knight : public Piece {
-private:
 public:
   Knight();
   Knight(string _owner, string _square, ChessBoard *_chboard);
@@ -98,7 +95,6 @@ public:
 };
 
 class Rook : public Piece {
-private:
 public:
   Rook();
   Rook(string _owner, string _square, ChessBoard *_chboard);
@@ -107,9 +103,6 @@ public:
 };
 
 class Pawn : public Piece {
-private:
-  bool firstMoveMade;
-
 public:
   Pawn();
   Pawn(string _owner, string _square, ChessBoard *_chboard);

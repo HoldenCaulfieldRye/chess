@@ -60,10 +60,10 @@ void Piece::printValidMoves() {
   cout << endl;
 }
 
-bool Piece::isValidMove(string square) {
+bool Piece::isValidMove(string sqquare) {
   genValidMoves();
   for (VecIt it = validMoves.begin(); it != validMoves.end(); it++) {
-    if(*it == square) {
+    if(*it == sqquare) {
       cerr << "move is valid" << endl;
       return true;
     }
@@ -166,27 +166,22 @@ Knight::Knight(string _owner, string _square, ChessBoard *_chboard) : Piece::Pie
 
 void Knight::genValidMoves() {
   cerr << "genValidMoves called" << endl;
-  char r[8] = {rank}, f[8] = {file};
+  int incr[8][2] = {{2,1}, {1,2}, {-2,1}, {1,-2}, {2,-1}, {-1,2}, {-2,-1}, {-1,-2}};
+  char r, f;
   string move;
 
-  for(char j=-3; j<4; j+=2) {
-    if (j<0)
-      r[j+3] = f[j+4] -= 2;
-    else r[j+3] = f[j+4] += 2;
-
-    f[j+3] = r[j+4] = j - r[j+3];
-
-    for(int k=3; k<5; k++) {
-      move = concat(r[j+k], f[j+k]);
-      cerr << "checking if Knight can reach " << move << " from " << file << rank << endl;
-      if (chboard->pieceOnSquare(move) != FRIEND && chboard->isValidSquare(move)) {
+  for(int i=0; i<8; i++) {
+    r = rank + incr[i][0]; 
+    f = file + incr[i][1];
+    move = concat(r, f);
+    cerr << "checking if Knight can reach " << move << " from " << file << rank << endl;
+    if (chboard->pieceOnSquare(move) != FRIEND && chboard->isValidSquare(move)) {
 	cerr << move << " is a valid move for " << getType() << " from " << square << endl;
 	validMoves.insert(validMoves.begin(), move);
       }
       else {
 	cerr << "for " << getType() << ", "  << move << " is an invalid move from " << file << rank << " because pieceOnSquare(move) = " << chboard->pieceOnSquare(move) << " or because chboard->isValidSquare(move) = " << chboard->isValidSquare(move) << endl;
       }
-    } 
   }
 }
 
@@ -246,9 +241,7 @@ void Pawn::genValidMoves() {
       cerr << "for " << getType() << " at " << file << rank << ", no valid position from " << move << " in 0 direction" << endl;
       return;
     }
-  } while (!firstMoveMade && count<2);
-
-  firstMoveMade = true;               //more elegant if only set once; improve
+  } while (count<2 && ( (rank==2 && owner=="White") || (rank==7 && owner=="Black") ));
 
 
   //diagonal attacks
