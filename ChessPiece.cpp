@@ -171,11 +171,16 @@ void Knight::genValidMoves() {
     move = concat(r, f);
     cerr << "checking if Knight can reach " << move << " from " << file << rank << endl;
     if (chboard->pieceOnSquare(move) != FRIEND && chboard->isValidSquare(move)) {
+<<<<<<< HEAD
 	cerr << move << " is a valid move for " << getType() << " from " << position << endl;
 	validMoves.insert(validMoves.begin(), move);
+=======
+        cerr << move << " is a valid move for " << getType() << " from " << square << endl;
+        validMoves.insert(validMoves.begin(), move);
+>>>>>>> workingExceptKnight,PerformMove,PawnFirstMove
       }
       else {
-	cerr << "for " << getType() << ", "  << move << " is an invalid move from " << file << rank << " because pieceOnSquare(move) = " << chboard->pieceOnSquare(move) << " or because chboard->isValidSquare(move) = " << chboard->isValidSquare(move) << endl;
+        cerr << "for " << getType() << ", "  << move << " is an invalid move from " << file << rank << " because pieceOnSquare(move) = " << chboard->pieceOnSquare(move) << " or because chboard->isValidSquare(move) = " << chboard->isValidSquare(move) << endl;
       }
   }
 }
@@ -212,7 +217,11 @@ string Rook::getType() const {
 /*Pawn definitions*/
 Pawn::Pawn() {}
 
+<<<<<<< HEAD
 Pawn::Pawn(string _owner, string _position, ChessBoard *_chboard) : Piece(_owner, _position, _chboard) {}
+=======
+Pawn::Pawn(string _owner, string _square, ChessBoard *_chboard) : Piece(_owner, _square, _chboard) {}
+>>>>>>> workingExceptKnight,PerformMove,PawnFirstMove
 
 void Pawn::genValidMoves() {
   cerr << "genValidMoves called" << endl;
@@ -234,10 +243,15 @@ void Pawn::genValidMoves() {
       cerr << "for " << getType() << " at " << file << rank << ", no valid position from " << move << " in 0 direction" << endl;
       return;
     }
+<<<<<<< HEAD
   } while (count<2 && ( (rank=='2' && owner=="White") || (rank=='7' && owner=="Black")));
+=======
+  } while (count<2 && ( (rank=='2' && owner=="White") || (rank=='7' && owner=="Black") ));
+  //Pawn can move two squares forward only on first move
+  //since it cannot move back in rank, it is only at starting rank on its first move 
+>>>>>>> workingExceptKnight,PerformMove,PawnFirstMove
 
-  //diagonal attacks
-  for(int i=1; incr[i][0] != SINTINEL; i++) {     
+  for(int i=1; incr[i][0] != SINTINEL; i++) {       //diagonal attacks
     r=rank, f=file;
     increment(FORWARDS, r, f, incr[i]);
     move = concat(r, f);

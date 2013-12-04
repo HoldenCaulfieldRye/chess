@@ -116,9 +116,23 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
   }
   else cerr << "check 6 FINAL: King won't be in check after this move" << endl;
 
-
   /*reach here iif move is valid*/
+<<<<<<< HEAD
   cout << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " moves from " << sourceSquare << " to " << destSquare;
+=======
+  cout << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " moves from " << sourceSquare << " to " << destSquare << endl;
+  cout <<"boardMap before move: ";
+  for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
+    cout << "(" << it->first << "," << (it->second)->getType() << "), ";
+  cout << endl << "boardMap after move: ";
+
+  boardMap[destSquare] = boardMap[sourceSquare];
+  boardMap.erase(sourceSquare);
+
+  for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
+    cout << "(" << it->first << "," << (it->second)->getType() << "), ";
+  cout << endl;
+>>>>>>> workingExceptKnight,PerformMove,PawnFirstMove
 
   boardMap[sourceSquare]->setPosition(destSquare);
 
@@ -186,14 +200,21 @@ bool ChessBoard::putsOwnKingInCheck(const string square, const string destSquare
 }
 
 void ChessBoard::resetBoard() {
+  boardMap.clear();
   initiate();
 }
 
 ChessBoard::~ChessBoard() {
+<<<<<<< HEAD
   MapIt it = boardMap.begin();
   for (; it!=boardMap.end(); it++) {
     delete [] it->second;
     it->second = NULL;
+=======
+  for(MapIt it = boardMap.begin(); it != boardMap.end(); it++) {
+    delete [] it->second;
+    it-> second = NULL;
+>>>>>>> workingExceptKnight,PerformMove,PawnFirstMove
   }
 }
 /*end of ChessBoard definitions*/
