@@ -116,6 +116,7 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
   cout << endl << "boardMap after move: ";
 
   boardMap[destSquare] = boardMap[sourceSquare];
+  boardMap.erase(sourceSquare);
 
   for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
     cout << "(" << it->first << "," << (it->second)->getType() << "), ";
@@ -174,6 +175,14 @@ bool ChessBoard::putsOwnKingInCheck(const string square, const string destSquare
 }
 
 void ChessBoard::resetBoard() {
+  boardMap.clear();
   initiate();
+}
+
+ChessBoard::~ChessBoard() {
+  for(MapIt it = boardMap.begin(); it != boardMap.end(); it++) {
+    delete [] it->second;
+    it-> second = NULL;
+  }
 }
 /*end of ChessBoard definitions*/
