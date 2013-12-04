@@ -108,17 +108,23 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
   }
   else cerr << "check 6 FINAL: King won't be in check after this move" << endl;
 
+  cout <<"boardMap before move: ";
+  for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
+    cout << "(" << it->first << "," << (it->second)->getType() << "), ";
+  cout << endl;
+
   /*reach here iif move is valid*/
   cout << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " moves from " << sourceSquare << " to " << destSquare;
   if (attack) {
     cout << " taking " << notPlayer() << "'s " << boardMap[destSquare]->getType() << endl;
   cout << endl;
-  //delete 
+  delete boardMap[destSquare];
+  //Piece *temp = boardMap[sourceSquare];  //maybe don't need this, delete boardMap[sourceSquare] and then erase it
+  //boardMap[destSquare] = boardMap[sourceSquare];
+  //boardMap.erase(sourceSquare);
+  //delete temp;
+  //temp = NULL;
   }
-
-  cout <<"boardMap before move: ";
-  for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
-    cout << "(" << it->first << "," << (it->second)->getType() << "), ";
 
   boardMap[destSquare] = boardMap[sourceSquare];
   boardMap.erase(sourceSquare);
