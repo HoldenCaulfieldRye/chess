@@ -95,7 +95,7 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
   else cerr << "check 4: no friendly piece on destination square" << endl;
 
   /*check that piece can theoretically get to destination square*/
-  if (boardMap[sourceSquare]->isValidMove(destSquare) == false) {
+  if ( !(boardMap[sourceSquare]->isValidMove(destSquare)) ) {
     cerr << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move to" << destSquare << "!" << endl;
     return;
   }
@@ -114,28 +114,22 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
   cout << endl;
 
   /*reach here iif move is valid*/
+
   cout << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " moves from " << sourceSquare << " to " << destSquare;
+
   if (attack) {
     cout << " taking " << notPlayer() << "'s " << boardMap[destSquare]->getType() << endl;
-  cout << endl;
-  delete boardMap[destSquare];
-  //Piece *temp = boardMap[sourceSquare];  //maybe don't need this, delete boardMap[sourceSquare] and then erase it
-  //boardMap[destSquare] = boardMap[sourceSquare];
-  //boardMap.erase(sourceSquare);
-  //delete temp;
-  //temp = NULL;
+    delete boardMap[destSquare];
   }
 
   boardMap[destSquare] = boardMap[sourceSquare];
+  boardMap[destSquare]->setPosition(destSquare);
   boardMap.erase(sourceSquare);
 
   cout << endl << "boardMap after move: ";
   for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
     cout << "(" << it->first << "," << (it->second)->getType() << "), ";
   cout << endl;
-
-  if (attack)
-    boardMap.erase(sourceSquare);
 
   nextPlayer();
   return;
@@ -144,9 +138,30 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
 
 /*do we need isValid when boardMap.find in pieceSquare will fail if move invalid?*/
 bool ChessBoard::isValidSquare(const string square) const {
-  if (square[0]<'A' || square[0]>'H' || square[1]<'1' || square[1]>'8' || square[2]!='\0') {
+  if (square[0]<'A') {
+    cerr << square[0] << "<'A' so ";
     return false;
   }
+  if (square[0]>'H') {
+    cerr << square[0] << ">'H' so ";
+    return false;
+  }
+  if (square[1]<'1') {
+    cerr << square[1] << "<'1' so ";
+    return false;
+  }
+  if (square[1]>'8') {
+    cerr << square[1] << ">'8' so ";
+    return false;
+  }
+  if (square[2]!='\0') {
+    cerr << square[2] << "!='\0' so ";
+    return false;
+  }
+
+  // if (square[0]<'A' || square[0]>'H' || square[1]<'1' || square[1]>'8' || square[2]!='\0') {
+  //   return false;
+  // }
   return true;
 }
 
@@ -191,10 +206,10 @@ void ChessBoard::resetBoard() {
   initiate();
 }
 
-ChessBoard::~ChessBoard() {
-  for(MapIt it = boardMap.begin(); it != boardMap.end(); it++) {
-    delete it->second;
-    it-> second = NULL;
-  }
-}
+// ChessBoard::~ChessBoard() {
+//   for(MapIt it = boardMap.begin(); it != boardMap.end(); it++) {
+//     delete it->second;
+//     it-> second = NULL;
+//   }
+// }
 /*end of ChessBoard definitions*/
