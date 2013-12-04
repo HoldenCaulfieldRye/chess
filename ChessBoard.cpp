@@ -109,22 +109,22 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
 
   /*perform Move*/
   if (attack) {
-    Piece *temp = new Piece(*(boardMap[destSquare]));  //copy constructor
+    Piece *temp = new Piece(*(boardMap[destSquare]));  //if move puts king in check, will have to bring taken piece back to life
   }
   boardMap[destSquare] = boardMap[sourceSquare];
   boardMap[destSquare]->setPosition(destSquare);
-  boardMap.erase(sourceSquare);
+  boardMap.erase(sourceSquare); //erase, but don't delete memory from heap until certain that move is valid
 
-  /*if King is now in check, output error and backtrack*/
-  if (kingInCheck(whoseTurn, attack)) {
+  /*if King is now in check, output error and undo the move*/
+  if (kingInCheck(whoseTurn)) {
     cerr << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move from " << sourceSquare << " because this would put own King in check!" << endl;
     boardMap[sourceSquare] = boardMap[destSquare];
     boardMap[sourceSquare]->setPosition(sourceSquare);
     if (attack) {
-      boardMap[destSquare] = temp;
-      temp = NULL;
+      boardMap[destSquare] = temp; //bring taken piece back to life
+      temp = NULL; //no longer need temp (but don't delete what's on heap)
     }
-    else boardMap.erase(destSquare);
+    else boardMap.erase(destSquare); //!attack so there was nothing in destSquare before move
     return;
   }
   else cerr << "check 6 FINAL: King won't be in check after this move" << endl;
@@ -135,7 +135,7 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
 
   if (attack) { //don't delete cout below either
     cout << " taking " << notPlayer() << "'s " << boardMap[destSquare]->getType() << endl;
-    delete boardMap[destSquare];
+    delete boardMap[destSquare]; //permanently remove taken piece from heap
   }
 
   cerr << endl << "boardMap after move: ";
@@ -207,18 +207,21 @@ void ChessBoard::performMove(const string sourceSquare, const string destSquare,
 }
 
 bool ChessBoard::kingInCheck(const string player) {
+  string kingPos;
 
-
-
-
-
-  //save piece on square's type in temp
-  //literally move piece on square from sourceSquare to destSquare
-  //iterate through mapBoard to see where King is
-  //save king's position
-  //loop: compute possible moves of all opponent pieces until king's position met or all moves have been computes
-  //move piece back to where it was
-  //based on how loop stops (value of i), return true or false
+  /*set kingPos*/
+  for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++) {
+    /*look for king among pieces belonging to active player*/
+    if ((it->second)->getType()=="King" && (it->second)->getOwner()==player) {
+      kingPos = it->first;
+      break;
+    }
+  }
+  /*try to find kingPos from set of opponent's valid moves*/
+  for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++) {
+    if ((it->second)->getOwner != player && (it->second)->isValidMove(kingPos))
+      return true;
+  }
   return false;
 }
 
