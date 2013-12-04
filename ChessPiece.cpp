@@ -243,9 +243,7 @@ void Pawn::genValidMoves() {
   //Pawn can move two squares forward only on first move
   //since it cannot move back in rank, it is only at starting rank on its first move 
 
-
-  //diagonal attacks
-  for(int i=1; incr[i][0] != SINTINEL; i++) {     
+  for(int i=1; incr[i][0] != SINTINEL; i++) {       //diagonal attacks
     r=rank, f=file;
     increment(FORWARDS, r, f, incr[i]);
     move = concat(r, f);
