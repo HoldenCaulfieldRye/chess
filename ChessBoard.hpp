@@ -42,7 +42,7 @@ class ChessBoard {
 class Piece {  //no Position field, only chessboard need keep track of that
 protected:
   string owner;
-  string square;
+  string position;
   ChessBoard *chboard;
   char file;
   char rank;
@@ -54,7 +54,7 @@ public:
   virtual void genValidMoves();
   void   classifyMoves      (Length length, Direction dir, int* inc, string& move);
   void   increment          (Direction dir, char &coordinate1, char &coordinate2, int *inc);
-  void   classifyLastMove   (const string move);
+  void   classifyLastMove   (string move);
   bool   isValidMove        (string square);
   void   printValidMoves    ();
   string getOwner           () const;

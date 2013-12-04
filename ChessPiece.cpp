@@ -30,7 +30,7 @@ void Piece::classifyMoves(Length length, Direction dir, int *inc, string& move) 
       validMoves.insert(validMoves.end(), move);
     }
     else {
-      cerr << "for " << getType() << " at " << file << rank << ", no valid position from " << move << " in " << dir << " direction" << endl;
+      cerr << "for " << getType() << " at " << file << rank << ", no valid position from " << move << " onwards, in direction " << dir << endl;
       return;
     }
   } while (length == LONG /*&& count<20*/);
@@ -49,9 +49,11 @@ void Piece::increment(Direction dir, char &coordinate1, char &coordinate2, int *
 }
 
 /*helper function for classifyMoves*/
-void Piece::classifyLastMove(const string move) {
-  if (chboard->isValidSquare(move)==0 && chboard->pieceOnSquare(move) == FOE)
+void Piece::classifyLastMove(string move) {
+  if (chboard->isValidSquare(move)==0 && chboard->pieceOnSquare(move) == FOE) {
+      cerr << move << " is a valid attack move for " << getType() << " from " << square << endl;
     validMoves.insert(validMoves.begin(), move);
+  }
 }
 
 void Piece::printValidMoves() {
@@ -149,8 +151,10 @@ void Bishop::genValidMoves() {
 
   for(int i=0; incr[i][0] != SINTINEL; i++) {
     classifyMoves(LONG, FORWARDS, incr[i], move);
+    cerr << "about to classify last move: " << move << endl;
     classifyLastMove(move);
     classifyMoves(LONG, BACKWARDS, incr[i], move);
+    cerr << "about to classify last move: " << move << endl;
     classifyLastMove(move);
   }
 }
