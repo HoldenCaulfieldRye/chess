@@ -107,9 +107,6 @@ public:
 };
 
 class Pawn : public Piece {
-private:
-  bool firstMoveMade;
-
 public:
   Pawn();
   Pawn(string _owner, string _square, ChessBoard *_chboard);
