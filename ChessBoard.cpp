@@ -101,35 +101,47 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
   }
   else cerr << "check 5: piece can theoretically get to destination square" << endl;
 
-  /*check that King won't be in check after this move*/
-  if (putsOwnKingInCheck(sourceSquare, destSquare)) {
-    cerr << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move from " << sourceSquare << " because this would put own King in check!" << endl;
-    return;
-  }
-  else cerr << "check 6 FINAL: King won't be in check after this move" << endl;
 
-  cout <<"boardMap before move: ";
+  cerr <<"boardMap before move: ";
   for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
-    cout << "(" << it->first << "," << (it->second)->getType() << "), ";
-  cout << endl;
+    cerr << "(" << it->first << "," << (it->second)->getType() << "), ";
+  cerr << endl;
 
-  /*reach here iif move is valid*/
-
-  cout << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " moves from " << sourceSquare << " to " << destSquare;
-
+  /*perform Move*/
   if (attack) {
-    cout << " taking " << notPlayer() << "'s " << boardMap[destSquare]->getType() << endl;
-    delete boardMap[destSquare];
+    Piece *temp = new Piece(*(boardMap[destSquare]));  //copy constructor
   }
-
   boardMap[destSquare] = boardMap[sourceSquare];
   boardMap[destSquare]->setPosition(destSquare);
   boardMap.erase(sourceSquare);
 
-  cout << endl << "boardMap after move: ";
+  /*if King is now in check, output error and backtrack*/
+  if (kingInCheck(whoseTurn, attack)) {
+    cerr << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move from " << sourceSquare << " because this would put own King in check!" << endl;
+    boardMap[sourceSquare] = boardMap[destSquare];
+    boardMap[sourceSquare]->setPosition(sourceSquare);
+    if (attack) {
+      boardMap[destSquare] = temp;
+      temp = NULL;
+    }
+    else boardMap.erase(destSquare);
+    return;
+  }
+  else cerr << "check 6 FINAL: King won't be in check after this move" << endl;
+
+
+  /*reach here iif move is valid*/
+  cout << whoseTurn << "'s " << boardMap[destSquare]->getType() << " moves from " << sourceSquare << " to " << destSquare; //DON'T DELETE!
+
+  if (attack) { //don't delete cout below either
+    cout << " taking " << notPlayer() << "'s " << boardMap[destSquare]->getType() << endl;
+    delete boardMap[destSquare];
+  }
+
+  cerr << endl << "boardMap after move: ";
   for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
-    cout << "(" << it->first << "," << (it->second)->getType() << "), ";
-  cout << endl;
+    cerr << "(" << it->first << "," << (it->second)->getType() << "), ";
+  cerr << endl;
 
   nextPlayer();
   return;
@@ -190,7 +202,16 @@ void ChessBoard::nextPlayer() {
   cout << endl << "Black has played, now it's White's turn" << endl << endl;
 }
 
-bool ChessBoard::putsOwnKingInCheck(const string square, const string destSquare) {
+void ChessBoard::performMove(const string sourceSquare, const string destSquare, bool attack) {
+
+}
+
+bool ChessBoard::kingInCheck(const string player) {
+
+
+
+
+
   //save piece on square's type in temp
   //literally move piece on square from sourceSquare to destSquare
   //iterate through mapBoard to see where King is

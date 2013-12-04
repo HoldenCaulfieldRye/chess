@@ -33,7 +33,7 @@ class ChessBoard {
   WhosePiece pieceOnSquare(const string square);
   string     notPlayer    () const;
   void       nextPlayer   ();
-  bool       putsOwnKingInCheck(const string square, const string destSquare);
+  bool       kingInCheck  (const string player);
   void       resetBoard   ();
   //~ChessBoard();
 };
@@ -50,6 +50,7 @@ protected:
 
 public:
   Piece();
+  Piece                     (const Piece& other);
   Piece                     (string _owner, string _position, ChessBoard *_chboard);
   virtual void genValidMoves();
   void    classifyMoves     (Length length, Direction dir, int* inc, string& move);

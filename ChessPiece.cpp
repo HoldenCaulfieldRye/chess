@@ -9,6 +9,9 @@ using namespace std;
 
 /*Piece definitions*/
 Piece::Piece() {}
+
+Piece::Piece(const Piece& other) : owner(other.owner), position(other.position), chboard(other.chboard), file(other.file), rank(other.rank), validMoves(other.validMoves) {}
+
 Piece::Piece(string _owner, string _position, ChessBoard *_chboard) : owner(_owner), position(_position), chboard(_chboard), file(_position[0]), rank(_position[1]) {
   validMoves.insert(validMoves.begin(),  "'\0'");
 }
