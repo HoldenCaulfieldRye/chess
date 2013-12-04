@@ -13,8 +13,7 @@ enum Direction  {FORWARDS, BACKWARDS};
 enum Length     {SHORT, LONG};
 
 
-//DOES THE MOVE PUT THE KING IN CHECK???
-
+//DYNAMIC MEMORY! DESTRUCTORS!
 
 class Piece;
 
@@ -36,14 +35,14 @@ class ChessBoard {
   void       nextPlayer   ();
   bool       putsOwnKingInCheck(const string square, const string destSquare);
   void       resetBoard   ();
-  ~ChessBoard();
+  //~ChessBoard();
 };
 
 
 class Piece {  //no Position field, only chessboard need keep track of that
 protected:
   string owner;
-  string position;
+  string square;
   ChessBoard *chboard;
   char file;
   char rank;
@@ -57,13 +56,14 @@ public:
   void   increment          (Direction dir, char &coordinate1, char &coordinate2, int *inc);
   void   classifyLastMove   (const string move);
   bool   isValidMove        (string square);
-  void   setPosition        (string square);
   void   printValidMoves    ();
   string getOwner           () const;
+  bool   cpyPossibleMove    (int i, string &move) const; // --> why not letting me add this?
   virtual string getType() const = 0;
 };
 
 class King : public Piece {
+private:
 public:
   King();
   King(string _owner, string _square, ChessBoard *_chboard);
@@ -72,6 +72,7 @@ public:
 };
 
 class Queen : public Piece {
+private:
 public:
   Queen();
   Queen(string _owner, string _square, ChessBoard *_chboard);
@@ -80,6 +81,7 @@ public:
 };
 
 class Bishop : public Piece {
+private:
 public:
   Bishop();
   Bishop(string _owner, string _square, ChessBoard *_chboard);
@@ -88,6 +90,7 @@ public:
 };
 
 class Knight : public Piece {
+private:
 public:
   Knight();
   Knight(string _owner, string _square, ChessBoard *_chboard);
@@ -96,6 +99,7 @@ public:
 };
 
 class Rook : public Piece {
+private:
 public:
   Rook();
   Rook(string _owner, string _square, ChessBoard *_chboard);

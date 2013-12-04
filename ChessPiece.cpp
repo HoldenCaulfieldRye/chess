@@ -9,12 +9,12 @@ using namespace std;
 
 /*Piece definitions*/
 Piece::Piece() {}
-Piece::Piece(string _owner, string _position, ChessBoard *_chboard) : owner(_owner), position(_position), chboard(_chboard), file(_position[0]), rank(_position[1]) {
+Piece::Piece(string _owner, string _square, ChessBoard *_chboard) : owner(_owner), square(_square), chboard(_chboard), file(_square[0]), rank(_square[1]) {
   validMoves.insert(validMoves.begin(),  "'\0'");
 }
 
 void Piece::genValidMoves() { //even if empty, need to keep it, because need it to be virtual, because dunno which subclass until runtime
-  cout << "piece at " << position << " not initiated to a proper piece!" << endl;
+  cout << "piece at " << square << " not initiated to a proper piece!" << endl;
 }
 
 /*helper function for genValidMoves*/
@@ -26,7 +26,7 @@ void Piece::classifyMoves(Length length, Direction dir, int *inc, string& move) 
     move = concat(r, f);
     //count++;
     if (chboard->isValidSquare(move) && chboard->pieceOnSquare(move) == NOPIECE) {
-      cerr << move << " is a valid move for " << getType() << " from " << position << endl;
+      cerr << move << " is a valid move for " << getType() << " from " << square << endl;
       validMoves.insert(validMoves.end(), move);
     }
     else {
@@ -71,17 +71,22 @@ bool Piece::isValidMove(string square) {
   return false;
 }
 
-void Piece::setPosition(string square) {
-  position = square;
-}
-
 string Piece::getOwner() const {
   return owner;
 }
 
+bool Piece::cpyPossibleMove(int i, string &move) const {
+  if (validMoves[i] == "'\0'")
+    return false;
+  move = validMoves[i];
+  return true;
+}
+/*end of Piece definitions*/
+
+
 /*King definitions*/
 King::King() {}
-King::King(string _owner, string _position, ChessBoard *_chboard) : Piece::Piece(_owner, _position, _chboard) {}
+King::King(string _owner, string _square, ChessBoard *_chboard) : Piece::Piece(_owner, _square, _chboard) {}
 
 void King::genValidMoves() {
   cerr << "genValidMoves called" << endl;
@@ -107,7 +112,7 @@ string King::getType() const {
 
 /*Queen definitions*/
 Queen::Queen() {}
-Queen::Queen(string _owner, string _position, ChessBoard *_chboard) : Piece::Piece(_owner, _position, _chboard) {}
+Queen::Queen(string _owner, string _square, ChessBoard *_chboard) : Piece::Piece(_owner, _square, _chboard) {}
 
 void Queen::genValidMoves() {
   cerr << "genValidMoves called" << endl;
@@ -133,7 +138,7 @@ string Queen::getType() const {
 
 /* Bishop definitions*/
 Bishop::Bishop() {}
-Bishop::Bishop(string _owner, string _position, ChessBoard *_chboard) : Piece::Piece(_owner, _position, _chboard) {}
+Bishop::Bishop(string _owner, string _square, ChessBoard *_chboard) : Piece::Piece(_owner, _square, _chboard) {}
 
 void Bishop::genValidMoves() {
   cerr << "genValidMoves called" << endl;
@@ -157,7 +162,7 @@ string Bishop::getType() const {
 
 /* Knight definitions*/
 Knight::Knight() {}
-Knight::Knight(string _owner, string _position, ChessBoard *_chboard) : Piece::Piece(_owner, _position, _chboard) {}
+Knight::Knight(string _owner, string _square, ChessBoard *_chboard) : Piece::Piece(_owner, _square, _chboard) {}
 
 void Knight::genValidMoves() {
   cerr << "genValidMoves called" << endl;
@@ -171,13 +176,8 @@ void Knight::genValidMoves() {
     move = concat(r, f);
     cerr << "checking if Knight can reach " << move << " from " << file << rank << endl;
     if (chboard->pieceOnSquare(move) != FRIEND && chboard->isValidSquare(move)) {
-<<<<<<< HEAD
-	cerr << move << " is a valid move for " << getType() << " from " << position << endl;
-	validMoves.insert(validMoves.begin(), move);
-=======
         cerr << move << " is a valid move for " << getType() << " from " << square << endl;
         validMoves.insert(validMoves.begin(), move);
->>>>>>> workingExceptKnight,PerformMove,PawnFirstMove
       }
       else {
         cerr << "for " << getType() << ", "  << move << " is an invalid move from " << file << rank << " because pieceOnSquare(move) = " << chboard->pieceOnSquare(move) << " or because chboard->isValidSquare(move) = " << chboard->isValidSquare(move) << endl;
@@ -192,7 +192,7 @@ string Knight::getType() const {
 
 /*Rook definitions*/
 Rook::Rook() {}
-Rook::Rook(string _owner, string _position, ChessBoard *_chboard) : Piece::Piece(_owner, _position, _chboard) {}
+Rook::Rook(string _owner, string _square, ChessBoard *_chboard) : Piece::Piece(_owner, _square, _chboard) {}
 
 void Rook::genValidMoves() {
   cerr << "genValidMoves called" << endl;
@@ -217,11 +217,7 @@ string Rook::getType() const {
 /*Pawn definitions*/
 Pawn::Pawn() {}
 
-<<<<<<< HEAD
-Pawn::Pawn(string _owner, string _position, ChessBoard *_chboard) : Piece(_owner, _position, _chboard) {}
-=======
 Pawn::Pawn(string _owner, string _square, ChessBoard *_chboard) : Piece(_owner, _square, _chboard) {}
->>>>>>> workingExceptKnight,PerformMove,PawnFirstMove
 
 void Pawn::genValidMoves() {
   cerr << "genValidMoves called" << endl;
@@ -236,20 +232,16 @@ void Pawn::genValidMoves() {
     move = concat(r, f);
     count++;
     if (chboard->isValidSquare(move) && chboard->pieceOnSquare(move) == NOPIECE) {
-      cerr << move << " is a valid move for " << getType() << " from " << position << endl;
+      cerr << move << " is a valid move for " << getType() << " from " << square << endl;
       validMoves.insert(validMoves.end(), move);
     }
     else {
       cerr << "for " << getType() << " at " << file << rank << ", no valid position from " << move << " in 0 direction" << endl;
       return;
     }
-<<<<<<< HEAD
-  } while (count<2 && ( (rank=='2' && owner=="White") || (rank=='7' && owner=="Black")));
-=======
   } while (count<2 && ( (rank=='2' && owner=="White") || (rank=='7' && owner=="Black") ));
   //Pawn can move two squares forward only on first move
   //since it cannot move back in rank, it is only at starting rank on its first move 
->>>>>>> workingExceptKnight,PerformMove,PawnFirstMove
 
   for(int i=1; incr[i][0] != SINTINEL; i++) {       //diagonal attacks
     r=rank, f=file;
