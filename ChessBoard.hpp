@@ -35,7 +35,7 @@ class ChessBoard {
   void       nextPlayer   ();
   bool       putsOwnKingInCheck(const string square, const string destSquare);
   void       resetBoard   ();
-  //~ChessBoard();
+  ~ChessBoard();
 };
 
 
