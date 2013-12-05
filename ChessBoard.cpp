@@ -147,7 +147,7 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
   }
 
   //cerr << endl << "boardMap after move: ";
-  for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
+  //for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
     //cerr << "(" << it->first << "," << (it->second)->getType() << "), ";
   //cerr << endl;
 
