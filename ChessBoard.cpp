@@ -108,7 +108,7 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
   cerr << endl;
 
   /*perform Move*/
-  Piece *temp;
+  Piece *temp = NULL;
   if (attack) {
     temp = boardMap[destSquare]; //make copy of attacked piece
   }
@@ -139,7 +139,8 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
 
   if (attack) { //don't delete cout below either
     cout << " taking " << notPlayer() << "'s " << boardMap[destSquare]->getType() << endl;
-    delete boardMap[destSquare]; //permanently remove taken piece from heap
+    delete temp; //permanently remove taken piece from heap
+    temp = NULL;
   }
 
   cerr << endl << "boardMap after move: ";
