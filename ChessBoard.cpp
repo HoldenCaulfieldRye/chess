@@ -136,7 +136,7 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
 
     return;
   }
-  else cerr << "check 6 FINAL: King won't be in check after this move" << endl;
+  else cerr << "check 4 FINAL: King won't be in check after this move" << endl;
 
 
   /*reach here iif move is valid*/

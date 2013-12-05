@@ -50,7 +50,6 @@ protected:
 
 public:
   Piece();
-  Piece                     (const Piece& other);
   Piece                     (string _owner, string _position, ChessBoard *_chboard);
   virtual void genValidMoves();
   void    classifyMoves     (Length length, Direction dir, int* inc, string& move);
