@@ -81,7 +81,8 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
     cout << "It is not " << notPlayer() << "'s turn to move!" << endl;
     return;
   case FRIEND: 
-    //cerr << "check 3: there is one of " << whoseTurn << "'s pieces on " << sourceSquare << endl; 
+    //cerr << "check 3: there is one of " << whoseTurn << "'s pieces on " << sourceSquare << endl;
+    break;
   }
 
   /*check that there is no piece belonging to player whose turn it is on destination square*/
@@ -92,19 +93,21 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
     cout << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move to" << destSquare << " because he/she would be taking his/her own piece!" << endl;
     return;
   }
-  else //cerr << "check 4: no friendly piece on destination square" << endl;
-
+  //else 
+  //cerr << "check 4: no friendly piece on destination square" << endl; ALSO UNCOMMENT 'else' just before
+    
   /*check that piece can theoretically get to destination square*/
   if ( !(boardMap[sourceSquare]->isValidMove(destSquare)) ) {
     cout << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move to" << destSquare << "!" << endl;
     return;
   }
-  else //cerr << "check 5: piece can theoretically get to destination square" << endl;
+  //else 
+  //cerr << "check 5: piece can theoretically get to destination square" << endl; ALSO UNCOMMENT 'else' just before
 
 
   //cerr <<"boardMap before move: ";
-  for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
-    //cerr << "(" << it->first << "," << (it->second)->getType() << "), ";
+  //for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
+  //cerr << "(" << it->first << "," << (it->second)->getType() << "), "; ALSO UNCOMMENT LINE ABOVE
   //cerr << endl;
 
   /*perform Move*/

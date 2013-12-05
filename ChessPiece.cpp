@@ -57,14 +57,15 @@ void Piece::classifyLastMove(string move) {
     //cerr << move << " is a valid attack move!" << endl;
     validMoves.insert(validMoves.begin(), move);
   }
-  else //cerr << move << " is invalid because pieceOnSquare(" << move << ") = " << whosep(chboard->pieceOnSquare(move)) << " or because isValidSquare(" << move << ") = " << chboard->isValidSquare(move) << endl;
+  //else 
+  //cerr << move << " is invalid because pieceOnSquare(" << move << ") = " << whosep(chboard->pieceOnSquare(move)) << " or because isValidSquare(" << move << ") = " << chboard->isValidSquare(move) << endl; ALSO UNCOMMENT 'else' just before
 }
 
-void Piece::printValidMoves() {
-  for(VecIt it=validMoves.begin(); it!=validMoves.end(); it++)
-    //cerr << *it << ", ";
-  //cerr << endl;
-}
+// void Piece::printValidMoves() {
+//   for(VecIt it=validMoves.begin(); it!=validMoves.end(); it++)
+//cerr << *it << ", ";  ALSO UNCOMMENT LINES AROUND
+//cerr << endl;
+//}
 
 bool Piece::isValidMove(string square) {
   genValidMoves();
@@ -273,5 +274,5 @@ string Pawn::getType() const {
   return "Pawn";
 }
 
-Pawn::~Pawn() {}
+Pawn::~Pawn() {} 
 /*end of Pawn definitions*/
