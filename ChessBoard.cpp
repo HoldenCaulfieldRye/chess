@@ -120,7 +120,7 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
   boardMap.erase(sourceSquare); //erase but don't delete; piece still exists, albeit elsewhere
 
   /*if King is now in check, output error and undo the move*/
-  if (kingInCheck(whoseTurn)) {
+  if (kingInCheck(whoseTurn, "")) {
     cout << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move from " << sourceSquare << " because this would put own King in check!" << endl;
 
     boardMap[sourceSquare] = boardMap[destSquare];
@@ -151,9 +151,14 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
     cerr << "(" << it->first << "," << (it->second)->getType() << "), ";
   cerr << endl;
 
-  /*check whether move puts opponent in check*/
-  if (kingInCheck(notPlayer()))
-    cout << notPlayer() << " is in check" << endl;
+  /*check whether move puts opponent in check or checkmate*/
+  string kingPos;
+  if (kingInCheck(notPlayer(), kingPos)) {
+    boardMap[kingPos]->genValidMoves;
+
+
+ else cout << notPlayer() << " is in check" << endl;
+  }
   cout << endl;
 
   nextPlayer();
@@ -216,9 +221,7 @@ void ChessBoard::nextPlayer() {
   cerr << endl << "Black has played, now it's White's turn" << endl;
 }
 
-bool ChessBoard::kingInCheck(const string player) {
-  string kingPos;
-
+bool ChessBoard::kingInCheck(const string player, string& kingPos) {
   /*set kingPos*/
   for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++) {
     /*look for king among pieces belonging to active player*/

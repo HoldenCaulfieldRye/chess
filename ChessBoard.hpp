@@ -33,7 +33,7 @@ class ChessBoard {
   WhosePiece pieceOnSquare(const string square);
   string     notPlayer    () const;
   void       nextPlayer   ();
-  bool       kingInCheck  (const string player);
+  bool       kingInCheck  (const string player, string& kingpos);
   void       resetBoard   ();
   //~ChessBoard();
 };
