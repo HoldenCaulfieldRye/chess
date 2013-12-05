@@ -64,13 +64,13 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
     cout << "invalid source square (rank or file not in range) !" << endl;
     return;
   }
-  else //cerr << "check 1: source square exists" << endl; 
+  else cerr << "check 1: source square exists" << endl; 
 
   if(!isValidSquare(destSquare)) {
     cout << "invalid destination square (rank or file not in range) !" << endl;
     return;
   }
-  else //cerr << "check 2: destination square valid" << endl; 
+  else cerr << "check 2: destination square valid" << endl; 
 
   /*check that there is a piece on source square, that it belongs to player whose turn it is*/
   switch(pieceOnSquare(sourceSquare)) {
@@ -81,7 +81,7 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
     cout << "It is not " << notPlayer() << "'s turn to move!" << endl;
     return;
   case FRIEND: 
-    //cerr << "check 3: there is one of " << whoseTurn << "'s pieces on " << sourceSquare << endl;
+    cerr << "check 3: there is one of " << whoseTurn << "'s pieces on " << sourceSquare << endl;
     break;
   }
 
@@ -93,22 +93,22 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
     cout << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move to" << destSquare << " because he/she would be taking his/her own piece!" << endl;
     return;
   }
-  //else 
-  //cerr << "check 4: no friendly piece on destination square" << endl; ALSO UNCOMMENT 'else' just before
+  else 
+  cerr << "check 4: no friendly piece on destination square" << endl;
     
   /*check that piece can theoretically get to destination square*/
   if ( !(boardMap[sourceSquare]->isValidMove(destSquare)) ) {
     cout << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move to" << destSquare << "!" << endl;
     return;
   }
-  //else 
-  //cerr << "check 5: piece can theoretically get to destination square" << endl; ALSO UNCOMMENT 'else' just before
+  else 
+  cerr << "check 5: piece can theoretically get to destination square" << endl; 
 
 
-  //cerr <<"boardMap before move: ";
-  //for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
-  //cerr << "(" << it->first << "," << (it->second)->getType() << "), "; ALSO UNCOMMENT LINE ABOVE
-  //cerr << endl;
+  cerr <<"boardMap before move: ";
+  for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
+    cerr << "(" << it->first << "," << (it->second)->getType() << "), "; 
+  cerr << endl;
 
   /*perform Move*/
   Piece *temp = NULL;
@@ -134,7 +134,7 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
 
     return;
   }
-  else //cerr << "check 6 FINAL: King won't be in check after this move" << endl;
+  else cerr << "check 6 FINAL: King won't be in check after this move" << endl;
 
 
   /*reach here iif move is valid*/
@@ -146,10 +146,10 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
     temp = NULL;
   }
 
-  //cerr << endl << "boardMap after move: ";
-  //for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
-    //cerr << "(" << it->first << "," << (it->second)->getType() << "), ";
-  //cerr << endl;
+  cerr << endl << "boardMap after move: ";
+  for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
+    cerr << "(" << it->first << "," << (it->second)->getType() << "), ";
+  cerr << endl;
 
   /*check whether move puts opponent in check*/
   if (kingInCheck(notPlayer()))
@@ -165,23 +165,23 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
 /*do we need isValid when boardMap.find in pieceSquare will fail if move invalid?*/
 bool ChessBoard::isValidSquare(const string square) const {
   if (square[0]<'A') {
-    //cerr << square[0] << "<'A' so ";
+    cerr << square[0] << "<'A' so ";
     return false;
   }
   if (square[0]>'H') {
-    //cerr << square[0] << ">'H' so ";
+    cerr << square[0] << ">'H' so ";
     return false;
   }
   if (square[1]<'1') {
-    //cerr << square[1] << "<'1' so ";
+    cerr << square[1] << "<'1' so ";
     return false;
   }
   if (square[1]>'8') {
-    //cerr << square[1] << ">'8' so ";
+    cerr << square[1] << ">'8' so ";
     return false;
   }
   if (square[2]!='\0') {
-    //cerr << square[2] << "!='\0' so ";
+    cerr << square[2] << "!='\0' so ";
     return false;
   }
 
@@ -208,12 +208,12 @@ string ChessBoard::notPlayer() const {
 
 void ChessBoard::nextPlayer() {
   if (whoseTurn == "White") {
-    //cerr << endl << "White has played, now it's Black's turn" <<  endl;
+    cerr << endl << "White has played, now it's Black's turn" <<  endl;
     whoseTurn = "Black";
     return;
   }
   whoseTurn = "White";
-  //cerr << endl << "Black has played, now it's White's turn" << endl;
+  cerr << endl << "Black has played, now it's White's turn" << endl;
 }
 
 bool ChessBoard::kingInCheck(const string player) {
