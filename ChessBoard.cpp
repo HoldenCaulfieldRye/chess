@@ -58,6 +58,7 @@ void ChessBoard::initiate() {  //should I embed this in constructor?
 /*errors can be discovered here, but return type must be void, because this constraint is implicit in main*/
 void ChessBoard::submitMove(const string sourceSquare, const string destSquare) {
   bool attack = false;
+  string move[2] = {sourceSquare, destSquare};
 
   /*check that source square exists*/
   if(!isValidSquare(sourceSquare)) {
@@ -112,9 +113,9 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
     cerr << "(" << it->first << "," << (it->second)->getType() << "), "; 
   cerr << endl;
 
-
+  
   /*check whether move puts friendly King in check. if not, perform move*/
-  if (moveEntailsCheck({sourceSquare, destSquare}, whoseTurn, attack)) {
+  if (moveEntailsCheck(move, whoseTurn, attack)) {
     cout << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move from " << sourceSquare << " because this would put own King in check!" << endl;
     return;
   }
@@ -132,19 +133,19 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
 
 
   /*check whether move puts opponent in check, checkmate, stalemate, or nothing really*/
-  switch (checkOutcome()) {
-  case "checkmate":
-    cout << notPlayer() << " is in checkmate" << endl;
-    return;
-  case "stalemate":
-    cout << "stalemate" << endl;
-    return;
-  case "check":
-    cout << notPlayer() << " is in check" << endl;
-    break;
-  case "nothing really":
-    break; //do nothing
-  }
+  // switch (checkOutcome()) {
+  // case "checkmate":
+  //   cout << notPlayer() << " is in checkmate" << endl;
+  //   return;
+  // case "stalemate":
+  //   cout << "stalemate" << endl;
+  //   return;
+  // case "check":
+  //   cout << notPlayer() << " is in check" << endl;
+  //   break;
+  // case "nothing really":
+  //   break; //do nothing
+  // }
 
 
   cout << endl;
@@ -210,7 +211,7 @@ void ChessBoard::nextPlayer() {
 
 
 /*checks whether a specified move by a specified player puts player's own king in check*/
-bool Piece::moveEntailsCheck(const string[] move, const string checkedPlayer, bool attack) {
+bool ChessBoard::moveEntailsCheck(const string move[], const string checkedPlayer, bool attack) {
   Piece *temp = NULL;
 
   /*check whether move is an attack*/
@@ -223,8 +224,7 @@ bool Piece::moveEntailsCheck(const string[] move, const string checkedPlayer, bo
   boardMap.erase(move[0]);        //erase but don't delete; piece still exists
 
   /*if King is now in check, output error and undo the move*/
-  string s;
-  if (kingInCheck(checkedPlayer, s)) {
+  if (kingInCheck(checkedPlayer)) {
     boardMap[move[0]] = boardMap[move[1]];
     boardMap[move[0]]->setPosition(move[0]);
 
@@ -238,7 +238,7 @@ bool Piece::moveEntailsCheck(const string[] move, const string checkedPlayer, bo
   }
   else {                          //reach here iif move doesn't put friendly king in check
     if (attack) {
-      cout << " taking " << notPlayer() << "'s " << boardMap[destSquare]->getType() << endl;
+      cout << " taking " << notPlayer() << "'s " << boardMap[move[1]]->getType() << endl;
       delete temp;                //permanently remove taken piece from heap
       temp = NULL;
     }
@@ -266,27 +266,27 @@ bool ChessBoard::kingInCheck(const string player) {
   return false;
 }
 
-/*checks whether in current state, we have check, checkmate, stalemate, or nothing really*/
-string ChessBoard::checkOutcome() {
+// /*checks whether in current state, we have check, checkmate, stalemate, or nothing really*/
+// string ChessBoard::checkOutcome() {
 
-  if (kingInCheck(notPlayer())) {
-    bool anAttack = false;
-    boardMap[kingPos]->genValidMoves();
+//   if (kingInCheck(notPlayer())) {
+//     bool anAttack = false;
+//     boardMap[kingPos]->genValidMoves();
 
-    for (each_valid_Move_of_king_WHICH_DOESNT_PUT_HIM_IN_CHECK!) {  //need access to a move of piece
-      if (pieceOnSquare(move[i][1]==FOE))
-	anAttack = true;
-      if (!moveEntailsCheck(move[i], notPlayer(), anAttack) ) {
-	"what if king can move to a square, but it would put him in check?"
-	  return "check";
-      }
-    }
-    return "checkmate";
-  }
-  return "nothing really";
-}
+//     for (each_valid_Move_of_king_WHICH_DOESNT_PUT_HIM_IN_CHECK!) {  //need access to a move of piece
+//       if (pieceOnSquare(move[i][1]==FOE))
+// 	anAttack = true;
+//       if (!moveEntailsCheck(move[i], notPlayer(), anAttack) ) {
+// 	"what if king can move to a square, but it would put him in check?"
+// 	  return "check";
+//       }
+//     }
+//     return "checkmate";
+//   }
+//   return "nothing really";
+// }
 
-string ChessBoard::resetBoard() {
+void ChessBoard::resetBoard() {
   boardMap.clear();
   initiate();
 }
