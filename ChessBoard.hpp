@@ -27,14 +27,15 @@ class ChessBoard {
 
  public:
   ChessBoard();
-  void       initiate     ();
-  void       submitMove   (const string sourceSquare, const string destSquare);
-  bool       isValidSquare(const string square) const;
-  WhosePiece pieceOnSquare(const string square);
-  string     notPlayer    () const;
-  void       nextPlayer   ();
-  bool       kingInCheck  (const string player, string& kingpos);
-  void       resetBoard   ();
+  void       initiate        ();
+  void       submitMove      (const string sourceSquare, const string destSquare);
+  bool       isValidSquare   (const string square) const;
+  WhosePiece pieceOnSquare   (const string square);
+  string     notPlayer       () const;
+  void       nextPlayer      ();
+  bool       moveEntailsCheck(const string move, const string player);
+  bool       kingInCheck     (const string player, string& kingpos);
+  void       resetBoard      ();
   //~ChessBoard();
 };
 

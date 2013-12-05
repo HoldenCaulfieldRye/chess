@@ -103,50 +103,27 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
     /*check whether move is an attack*/
     if(pieceOnSquare(destSquare) == FOE)
       attack = true;
-    else cerr << "check 3: piece can get to destination square" << endl; 
+    cerr << "check 3: piece can get to destination square" << endl; 
   }
+
 
   cerr <<"boardMap before move: ";
   for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
     cerr << "(" << it->first << "," << (it->second)->getType() << "), "; 
   cerr << endl;
 
-  /*perform Move*/
-  Piece *temp = NULL;
-  if (attack) {
-    temp = boardMap[destSquare]; //make copy of attacked piece
-  }
-  boardMap[destSquare] = boardMap[sourceSquare];
-  boardMap[destSquare]->setPosition(destSquare);
-  boardMap.erase(sourceSquare); //erase but don't delete; piece still exists, albeit elsewhere
 
-  /*if King is now in check, output error and undo the move*/
-  string s;
-  if (kingInCheck(whoseTurn, s)) {
+  /*check whether move puts friendly King in check*/
+  if (moveEntailsCheck({sourceSquare, destSquare}, whoseTurn, attack)) {
     cout << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move from " << sourceSquare << " because this would put own King in check!" << endl;
-
-    boardMap[sourceSquare] = boardMap[destSquare];
-    boardMap[sourceSquare]->setPosition(sourceSquare);
-
-    if (attack) {
-      boardMap[destSquare] = temp; //bring taken piece back to life
-      temp = NULL; //no longer need temp (but don't delete what's on heap)
-    }
-    else boardMap.erase(destSquare); //!attack so there was nothing in destSquare before move
-
     return;
   }
   else cerr << "check 4 FINAL: King won't be in check after this move" << endl;
 
 
-  /*reach here iif move is valid*/
+
     cout << whoseTurn << "'s " << boardMap[destSquare]->getType() << " moves from " << sourceSquare << " to " << destSquare << " ";
 
-  if (attack) {
-    cout << " taking " << notPlayer() << "'s " << boardMap[destSquare]->getType() << endl;
-    delete temp; //permanently remove taken piece from heap
-    temp = NULL;
-  }
 
   cerr << endl << "boardMap after move: ";
   for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
@@ -221,6 +198,46 @@ void ChessBoard::nextPlayer() {
   cerr << endl << "Black has played, now it's White's turn" << endl;
 }
 
+
+/*checks whether a specified move by a specified player puts player's own king in check*/
+bool Piece::moveEntailsCheck(const string[] move, const string checkedPlayer, bool attack) {
+  Piece *temp = NULL;
+
+  /*check whether move is an attack*/
+  if (attack)
+    temp = boardMap[move[1]];     //make copy of attacked piece
+
+  /*perform move*/
+  boardMap[move[1]] = boardMap[move[0]];
+  boardMap[move[1]]->setPosition(move[1]);
+  boardMap.erase(move[0]);        //erase but don't delete; piece still exists
+
+  /*if King is now in check, output error and undo the move*/
+  string s;
+  if (kingInCheck(checkedPlayer, s)) {
+    boardMap[move[0]] = boardMap[move[1]];
+    boardMap[move[0]]->setPosition(move[0]);
+
+    if (attack) {
+      boardMap[move[1]] = temp;   //bring taken piece back to life
+      temp = NULL;                //no longer need temp (but don't delete what's on heap)
+    }
+    else boardMap.erase(move[1]); //!attack so there was nothing in move[1] before move
+
+    return false;
+  }
+  else {                          //reach here iif move doesn't put friendly king in check
+    if (attack) {
+      cout << " taking " << notPlayer() << "'s " << boardMap[destSquare]->getType() << endl;
+      delete temp;                //permanently remove taken piece from heap
+      temp = NULL;
+    }
+    return true;
+  }
+}
+
+
+/*checks whether in current state, a specified player's king is in check*/
 bool ChessBoard::kingInCheck(const string player, string& kingPos) {
   /*set kingPos*/
   for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++) {
