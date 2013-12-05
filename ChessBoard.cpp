@@ -240,7 +240,7 @@ bool ChessBoard::moveEntailsCheck(const string move[], const string checkedPlaye
     if (attack) {
       cout << " taking " << notPlayer() << "'s " << boardMap[move[1]]->getType() << endl;
       delete temp;                //permanently remove taken piece from heap
-      temp = NULL;
+      temp = NULL; 
     }
     return true;
   }
