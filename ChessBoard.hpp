@@ -34,7 +34,8 @@ class ChessBoard {
   string     notPlayer       () const;
   void       nextPlayer      ();
   bool       moveEntailsCheck(const string move[], const string checkedPlayer, bool attack);
-  bool       kingInCheck     (const string player);
+  string     findKingPos     (const string player);
+  bool       kingInCheck     (const string kingPos);
   void       resetBoard      ();
   //~ChessBoard();
 };
