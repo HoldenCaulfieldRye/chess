@@ -138,7 +138,7 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
 
 
   /*reach here iif move is valid*/
-  cout << whoseTurn << "'s " << boardMap[destSquare]->getType() << " moves from " << sourceSquare << " to " << destSquare;
+    cout << whoseTurn << "'s " << boardMap[destSquare]->getType() << " moves from " << sourceSquare << " to " << destSquare << " ";
 
   if (attack) {
     cout << " taking " << notPlayer() << "'s " << boardMap[destSquare]->getType() << endl;
@@ -151,14 +151,13 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
     //cerr << "(" << it->first << "," << (it->second)->getType() << "), ";
   //cerr << endl;
 
-
   /*check whether move puts opponent in check*/
   if (kingInCheck(notPlayer()))
     cout << notPlayer() << " is in check" << endl;
+  cout << endl;
 
   nextPlayer();
 
-  //cerr << " THIS IS //CERR   !!!!"<< endl;
   return;
 }
 
@@ -209,12 +208,12 @@ string ChessBoard::notPlayer() const {
 
 void ChessBoard::nextPlayer() {
   if (whoseTurn == "White") {
-    //cerr << endl << "White has played, now it's Black's turn" << endl << endl;
+    //cerr << endl << "White has played, now it's Black's turn" <<  endl;
     whoseTurn = "Black";
     return;
   }
   whoseTurn = "White";
-  cout << endl << "Black has played, now it's White's turn" << endl << endl;
+  //cerr << endl << "Black has played, now it's White's turn" << endl;
 }
 
 bool ChessBoard::kingInCheck(const string player) {
