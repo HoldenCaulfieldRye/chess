@@ -108,23 +108,27 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
   cerr << endl;
 
   /*perform Move*/
+  Piece *temp;
   if (attack) {
-    Piece *temp = new Piece(*(boardMap[destSquare]));  //if move puts king in check, will have to bring taken piece back to life
+    temp = boardMap[destSquare]; //make copy of attacked piece
   }
   boardMap[destSquare] = boardMap[sourceSquare];
   boardMap[destSquare]->setPosition(destSquare);
-  boardMap.erase(sourceSquare); //erase, but don't delete memory from heap until certain that move is valid
+  boardMap.erase(sourceSquare); //erase but don't delete; piece still exists, albeit elsewhere
 
   /*if King is now in check, output error and undo the move*/
   if (kingInCheck(whoseTurn)) {
     cerr << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move from " << sourceSquare << " because this would put own King in check!" << endl;
+
     boardMap[sourceSquare] = boardMap[destSquare];
     boardMap[sourceSquare]->setPosition(sourceSquare);
+
     if (attack) {
       boardMap[destSquare] = temp; //bring taken piece back to life
       temp = NULL; //no longer need temp (but don't delete what's on heap)
     }
     else boardMap.erase(destSquare); //!attack so there was nothing in destSquare before move
+
     return;
   }
   else cerr << "check 6 FINAL: King won't be in check after this move" << endl;
@@ -202,10 +206,6 @@ void ChessBoard::nextPlayer() {
   cout << endl << "Black has played, now it's White's turn" << endl << endl;
 }
 
-void ChessBoard::performMove(const string sourceSquare, const string destSquare, bool attack) {
-
-}
-
 bool ChessBoard::kingInCheck(const string player) {
   string kingPos;
 
@@ -218,8 +218,8 @@ bool ChessBoard::kingInCheck(const string player) {
     }
   }
   /*try to find kingPos from set of opponent's valid moves*/
-  for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++) {
-    if ((it->second)->getOwner != player && (it->second)->isValidMove(kingPos))
+  for(MapIt it = boardMap.begin(); it != boardMap.end(); it++) {
+    if ((it->second)->getOwner() != player && (it->second)->isValidMove(kingPos))
       return true;
   }
   return false;
