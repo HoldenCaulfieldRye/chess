@@ -273,14 +273,17 @@ string ChessBoard::checkOutcome() {
   string opKingPos;                          //position of King of notPlayer()
 
   /*test whether any non-King pieces of opponent can validly move. When testing for stalemate or checkmate, need to look for moves that do not lead to check. criteria are the same for both, so better to look for such moves first.*/
-  for (each_piece && piece->getOwner() == notPlayer()) {
-    if (position_of_piece != opKingPos) {   //ie piece isn't King
-      for (each_valid_Move_of_piece) {
-	if (pieceOnSquare(move[i][1]==FOE))
+  for (MapIt it = boardMap.begin(); it!=boardMap.end(); it++) {
+    string pos = &(it->first);
+    Piece* piece = &(it->second);
+    if (pos != opKingPos && piece->getOwner() != whoseTurn) { //select an opponent piece which isn't King
+
+      Vecs moves = pos->getValidMoves();
+      for (VecIt it=moves.begin(); it!=moves.end(); it++) { //each_valid_Move_of_piece) {
+	if (pieceOnSquare(moves[i][1]==FOE))
 	  anAttack = true;
-	if (!moveEntailsCheck(move[i], notPlayer(), anAttack) ) {
+	if (!moveEntailsCheck(moves[i], notPlayer(), anAttack) )
 	  return "nothing really";
-	}
       }
     }
   }

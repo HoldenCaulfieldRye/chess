@@ -76,6 +76,14 @@ bool Piece::isValidMove(string square) {
   return false;
 }
 
+Vecs Piece::getValidMoves() {
+  Vecs moves;
+  for(VecIt it=validMoves.begin(); it!=validMoves.end(); it++) {
+    moves.insert(moves.end(), {position, *it});
+  }
+  return moves;
+}
+
 string Piece::getOwner() const {
   return owner;
 }
