@@ -77,5 +77,7 @@ int main() {
     // cb.submitMove("D3", "G6");
     // cout << endl;
 
+    cout << "TEST FOR STALEMATE" << endl;
+
     return 0;
 }

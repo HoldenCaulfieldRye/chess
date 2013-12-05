@@ -59,20 +59,15 @@ void ChessBoard::initiate() {  //should I embed this in constructor?
 void ChessBoard::submitMove(const string sourceSquare, const string destSquare) {
   bool attack = false;
 
-  /*check that squares given exist*/
+  /*check that source square exists*/
   if(!isValidSquare(sourceSquare)) {
     cout << "invalid source square (rank or file not in range) !" << endl;
     return;
   }
   else cerr << "check 1: source square exists" << endl; 
 
-  if(!isValidSquare(destSquare)) {
-    cout << "invalid destination square (rank or file not in range) !" << endl;
-    return;
-  }
-  else cerr << "check 2: destination square valid" << endl; 
 
-  /*check that there is a piece on source square, that it belongs to player whose turn it is*/
+  /*check that there is a friendly piece on source square*/
   switch(pieceOnSquare(sourceSquare)) {
   case NOPIECE:
     cout << "There is no piece at position " << sourceSquare << "!" << endl;
@@ -81,29 +76,35 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
     cout << "It is not " << notPlayer() << "'s turn to move!" << endl;
     return;
   case FRIEND: 
-    cerr << "check 3: there is one of " << whoseTurn << "'s pieces on " << sourceSquare << endl;
+    cerr << "check 2: there is one of " << whoseTurn << "'s pieces on " << sourceSquare << endl;
     break;
-  }
+  }  
 
-  /*check that there is no piece belonging to player whose turn it is on destination square*/
-  WhosePiece wpiece = pieceOnSquare(destSquare);
-  if (wpiece == FOE)
-    attack = true;
-  if (wpiece == FRIEND) {
-    cout << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move to" << destSquare << " because he/she would be taking his/her own piece!" << endl;
-    return;
-  }
-  else 
-  cerr << "check 4: no friendly piece on destination square" << endl;
-    
-  /*check that piece can theoretically get to destination square*/
+  /*check that piece can get to destination square (excluding putting own king in check)*/
   if ( !(boardMap[sourceSquare]->isValidMove(destSquare)) ) {
+    /*reach here iif it can't; enquire why*/
+    /*check that destination square is valid*/
+    if(!isValidSquare(destSquare)) {
+      cout << "invalid destination square (rank or file not in range) !" << endl;
+      return;
+    }
+
+    /*check that there is no friendly piece on destination square*/
+    if (pieceOnSquare(destSquare) == FRIEND) {
+      cout << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move to" << destSquare << " because he/she would be taking his/her own piece!" << endl;
+      return;
+    }
+
+    /*reach here iif piece is just not capable of making such a move*/
     cout << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move to" << destSquare << "!" << endl;
     return;
   }
-  else 
-  cerr << "check 5: piece can theoretically get to destination square" << endl; 
-
+  else {
+    /*check whether move is an attack*/
+    if(pieceOnSquare(destSquare) == FOE)
+      attack = true;
+    else cerr << "check 3: piece can get to destination square" << endl; 
+  }
 
   cerr <<"boardMap before move: ";
   for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
@@ -120,7 +121,8 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
   boardMap.erase(sourceSquare); //erase but don't delete; piece still exists, albeit elsewhere
 
   /*if King is now in check, output error and undo the move*/
-  if (kingInCheck(whoseTurn, "")) {
+  string s;
+  if (kingInCheck(whoseTurn, s)) {
     cout << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move from " << sourceSquare << " because this would put own King in check!" << endl;
 
     boardMap[sourceSquare] = boardMap[destSquare];
@@ -154,10 +156,8 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
   /*check whether move puts opponent in check or checkmate*/
   string kingPos;
   if (kingInCheck(notPlayer(), kingPos)) {
-    boardMap[kingPos]->genValidMoves;
-
-
- else cout << notPlayer() << " is in check" << endl;
+    //boardMap[kingPos]->genValidMoves();
+    cout << notPlayer() << " is in check" << endl;
   }
   cout << endl;
 
