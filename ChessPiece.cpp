@@ -17,7 +17,7 @@ Piece::Piece(string _owner, string _position, ChessBoard *_chboard) : owner(_own
 }
 
 void Piece::genValidMoves() { //even if empty, need to keep it, because need it to be virtual, because dunno which subclass until runtime
-  cout << "piece at " << position << " not initiated to a proper piece!" << endl;
+  cerr << "piece at " << position << " not initiated to a proper piece!" << endl;
 }
 
 /*helper function for genValidMoves*/
@@ -62,8 +62,8 @@ void Piece::classifyLastMove(string move) {
 
 void Piece::printValidMoves() {
   for(VecIt it=validMoves.begin(); it!=validMoves.end(); it++)
-    cout << *it << ", ";
-  cout << endl;
+    cerr << *it << ", ";
+  cerr << endl;
 }
 
 bool Piece::isValidMove(string square) {

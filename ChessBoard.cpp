@@ -51,7 +51,7 @@ void ChessBoard::initiate() {  //should I embed this in constructor?
 
   whoseTurn = "White";
 
-  cerr << "A new chess game is started!" << endl;
+  cout << "A new chess game is started!" << endl;
 }
 
 
@@ -61,13 +61,13 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
 
   /*check that squares given exist*/
   if(!isValidSquare(sourceSquare)) {
-    cerr << "invalid source square (rank or file not in range) !" << endl;
+    cout << "invalid source square (rank or file not in range) !" << endl;
     return;
   }
   else cerr << "check 1: source square exists" << endl; 
 
   if(!isValidSquare(destSquare)) {
-    cerr << "invalid destination square (rank or file not in range) !" << endl;
+    cout << "invalid destination square (rank or file not in range) !" << endl;
     return;
   }
   else cerr << "check 2: destination square valid" << endl; 
@@ -75,10 +75,10 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
   /*check that there is a piece on source square, that it belongs to player whose turn it is*/
   switch(pieceOnSquare(sourceSquare)) {
   case NOPIECE:
-    cerr << "There is no piece at position " << sourceSquare << "!" << endl;
+    cout << "There is no piece at position " << sourceSquare << "!" << endl;
     return;
   case FOE:
-    cerr << "It is not " << notPlayer() << "'s turn to move!" << endl;
+    cout << "It is not " << notPlayer() << "'s turn to move!" << endl;
     return;
   case FRIEND: 
     cerr << "check 3: there is one of " << whoseTurn << "'s pieces on " << sourceSquare << endl; 
@@ -89,14 +89,14 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
   if (wpiece == FOE)
     attack = true;
   if (wpiece == FRIEND) {
-    cerr << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move to" << destSquare << " because he/she would be taking his/her own piece!" << endl;
+    cout << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move to" << destSquare << " because he/she would be taking his/her own piece!" << endl;
     return;
   }
   else cerr << "check 4: no friendly piece on destination square" << endl;
 
   /*check that piece can theoretically get to destination square*/
   if ( !(boardMap[sourceSquare]->isValidMove(destSquare)) ) {
-    cerr << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move to" << destSquare << "!" << endl;
+    cout << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move to" << destSquare << "!" << endl;
     return;
   }
   else cerr << "check 5: piece can theoretically get to destination square" << endl;
@@ -118,7 +118,7 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
 
   /*if King is now in check, output error and undo the move*/
   if (kingInCheck(whoseTurn)) {
-    cerr << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move from " << sourceSquare << " because this would put own King in check!" << endl;
+    cout << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move from " << sourceSquare << " because this would put own King in check!" << endl;
 
     boardMap[sourceSquare] = boardMap[destSquare];
     boardMap[sourceSquare]->setPosition(sourceSquare);
@@ -135,9 +135,9 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
 
 
   /*reach here iif move is valid*/
-  cout << whoseTurn << "'s " << boardMap[destSquare]->getType() << " moves from " << sourceSquare << " to " << destSquare; //DON'T DELETE!
+  cout << whoseTurn << "'s " << boardMap[destSquare]->getType() << " moves from " << sourceSquare << " to " << destSquare;
 
-  if (attack) { //don't delete cout below either
+  if (attack) {
     cout << " taking " << notPlayer() << "'s " << boardMap[destSquare]->getType() << endl;
     delete temp; //permanently remove taken piece from heap
     temp = NULL;
@@ -147,6 +147,11 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
   for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
     cerr << "(" << it->first << "," << (it->second)->getType() << "), ";
   cerr << endl;
+
+
+  /*check whether move puts opponent in check*/
+  if (kingInCheck(notPlayer()))
+    cout << notPlayer() << " is in check" << endl;
 
   nextPlayer();
   return;
