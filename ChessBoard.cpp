@@ -206,7 +206,7 @@ void ChessBoard::nextPlayer() {
 bool ChessBoard::entailsCheck(const string move[], const string player) {
   Piece *temp = NULL;
   string kingPos;
- 
+  cerr << "does move entail check?" << endl;
   temp = performMove(move); //if attack, returns pointer to taken piece
   kingPos = findKingPos(player);
   if (kingInCheck(kingPos)) {
@@ -218,23 +218,27 @@ bool ChessBoard::entailsCheck(const string move[], const string player) {
 
 /*scratch for performMove()*/
 Piece* ChessBoard::performMove(const string move[]) {
+  cerr << "performing move" << endl;
   Piece *takenPiece = NULL;
   if (pieceOnSquare(move[1]) == FOE) //if attack, save memory location of attacked piece
     takenPiece = boardMap[move[1]];
   boardMap[move[1]] = boardMap[move[0]];
   boardMap[move[1]]->setPosition(move[1]);
   boardMap.erase(move[0]);           //erase but don't delete; piece still exists
+  cerr << "move performed" << endl;
   return takenPiece;
 }
 /*eo scratch for performMove()*/
 
 /*scratch for undoMove()*/
 void ChessBoard::undoMove(const string move[], Piece *takenPiece) {
+  cerr << "undoing move" << endl;
   boardMap[move[0]] = boardMap[move[1]];
   boardMap[move[0]]->setPosition(move[0]);
   if (takenPiece)
     boardMap[move[1]] = takenPiece;   //bring taken piece back to life
   else boardMap.erase(move[1]); //!attack so there was nothing in move[1] before move
+  cerr << "move undone" << endl;
 }
 /*eo scratch for undoMove()*/
 
@@ -277,11 +281,14 @@ void ChessBoard::undoMove(const string move[], Piece *takenPiece) {
 
 /*look for king among pieces belonging to active player*/
 string ChessBoard::findKingPos(const string player) {
+  cerr << "looking for kingPos" << endl;
   Piece *piece;
   for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++) {
     piece = it->second;
-    if (piece->getType()=="King" && piece->getOwner()==player)
+    if (piece->getType()=="King" && piece->getOwner()==player) {
+      cerr << "kingPos found" << endl;
       return it->first;
+    }
   }
   return "error";
 }

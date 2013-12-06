@@ -23,11 +23,11 @@ void Piece::classifyMoves(Length length, Direction dir, int *inc, string& move) 
     move = concat(r, f);
     //count++;
     if (chboard->isValidSquare(move) && chboard->pieceOnSquare(move) == NOPIECE) {
-      cerr << move << " is a valid move" << endl;
+      //cerr << move << " is a valid move" << endl;
       validMoves.insert(validMoves.end(), move);
     }
     else {
-      cerr << "no valid position from " << move << " onwards, in direction " << dir << endl;
+      //cerr << "no valid position from " << move << " onwards, in direction " << dir << endl;
       return;
     }
   } while (length == LONG /*&& count<20*/);
@@ -51,8 +51,8 @@ void Piece::classifyLastMove(string move) {
     cerr << move << " is a valid attack move!" << endl;
     validMoves.insert(validMoves.begin(), move);
   }
-  else 
-    cerr << move << " is invalid because pieceOnSquare(" << move << ") = " << whosep(chboard->pieceOnSquare(move)) << " or because isValidSquare(" << move << ") = " << chboard->isValidSquare(move) << endl; 
+  //else 
+    //cerr << move << " is invalid because pieceOnSquare(" << move << ") = " << whosep(chboard->pieceOnSquare(move)) << " or because isValidSquare(" << move << ") = " << chboard->isValidSquare(move) << endl; uncomment around too
 }
 
 void Piece::printValidMoves() {
