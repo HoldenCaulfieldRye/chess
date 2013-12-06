@@ -150,23 +150,23 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
 /*do we need isValid when boardMap.find in pieceSquare will fail if move invalid?*/
 bool ChessBoard::isValidSquare(const string square) const {
   if (square[0]<'A') {
-    cerr << square[0] << "<'A' so ";
+    //cerr << square[0] << "<'A' so ";
     return false;
   }
   if (square[0]>'H') {
-    cerr << square[0] << ">'H' so ";
+    //cerr << square[0] << ">'H' so ";
     return false;
   }
   if (square[1]<'1') {
-    cerr << square[1] << "<'1' so ";
+    //cerr << square[1] << "<'1' so ";
     return false;
   }
   if (square[1]>'8') {
-    cerr << square[1] << ">'8' so ";
+    //cerr << square[1] << ">'8' so ";
     return false;
   }
   if (square[2]!='\0') {
-    cerr << square[2] << "!='\0' so ";
+    //cerr << square[2] << "!='\0' so ";
     return false;
   }
 
