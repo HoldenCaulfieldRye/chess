@@ -203,59 +203,59 @@ int main() {
 
 
 
-    cb.resetBoard();
-    cout << endl;
-cb.submitMove("F2","F3");
-cb.submitMove("E7","E6");
-cb.submitMove("G2","G4");
-cb.submitMove("D8","H4");
-    cout << "end with white in checkmate?" << endl;
-
-
-
 //     cb.resetBoard();
 //     cout << endl;
-// cb.submitMove("A2","A4");
-// cb.submitMove("A7","A5");
-// cb.submitMove("B2","B4");
-// cb.submitMove("B7","B5");
-// cb.submitMove("C2","C4");
-// cb.submitMove("C7","C5");
-// cb.submitMove("D2","D4");
-// cb.submitMove("D7","D5");
-// cb.submitMove("E2","E4");
-// cb.submitMove("E7","E5");
-// cb.submitMove("F2","F4");
-// cb.submitMove("F7","F5");
+// cb.submitMove("F2","F3");
+// cb.submitMove("E7","E6");
 // cb.submitMove("G2","G4");
-// cb.submitMove("G7","G5");
-// cb.submitMove("H2","H4");
-// cb.submitMove("H7","H5");
-// cb.submitMove("H4","G5");
-// cb.submitMove("H5","G4");
-// cb.submitMove("H1","H4");
-// cb.submitMove("H8","H5");
-// cb.submitMove("A4","B5");
-// cb.submitMove("A5","B4");
-// cb.submitMove("C4","D5");
-// cb.submitMove("C5","D4");
-// cb.submitMove("E4","F5");
-// cb.submitMove("E5","F4");
-// cb.submitMove("H4","G4");
-// cb.submitMove("H5","G5");
-// cb.submitMove("G4","F4");
-// cb.submitMove("G5","F5");
-// cb.submitMove("F4","D4");
-// cb.submitMove("F5","D5");
-// cb.submitMove("D4","B4");
-// cb.submitMove("D5","B5");
-// cb.submitMove("B4","A4");
-// cb.submitMove("B5","B1");
-// cb.submitMove("C1","A3");
-// cb.submitMove("D8","D3");
-// cb.submitMove("A3","B2");
-// cb.submitMove("D3","D2");
-//     cout << "end with nothing special?" << endl;
+// cb.submitMove("D8","H4");
+//     cout << "end with white in checkmate?" << endl;
+
+
+
+    cb.resetBoard();
+    cout << endl;
+cb.submitMove("A2","A4");
+cb.submitMove("A7","A5");
+cb.submitMove("B2","B4");
+cb.submitMove("B7","B5");
+cb.submitMove("C2","C4");
+cb.submitMove("C7","C5");
+cb.submitMove("D2","D4");
+cb.submitMove("D7","D5");
+cb.submitMove("E2","E4");
+cb.submitMove("E7","E5");
+cb.submitMove("F2","F4");
+cb.submitMove("F7","F5");
+cb.submitMove("G2","G4");
+cb.submitMove("G7","G5");
+cb.submitMove("H2","H4");
+cb.submitMove("H7","H5");
+cb.submitMove("H4","G5");
+cb.submitMove("H5","G4");
+cb.submitMove("H1","H4");
+cb.submitMove("H8","H5");
+cb.submitMove("A4","B5");
+cb.submitMove("A5","B4");
+cb.submitMove("C4","D5");
+cb.submitMove("C5","D4");
+cb.submitMove("E4","F5");
+cb.submitMove("E5","F4");
+cb.submitMove("H4","G4");
+cb.submitMove("H5","G5");
+cb.submitMove("G4","F4");
+cb.submitMove("G5","F5");
+cb.submitMove("F4","D4");
+cb.submitMove("F5","D5");
+cb.submitMove("D4","B4");
+cb.submitMove("D5","B5");
+cb.submitMove("B4","A4");
+cb.submitMove("B5","B1");
+cb.submitMove("C1","A3");
+cb.submitMove("D8","D3");
+cb.submitMove("A3","B2");
+cb.submitMove("D3","D2");
+    cout << "end with nothing special?" << endl;
 
 
 //     cb.resetBoard();
