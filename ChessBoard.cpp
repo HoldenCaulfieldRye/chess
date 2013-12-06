@@ -56,8 +56,9 @@ void ChessBoard::initiate() {  //should I embed this in constructor?
 
 
 /*Note: a piece belonging to player whose turn it is will be referred to as a 'friendly piece' in the comments, and 'opponent piece' otherwise*/
-void ChessBoard::submitMove(const string sourceSquare, const string destSquare) {
+void ChessBoard::submitMove(Cnstring sourceSquare, Cnstring destSquare) {
   bool attack = false;
+  const bool speculative = true;
   string move[2] = {sourceSquare, destSquare};
   string temp;
 
@@ -115,7 +116,7 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
   cerr << endl;
 
   /*test whether move puts friendly King in check. if not, perform move*/
-  if (entailsCheck(move, whoseTurn)) {
+  if (entailsCheck(move, whoseTurn, !speculative)) {
     cout << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move from " << sourceSquare << " because this would put own King in check!" << endl;
     return;
   }
@@ -145,7 +146,10 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
   if (outcome == "check")
     cout << notPlayer() << " is in check" << endl;
 
-
+  cerr << endl << "boardMap after move: ";
+  for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
+    cerr << "(" << it->first << "," << (it->second)->getType() << "," << (it->second)->getOwner() << "), ";
+  cerr << endl;
 
   cout << endl;
   nextPlayer();
@@ -155,7 +159,7 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
 
 
 /*do we need isValid when boardMap.find in pieceSquare will fail if move invalid?*/
-bool ChessBoard::isValidSquare(const string square) const {
+bool ChessBoard::isValidSquare(Cnstring square) const {
   if (square[0]<'A') {
     //cerr << square[0] << "<'A' so ";
     return false;
@@ -183,7 +187,7 @@ bool ChessBoard::isValidSquare(const string square) const {
   return true;
 }
 
-WhosePiece ChessBoard::pieceOnSquare(const string square, const string player) {
+WhosePiece ChessBoard::pieceOnSquare(Cnstring square, Cnstring player) {
   MapIt it = boardMap.find(square);
   if (it == boardMap.end())
     return NOPIECE;
@@ -210,24 +214,25 @@ void ChessBoard::nextPlayer() {
 
 
 /*checks whether a specified move by a specified player puts player's own king in check*/ 
-bool ChessBoard::entailsCheck(const string move[], const string player) {
-
-  //return either: invalid move, valid move, valid attack
-
-  Piece *temp = NULL;
+bool ChessBoard::entailsCheck(Cnstring move[], Cnstring player, const bool speculative) {  Piece *temp = NULL;
   string kingPos;
   cerr << "does move entail check?" << endl;
   temp = performMove(move); //if attack, returns pointer to taken piece
   kingPos = findKingPos(player);
+
   if (kingInCheck(kingPos)) {
     undoMove(move, temp);
     return true;
   }
-  return false;
+  else {
+    if (speculative)
+      undoMove(move, temp);
+    return false;
+  }
 }
 
 /*scratch for performMove()*/
-Piece* ChessBoard::performMove(const string move[]) {
+Piece* ChessBoard::performMove(Cnstring move[]) {
   cerr << "performing move" << endl;
   Piece *takenPiece = NULL, *movingPiece = boardMap[move[0]];
   if (pieceOnSquare(move[1], movingPiece->getOwner()) == FOE)
@@ -241,7 +246,7 @@ Piece* ChessBoard::performMove(const string move[]) {
 /*eo scratch for performMove()*/
 
 /*scratch for undoMove()*/
-void ChessBoard::undoMove(const string move[], Piece *takenPiece) {
+void ChessBoard::undoMove(Cnstring move[], Piece *takenPiece) {
   cerr << "undoing move" << endl;
   boardMap[move[0]] = boardMap[move[1]];
   boardMap[move[0]]->setPosition(move[0]);
@@ -253,7 +258,7 @@ void ChessBoard::undoMove(const string move[], Piece *takenPiece) {
 /*eo scratch for undoMove()*/
 
 
-// bool ChessBoard::entailsCheck(const string move[], const string checkedPlayer, bool attack) {
+// bool ChessBoard::entailsCheck(Cnstring move[], Cnstring checkedPlayer, bool attack) {
 //   Piece *temp = NULL;
 
 //   /*test whether move is an attack*/
@@ -290,7 +295,7 @@ void ChessBoard::undoMove(const string move[], Piece *takenPiece) {
 // }
 
 /*look for king among pieces belonging to active player*/
-string ChessBoard::findKingPos(const string player) {
+string ChessBoard::findKingPos(Cnstring player) {
   cerr << "looking for kingPos" << endl;
   Piece *piece;
   for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++) {
@@ -304,7 +309,7 @@ string ChessBoard::findKingPos(const string player) {
 }
 
 /*checks whether in current state, a specified player's king is in check*/
-bool ChessBoard::kingInCheck(const string kingPos) {
+bool ChessBoard::kingInCheck(Cnstring kingPos) {
   cerr << "is king now in check?" << endl;
   Piece *piece, *king = boardMap[kingPos];
   for(MapIt it = boardMap.begin(); it != boardMap.end(); it++) {

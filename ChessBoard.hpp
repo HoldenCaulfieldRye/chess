@@ -17,6 +17,7 @@ enum Length     {SHORT, LONG};
 
 class Piece;
 
+typedef const string Cnstring;
 typedef vector<string> Vecstr;
 typedef vector<string>::iterator VecIt;
 typedef map<string, Piece*>::iterator MapIt;
@@ -29,15 +30,15 @@ class ChessBoard {
  public:
   ChessBoard();
   void       initiate     ();
-  void       submitMove   (const string sourceSquare, const string destSquare);
-  bool       isValidSquare(const string square) const;
-  WhosePiece pieceOnSquare(const string square, const string player);
-  Piece*     performMove  (const string move[]);
-  void       undoMove     (const string move[], Piece *takenPiece);
-  bool       entailsCheck (const string move[], const string checkedPlayer);
-  bool       kingInCheck  (const string kingPos);
+  void       submitMove   (Cnstring sourceSquare, Cnstring destSquare);
+  bool       isValidSquare(Cnstring square) const;
+  WhosePiece pieceOnSquare(Cnstring square, Cnstring player);
+  Piece*     performMove  (Cnstring move[]);
+  void       undoMove     (Cnstring move[], Piece *takenPiece);
+  bool       entailsCheck (Cnstring move[], Cnstring checkedPlayer, const bool speculative);
+  bool       kingInCheck  (Cnstring kingPos);
   string     checkOutcome ();
-  string     findKingPos  (const string player); //DELETE?
+  string     findKingPos  (Cnstring player); //DELETE?
   string     notPlayer    () const;
   void       nextPlayer   ();
   void       resetBoard   ();
@@ -64,7 +65,7 @@ public:
   bool    isValidMove       (string square);
   bool    canMove           ();
   //  Vecstr  getValidMoves     ();  //DELETE?
-  void    setPosition       (const string);
+  void    setPosition       (Cnstring);
   string  getOwner          () const;
   void    printValidMoves   (); //delete
   virtual string getType    () const = 0;

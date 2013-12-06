@@ -75,10 +75,12 @@ bool Piece::isValidMove(string square) {
 /*tests whether piece can move without putting 'his/her' King in check*/
 bool Piece::canMove() {
   string move[2] = {position};
+  const bool speculative = true;
   genValidMoves();
+
   for (VecIt it=validMoves.begin(); it!=validMoves.end(); it++) {
     move[1] = *it;
-    if ( !(chboard->entailsCheck(move, owner)) )
+    if ( !(chboard->entailsCheck(move, owner, speculative)) )
       return true;
   }
   return false;
@@ -96,7 +98,7 @@ string Piece::getOwner() const {
   return owner;
 }
 
-void Piece::setPosition(const string newPos) {
+void Piece::setPosition(Cnstring newPos) {
   position = newPos;
   file = newPos[0];
   rank = newPos[1];
