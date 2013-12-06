@@ -57,7 +57,7 @@ protected:
 public:
   Piece();
   Piece                     (string _owner, string _position, ChessBoard *_chboard);
-  virtual void genValidMoves();
+  virtual void genValidMoves() = 0;
   void    classifyMoves     (Length length, Direction dir, int* inc, string& move);
   void    increment         (Direction dir, char &coordinate1, char &coordinate2, int *inc);
   void    classifyLastMove  (string move);

@@ -325,7 +325,6 @@ string ChessBoard::checkOutcome() {
   }
 }
 
-
 void ChessBoard::resetBoard() {
   boardMap.clear();
   initiate();
