@@ -79,58 +79,58 @@ int main() {
 
 
 
+    // cb.resetBoard();
+    // cout << endl;
+
+    // cb.submitMove("B1","C3");
+    // cb.submitMove("B8","C6");
+    // cb.submitMove("D2","D3");
+    // cb.submitMove("G8","F6");
+    // cb.submitMove("C1","G5");
+    // cb.submitMove("F6","G4");
+    // cb.submitMove("E2","E3");
+    // cb.submitMove("G4","E3");
+    // cb.submitMove("F2","E3");
+    // cb.submitMove("B7","B5");
+    // cb.submitMove("D1","H5");
+    // cb.submitMove("G7","G6");
+    // cb.submitMove("H5","H4");
+    // cb.submitMove("H7","H6");
+    // cb.submitMove("G5","H6");
+    // cb.submitMove("H8","H6");
+    // cb.submitMove("H4","H6");
+    // cb.submitMove("F8","H6");
+    // cb.submitMove("G1","F3");
+    // cb.submitMove("H6","E3");
+    // cb.submitMove("H2","H4");
+    // cb.submitMove("G6","G5");
+    // cb.submitMove("H4","G5");
+    // cb.submitMove("A8","B8");
+    // cb.submitMove("H1","H8");
+    // cout << "ends with black in checkmate?" << endl;
+
     cb.resetBoard();
     cout << endl;
-
-    cb.submitMove("B1","C3");
-    cb.submitMove("B8","C6");
-    cb.submitMove("D2","D3");
-    cb.submitMove("G8","F6");
-    cb.submitMove("C1","G5");
-    cb.submitMove("F6","G4");
-    cb.submitMove("E2","E3");
-    cb.submitMove("G4","E3");
-    cb.submitMove("F2","E3");
-    cb.submitMove("B7","B5");
-    cb.submitMove("D1","H5");
-    cb.submitMove("G7","G6");
-    cb.submitMove("H5","H4");
-    cb.submitMove("H7","H6");
-    cb.submitMove("G5","H6");
-    cb.submitMove("H8","H6");
-    cb.submitMove("H4","H6");
-    cb.submitMove("F8","H6");
-    cb.submitMove("G1","F3");
-    cb.submitMove("H6","E3");
+    cb.submitMove("C2","C4");
+    cb.submitMove("H7","H5");
     cb.submitMove("H2","H4");
-    cb.submitMove("G6","G5");
-    cb.submitMove("H4","G5");
-    cb.submitMove("A8","B8");
-    cb.submitMove("H1","H8");
-    cout << "ends with black in checkmate?" << endl;
-
-//     cb.resetBoard();
-//     cout << endl;
-//     cb.submitMove("C2","C4");
-//     cb.submitMove("H7","H5");
-//     cb.submitMove("H2","H4");
-//     cb.submitMove("A7","A5");
-//     cb.submitMove("D1","A4");
-//     cb.submitMove("A8","A6");
-//     cb.submitMove("A4","A5");
-//     cb.submitMove("A6","H6");
-//     cb.submitMove("A5","C7");
-//     cb.submitMove("F7","F6");
-//     cb.submitMove("C7","D7");
-//     cb.submitMove("E8","F7");
-//     cb.submitMove("D7","B7");
-//     cb.submitMove("D8","D3");
-//     cb.submitMove("B7","B8");
-//     cb.submitMove("D3","H7");
-//     cb.submitMove("B8","C8");
-//     cb.submitMove("F7","G6");
-//     cb.submitMove("C8","E6");
-//     cout << "end with white forcing stalemate?" << endl;
+    cb.submitMove("A7","A5");
+    cb.submitMove("D1","A4");
+    cb.submitMove("A8","A6");
+    cb.submitMove("A4","A5");
+    cb.submitMove("A6","H6");
+    cb.submitMove("A5","C7");
+    cb.submitMove("F7","F6");
+    cb.submitMove("C7","D7");
+    cb.submitMove("E8","F7");
+    cb.submitMove("D7","B7");
+    cb.submitMove("D8","D3");
+    cb.submitMove("B7","B8");
+    cb.submitMove("D3","H7");
+    cb.submitMove("B8","C8");
+    cb.submitMove("F7","G6");
+    cb.submitMove("C8","E6");
+    cout << "end with white forcing stalemate?" << endl;
 
 
 //     cb.resetBoard();
