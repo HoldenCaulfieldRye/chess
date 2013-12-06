@@ -121,6 +121,7 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
 
   /*reach here iif move is completely valid, in which case it has been performed*/
   cout << whoseTurn << "'s " << boardMap[destSquare]->getType() << " moves from " << sourceSquare << " to " << destSquare << " ";
+  cerr << whoseTurn << "'s " << boardMap[destSquare]->getType() << " moves from " << sourceSquare << " to " << destSquare << endl;;
 
   // cerr << endl << "boardMap after move: ";
   // for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
@@ -202,8 +203,11 @@ void ChessBoard::nextPlayer() {
 }
 
 
-/*checks whether a specified move by a specified player puts player's own king in check*/
+/*checks whether a specified move by a specified player puts player's own king in check*/ 
 bool ChessBoard::entailsCheck(const string move[], const string player) {
+
+  //return either: invalid move, valid move, valid attack
+
   Piece *temp = NULL;
   string kingPos;
   cerr << "does move entail check?" << endl;
