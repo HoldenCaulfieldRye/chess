@@ -48,7 +48,7 @@ void Piece::increment(Direction dir, char &coordinate1, char &coordinate2, int *
 /*helper function for classifyMoves*/
 void Piece::classifyLastMove(string move) {
   if (chboard->isValidSquare(move) && chboard->pieceOnSquare(move) == FOE) {
-    cerr << move << " is a valid attack move!" << endl;
+    cerr << move << " is a valid attack move for " << getType() << " at " << position << "!" << endl;
     validMoves.insert(validMoves.begin(), move);
   }
   //else 
