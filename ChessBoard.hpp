@@ -25,9 +25,9 @@ typedef map<string, Piece*>::iterator MapIt;
 class ChessBoard {
  private:
   string whoseTurn;
+  map<string, Piece*> boardMap;
 
  public:
-  map<string, Piece*> boardMap; //MAKE PRIVATE!
   ChessBoard();
   void       initiate     ();
   void       submitMove   (Cnstring sourceSquare, Cnstring destSquare);
