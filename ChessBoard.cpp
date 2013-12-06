@@ -313,10 +313,10 @@ string ChessBoard::checkOutcome() {
   string opKingPos;                          //position of King of notPlayer()
   Piece *piece = NULL;
 
-  cerr << "what is the outcome of this move?" << endl;
+  cerr << "what is the outcome of this move? ";
 
   /*test whether any non-King pieces of opponent can validly move. When testing for stalemate or checkmate, need to look for moves that do not lead to check. criteria are the same for both, so better to look for such moves first.*/
-  cerr << "can opponent's pieces move?" << endl;
+  cerr << "can opponent's pieces move? (ignore next cerrs, just checking that potentially valid moves by opponent's pieces don't leave opponent's king in check)" << endl;
   for (MapIt it = boardMap.begin(); it!=boardMap.end(); it++) {
     piece = it->second;
     if (piece->getOwner() != whoseTurn) {
