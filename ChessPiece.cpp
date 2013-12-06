@@ -203,14 +203,14 @@ void Knight::genValidMoves() {
     r = rank + incr[i][0]; 
     f = file + incr[i][1];
     move = concat(r, f);
-    cerr << "checking if Knight can reach " << move << " from " << file << rank << endl;
+    //cerr << "checking if Knight can reach " << move << " from " << file << rank << endl;
     if (chboard->pieceOnSquare(move) != FRIEND && chboard->isValidSquare(move)) {
-        cerr << move << " is a valid move for " << getType() << " from " << position << endl;
+      //cerr << move << " is a valid move for " << getType() << " from " << position << endl;
         validMoves.insert(validMoves.begin(), move);
       }
-      else {
-        cerr << "for " << getType() << ", "  << move << " is an invalid move from " << file << rank << " because pieceOnSquare(move) = " << chboard->pieceOnSquare(move) << " or because chboard->isValidSquare(move) = " << chboard->isValidSquare(move) << endl;
-      }
+    //else {
+        //cerr << "for " << getType() << ", "  << move << " is an invalid move from " << file << rank << " because pieceOnSquare(move) = " << chboard->pieceOnSquare(move) << " or because chboard->isValidSquare(move) = " << chboard->isValidSquare(move) << endl; uncomment around also
+    //}
   }
 }
 
