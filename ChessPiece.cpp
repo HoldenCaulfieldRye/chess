@@ -265,11 +265,11 @@ void Pawn::genValidMoves() {
     move = concat(r, f);
     count++;
     if (chboard->isValidSquare(move) && chboard->pieceOnSquare(move) == NOPIECE) {
-      cerr << move << " is a valid move for " << getType() << " from " << position << endl;
+      //cerr << move << " is a valid move for " << getType() << " from " << position << endl;
       validMoves.insert(validMoves.end(), move);
     }
     else {
-      cerr << "for " << getType() << " at " << file << rank << ", no valid position from " << move << " in 0 direction" << endl;
+      //cerr << "for " << getType() << " at " << file << rank << ", no valid position from " << move << " in 0 direction" << endl;
       return;
     }
   } while (count<2 && ( (rank=='2' && owner=="White") || (rank=='7' && owner=="Black") ));
