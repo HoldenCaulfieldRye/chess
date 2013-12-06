@@ -151,7 +151,6 @@ void ChessBoard::submitMove(Cnstring sourceSquare, Cnstring destSquare) {
     cerr << "(" << it->first << "," << (it->second)->getType() << "," << (it->second)->getOwner() << "), ";
   cerr << endl;
 
-  cout << endl;
   nextPlayer();
 
   return;
