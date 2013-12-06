@@ -14,14 +14,15 @@ Piece::Piece(string _owner, string _position, ChessBoard *_chboard) : owner(_own
   validMoves.insert(validMoves.begin(),  "'\0'");
 }
 
-/*helper function for genValidMoves*/
+/*given where to look, adds potentially valid moves that are not an attack (used by all subPieces apart from Knight)*/
 void Piece::classifyMoves(Length length, Direction dir, int *inc, string& move) {
   char r=rank, f=file; 
   do {
     increment(dir, r, f, inc);
     move = concat(r, f);
+    /*if move is potentially valid an not an attack, add it*/
     if (chboard->isValidSquare(move) && chboard->pieceOnSquare(move, owner) == NOPIECE) {
-      //cerr << move << " is a valid move" << endl;
+      //cerr << move << " is a potentially valid move" << endl;
       if (validMoves.empty()) {
 	cerr << "validMoves is empty" << endl;
 	validMoves.insert(validMoves.begin(), move);
@@ -35,7 +36,7 @@ void Piece::classifyMoves(Length length, Direction dir, int *inc, string& move) 
   } while (length == LONG /*&& count<20*/);
 }
 
-/*helper function for classifyMoves*/
+/*given where to look, adds potentially valid move that is an attack (used by all subPieces apart from Knight)*/
 void Piece::increment(Direction dir, char &coordinate1, char &coordinate2, int *inc) {
   if ( (dir == FORWARDS && owner == "White") || (dir == BACKWARDS && owner == "Black") ) {
     coordinate1 += inc[0];
@@ -267,47 +268,27 @@ Pawn::Pawn(string _owner, string _position, ChessBoard *_chboard) : Piece(_owner
 void Pawn::genValidMoves() {
   //cerr << "genValidMoves called" << endl;
   string move;
-  char r=rank, f=file;
-  int count=0;
+  char r, f;
+  bool firstMove = ((rank=='2' && owner=="White") || (rank=='7' && owner=="Black"));
 
   /*because a pawn can only go forward in rank, it is at starting rank iif it hasn't made a first move. I use this property to distinguish the case where it can move forward by 2 squares*/
-  if ((rank=='2' && owner=="White") || (rank=='7' && owner=="Black"))
-    incr[5][2] = {{1, 0},      //vertical
-		  {2, 0},      //vertical, first move
-		  {1, 1},      //diagonal1
-		  {1,-1},      //diagonal2
-		  {SINTINEL}};
-  else 
+  if (firstMove)
     incr[4][2] = {{1, 0},      //vertical
 		  {1, 1},      //diagonal1
 		  {1,-1},      //diagonal2
-		  {SINTINEL}};
+		  {2, 0}};      //vertical, first move
+  else incr[3][2] = {{1,0}, {1,1}, {1,-1}};
 
   validMoves.clear();
-  do {
-    increment(FORWARDS, r, f, incr[0]);
-    move = concat(r, f);
-    count++;
-    if (chboard->isValidSquare(move) && chboard->pieceOnSquare(move, owner) == NOPIECE) {
-      cerr << move << " is a valid move for " << getType() << " from " << position << endl;
-      if (validMoves.empty())
-	validMoves.insert(validMoves.begin(), move);
-      else validMoves.insert(validMoves.end(), move);
-    }
-    else {
-      cerr << "for " << getType() << " at " << file << rank << ", no valid position from " << move << " in 0 direction" << endl;
-      return;
-    }
-  } while (count<2 && ( (rank=='2' && owner=="White") || (rank=='7' && owner=="Black") ));
-  //Pawn can move two squares forward only on first move
-  //since it cannot move back in rank, it is only at starting rank on its first move 
-
-  for(int i=1; incr[i][0] != SINTINEL; i++) {       //diagonal attacks
+  classifyMoves(SHORT, FORWARDS, incr[0], move); //vertical
+  for (int i=1; i<3; i++) {                      //diagonals
     r=rank, f=file;
     increment(FORWARDS, r, f, incr[i]);
     move = concat(r, f);
     classifyLastMove(move);
   }
+  if(firstMove)                                  //vertical, first move
+    classifyMoves(SHORT, FORWARDS, incr[3], move);
 }
 
 string Pawn::getType() const {

@@ -55,7 +55,7 @@ void ChessBoard::initiate() {  //should I embed this in constructor?
 }
 
 
-/*Note: a piece belonging to player whose turn it is will be referred to as a 'friendly piece' in the comments, and 'opponent piece' otherwise*/
+/*Note: a piece belonging to player whose turn it is will be referred to as a 'friendly piece' in the comments, and 'opponent piece' otherwise. also, a move that seems valid but we don't know if it will put friendly king in check is referred to as a "potentially valid" move. a move that is valid in every respect is called a "fully valid" move*/
 void ChessBoard::submitMove(Cnstring sourceSquare, Cnstring destSquare) {
   bool attack = false;
   const bool speculative = true;
