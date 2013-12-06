@@ -107,13 +107,13 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
   }
 
 
-  cerr <<"boardMap before move: ";
-  for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
-    cerr << "(" << it->first << "," << (it->second)->getType() << "), "; 
-  cerr << endl;
+  // cerr <<"boardMap before move: ";
+  // for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
+  //   cerr << "(" << it->first << "," << (it->second)->getType() << "), "; 
+  // cerr << endl;
 
   /*test whether move puts friendly King in check. if not, perform move*/
-  if (entailsCheck(move, whoseTurn/*, attack*/)) {
+  if (entailsCheck(move, whoseTurn)) {
     cout << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move from " << sourceSquare << " because this would put own King in check!" << endl;
     return;
   }
@@ -122,10 +122,10 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
   /*reach here iif move is completely valid, in which case it has been performed*/
   cout << whoseTurn << "'s " << boardMap[destSquare]->getType() << " moves from " << sourceSquare << " to " << destSquare << " ";
 
-  cerr << endl << "boardMap after move: ";
-  for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
-    cerr << "(" << it->first << "," << (it->second)->getType() << "), ";
-  cerr << endl;
+  // cerr << endl << "boardMap after move: ";
+  // for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
+  //   cerr << "(" << it->first << "," << (it->second)->getType() << "), ";
+  // cerr << endl;
 
   /*test whether move puts opponent in check, checkmate, stalemate, or nothing really*/
   string outcome = checkOutcome();
@@ -211,9 +211,9 @@ bool ChessBoard::entailsCheck(const string move[], const string player) {
   kingPos = findKingPos(player);
   if (kingInCheck(kingPos)) {
     undoMove(move, temp);
-    return false;
+    return true;
   }
-  return true;
+  return false;
 }
 
 /*scratch for performMove()*/
@@ -295,12 +295,16 @@ string ChessBoard::findKingPos(const string player) {
 
 /*checks whether in current state, a specified player's king is in check*/
 bool ChessBoard::kingInCheck(const string kingPos) {
+  cerr << "is king now in check?" << endl;
   Piece *piece, *king = boardMap[kingPos];
   for(MapIt it = boardMap.begin(); it != boardMap.end(); it++) {
     piece = it->second;
-    if (piece->getOwner() != king->getOwner() && piece->isValidMove(kingPos))
+    if (piece->getOwner() != king->getOwner() && piece->isValidMove(kingPos)) {
+      cerr << "yes, king is now in check!" << endl;
       return true;
+    }
   }
+  cerr << "no, king isn't in check" << endl;
   return false;
 }
 
@@ -309,26 +313,39 @@ string ChessBoard::checkOutcome() {
   string opKingPos;                          //position of King of notPlayer()
   Piece *piece = NULL;
 
+  cerr << "what is the outcome of this move?" << endl;
+
   /*test whether any non-King pieces of opponent can validly move. When testing for stalemate or checkmate, need to look for moves that do not lead to check. criteria are the same for both, so better to look for such moves first.*/
+  cerr << "can opponent's pieces move?" << endl;
   for (MapIt it = boardMap.begin(); it!=boardMap.end(); it++) {
     piece = it->second;
     if (piece->getOwner() != whoseTurn) {
       if (piece->getType() != "King") { 
-	if (piece->canMove())
+	if (piece->canMove()) {
+	  cerr << "yes opponent's piece can move" << endl;
 	return "nothing really";
+	}
       }
       else opKingPos = it->first; //take the opportunity to save King's position
     }
   }
-  cerr << "opponent will be in check for any move of its non-King pieces. but is opponent's King even in check?" << endl;
+  cerr << "no, opponent's piece can't move!\ncan opponent's king move?" << endl;
 
   /*reach here iif opponent will be in check for any move of its non-King pieces*/
-  if (boardMap[opKingPos]->canMove())
+  if (boardMap[opKingPos]->canMove()) {
+    cerr << "yes, opponent's king can move" << endl;
     return "nothing really";
+  }
   else {
-    if (kingInCheck(opKingPos))
+    cerr << "no, opponent's king can't move!\nis it in check?" << endl;
+    if (kingInCheck(opKingPos)) {
+      cerr << "yes, opponent king is in check" << endl;
       return "checkmate";    //king in check, can't move and neither can friend pieces
-    else return "stalemate"; //king not in check, can't move and neither can friend pieces
+    }
+    else {
+      cerr << "no, opponent's king isn't in check" << endl;
+      return "stalemate"; //king not in check, can't move and neither can friend pieces
+    }
   }
 }
 
