@@ -28,16 +28,18 @@ class ChessBoard {
 
  public:
   ChessBoard();
-  void       initiate        ();
-  void       submitMove      (const string sourceSquare, const string destSquare);
-  bool       isValidSquare   (const string square) const;
-  WhosePiece pieceOnSquare   (const string square);
-  string     notPlayer       () const;
-  void       nextPlayer      ();
-  bool       moveEntailsCheck(const string move[], const string checkedPlayer, bool attack);
-  string     findKingPos     (const string player);
-  bool       kingInCheck     (const string kingPos);
-  void       resetBoard      ();
+  void       initiate     ();
+  void       submitMove   (const string sourceSquare, const string destSquare);
+  bool       isValidSquare(const string square) const;
+  WhosePiece pieceOnSquare(const string square);
+  string     notPlayer    () const;
+  void       nextPlayer   ();
+  bool       entailsCheck (const string move[], const string checkedPlayer/*, bool attack*/);
+  Piece*     performMove  (const string move[]);
+  void       undoMove     (const string move[], Piece *takenPiece);
+  string     findKingPos  (const string player); //DELETE?
+  bool       kingInCheck  (const string kingPos);
+  void       resetBoard   ();
   //~ChessBoard();
 };
 

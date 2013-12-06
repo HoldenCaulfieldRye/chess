@@ -57,7 +57,7 @@ void ChessBoard::initiate() {  //should I embed this in constructor?
 
 /*Note: a piece belonging to player whose turn it is will be referred to as a 'friendly piece' in the comments, and 'opponent piece' otherwise*/
 void ChessBoard::submitMove(const string sourceSquare, const string destSquare) {
-  bool attack = false;
+  //bool attack = false;
   string move[2] = {sourceSquare, destSquare};
 
   /*check that source square exists*/
@@ -66,7 +66,6 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
     return;
   }
   else cerr << "check 1: source square exists" << endl; 
-
 
   /*check that there is a friendly piece on source square*/
   switch(pieceOnSquare(sourceSquare)) {
@@ -102,8 +101,8 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
   }
   else {
     /*test whether move is an attack*/
-    if(pieceOnSquare(destSquare) == FOE)
-      attack = true;
+    // if(pieceOnSquare(destSquare) == FOE)
+    //   attack = true;
     cerr << "check 3: piece can get to destination square" << endl; 
   }
 
@@ -113,24 +112,20 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
     cerr << "(" << it->first << "," << (it->second)->getType() << "), "; 
   cerr << endl;
 
-  
   /*test whether move puts friendly King in check. if not, perform move*/
-  if (moveEntailsCheck(move, whoseTurn, attack)) {
+  if (entailsCheck(move, whoseTurn/*, attack*/)) {
     cout << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move from " << sourceSquare << " because this would put own King in check!" << endl;
     return;
   }
   else cerr << "check 4 FINAL: King won't be in check after this move" << endl;
 
-
   /*reach here iif move is completely valid, in which case it has been performed*/
   cout << whoseTurn << "'s " << boardMap[destSquare]->getType() << " moves from " << sourceSquare << " to " << destSquare << " ";
-
 
   cerr << endl << "boardMap after move: ";
   for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
     cerr << "(" << it->first << "," << (it->second)->getType() << "), ";
   cerr << endl;
-
 
   /*test whether move puts opponent in check, checkmate, stalemate, or nothing really*/
   switch (checkOutcome()) {
@@ -146,7 +141,6 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
   case "nothing really":
     break; //do nothing
   }
-
 
   cout << endl;
   nextPlayer();
@@ -211,42 +205,77 @@ void ChessBoard::nextPlayer() {
 
 
 /*checks whether a specified move by a specified player puts player's own king in check*/
-bool ChessBoard::moveEntailsCheck(const string move[], const string checkedPlayer, bool attack) {
+bool ChessBoard::entailsCheck(const string move[], const string player) {
   Piece *temp = NULL;
-
-  /*test whether move is an attack*/
-  if (attack)
-    temp = boardMap[move[1]];     //make copy of attacked piece
-
-  /*perform move*/
-  boardMap[move[1]] = boardMap[move[0]];
-  boardMap[move[1]]->setPosition(move[1]);
-  boardMap.erase(move[0]);        //erase but don't delete; piece still exists
-
-  /*if friendly King is now in check, output error and undo the move*/
-  string frKingPos = findKingPos(whoseTurn);
-  if (kingInCheck(frKingPos)) {
-    boardMap[move[0]] = boardMap[move[1]];
-    boardMap[move[0]]->setPosition(move[0]);
-
-    if (attack) {
-      boardMap[move[1]] = temp;   //bring taken piece back to life
-      temp = NULL;                //no longer need temp (but don't delete what's on heap)
-    }
-    else boardMap.erase(move[1]); //!attack so there was nothing in move[1] before move
-
+  string kingPos;
+ 
+  temp = performMove(move); //if attack, returns pointer to taken piece
+  kingPos = findKingPos(player);
+  if (kingInCheck(kingPos)) {
+    undoMove(move, temp);
     return false;
   }
-  else {                          //reach here iif move doesn't put friendly king in check
-    if (attack) {
-      cout << " taking " << notPlayer() << "'s " << boardMap[move[1]]->getType() << endl;
-      delete temp;                //permanently remove taken piece from heap
-      temp = NULL; 
-    }
-    return true;
-  }
+  return true;
 }
 
+/*scratch for performMove()*/
+Piece* ChessBoard::performMove(const string move[]) {
+  Piece *takenPiece = NULL;
+  if (pieceOnSquare(move[1]) == FOE) //if attack, save memory location of attacked piece
+    takenPiece = boardMap[move[1]];
+  boardMap[move[1]] = boardMap[move[0]];
+  boardMap[move[1]]->setPosition(move[1]);
+  boardMap.erase(move[0]);           //erase but don't delete; piece still exists
+  return takenPiece;
+}
+/*eo scratch for performMove()*/
+
+/*scratch for undoMove()*/
+void ChessBoard::undoMove(const string move[], Piece *takenPiece) {
+  boardMap[move[0]] = boardMap[move[1]];
+  boardMap[move[0]]->setPosition(move[0]);
+  if (takenPiece)
+    boardMap[move[1]] = temp;   //bring taken piece back to life
+  else boardMap.erase(move[1]); //!attack so there was nothing in move[1] before move
+}
+/*eo scratch for undoMove()*/
+
+
+// bool ChessBoard::entailsCheck(const string move[], const string checkedPlayer, bool attack) {
+//   Piece *temp = NULL;
+
+//   /*test whether move is an attack*/
+//   if (attack)
+//     temp = boardMap[move[1]];     //make copy of attacked piece
+
+//   /*perform move*/
+//   boardMap[move[1]] = boardMap[move[0]];
+//   boardMap[move[1]]->setPosition(move[1]);
+//   boardMap.erase(move[0]);        //erase but don't delete; piece still exists
+
+//   /*if friendly King is now in check, output error and undo the move*/
+//   string frKingPos = findKingPos(whoseTurn);
+//   if (kingInCheck(frKingPos)) {
+//     boardMap[move[0]] = boardMap[move[1]];
+//     boardMap[move[0]]->setPosition(move[0]);
+
+//     if (attack) {
+//       boardMap[move[1]] = temp;   //bring taken piece back to life
+//       temp = NULL;                //no longer need temp (but don't delete what's on heap)
+//     }
+//     else boardMap.erase(move[1]); //!attack so there was nothing in move[1] before move
+
+//     return false;
+//   }
+//   else {                          //reach here iif move doesn't put friendly king in check
+//     if (attack) {
+//       cout << " taking " << notPlayer() << "'s " << boardMap[move[1]]->getType() << endl;
+//       delete temp;                //permanently remove taken piece from heap
+//       temp = NULL; 
+//     }
+//     return true;
+//   }
+// }
 
 /*look for king among pieces belonging to active player*/
 string ChessBoard::findKingPos(const string player) {
@@ -257,7 +286,6 @@ string ChessBoard::findKingPos(const string player) {
   }
 }
 
-
 /*checks whether in current state, a specified player's king is in check*/
 bool ChessBoard::kingInCheck(const string kingPos) {
   for(MapIt it = boardMap.begin(); it != boardMap.end(); it++) {
@@ -266,7 +294,6 @@ bool ChessBoard::kingInCheck(const string kingPos) {
   }
   return false;
 }
-
 
 /*checks whether opponent is in check, checkmate, stalemate, or nothing really*/
 string ChessBoard::checkOutcome() {

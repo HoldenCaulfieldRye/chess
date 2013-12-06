@@ -85,7 +85,7 @@ bool Piece::canMove() {
     move[1] = *it;
     if (chboard->pieceOnSquare(*it) == FOE)
       attack = true;
-    if ( !(chboard->moveEntailsCheck(move, owner, attack)) )
+    if ( !(chboard->entailsCheck(move, owner, attack)) )
       return true;
   }
   return false;
