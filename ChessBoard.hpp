@@ -32,13 +32,14 @@ class ChessBoard {
   void       submitMove   (const string sourceSquare, const string destSquare);
   bool       isValidSquare(const string square) const;
   WhosePiece pieceOnSquare(const string square);
-  string     notPlayer    () const;
-  void       nextPlayer   ();
-  bool       entailsCheck (const string move[], const string checkedPlayer/*, bool attack*/);
   Piece*     performMove  (const string move[]);
   void       undoMove     (const string move[], Piece *takenPiece);
-  string     findKingPos  (const string player); //DELETE?
+  bool       entailsCheck (const string move[], const string checkedPlayer);
   bool       kingInCheck  (const string kingPos);
+  string     checkOutcome ();
+  string     findKingPos  (const string player); //DELETE?
+  string     notPlayer    () const;
+  void       nextPlayer   ();
   void       resetBoard   ();
   //~ChessBoard();
 };
@@ -62,10 +63,10 @@ public:
   void    classifyLastMove  (string move);
   bool    isValidMove       (string square);
   bool    canMove           ();
-  Vecstr  getValidMoves     (); 
+  //  Vecstr  getValidMoves     ();  //DELETE?
   void    setPosition       (const string);
   string  getOwner          () const;
-  void    printValidMoves   ();
+  void    printValidMoves   (); //delete
   virtual string getType    () const = 0;
   virtual ~Piece();
 };

@@ -78,26 +78,23 @@ bool Piece::isValidMove(string square) {
 
 /*tests whether piece can move without putting 'his/her' King in check*/
 bool Piece::canMove() {
-  bool attack = false;
   string move[2] = {position};
   genValidMoves();
   for (VecIt it=validMoves.begin(); it!=validMoves.end(); it++) {
     move[1] = *it;
-    if (chboard->pieceOnSquare(*it) == FOE)
-      attack = true;
-    if ( !(chboard->entailsCheck(move, owner, attack)) )
+    if ( !(chboard->entailsCheck(move, owner)) )
       return true;
   }
   return false;
 }
 
-Vecs Piece::getValidMoves() {
-  Vecs moves;
-  for(VecIt it=validMoves.begin(); it!=validMoves.end(); it++) {
-    moves.insert(moves.end(), {position, *it});
-  }
-  return moves;
-}
+// Vecs Piece::getValidMoves() {
+//   Vecs moves;
+//   for(VecIt it=validMoves.begin(); it!=validMoves.end(); it++) {
+//     moves.insert(moves.end(), {position, *it});
+//   }
+//   return moves;
+// }
 
 string Piece::getOwner() const {
   return owner;
