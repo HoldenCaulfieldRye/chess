@@ -93,12 +93,12 @@ void ChessBoard::submitMove(Cnstring sourceSquare, Cnstring destSquare) {
 
     /*check that there is no friendly piece on destination square*/
     if (pieceOnSquare(destSquare, whoseTurn) == FRIEND) {
-      cout << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move to" << destSquare << " because he/she would be taking his/her own piece!" << endl;
+      cout << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move to " << destSquare << " because he/she would be taking his/her own piece!" << endl;
       return;
     }
 
     /*reach here iif piece is just not capable of making such a move*/
-    cout << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move to" << destSquare << "!" << endl;
+    cout << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move to " << destSquare << "!" << endl;
     return;
   }
   else cerr << "check 3: piece can get to destination square" << endl; 

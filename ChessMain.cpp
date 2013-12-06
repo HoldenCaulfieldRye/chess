@@ -50,23 +50,23 @@ int main() {
     cb.submitMove("B4", "C3");
     cout << endl;
 
-    // cb.submitMove("B2", "C3");
-    // cb.submitMove("H7", "H6");
-    // cout << endl;
+    cb.submitMove("B2", "C3");
+    cb.submitMove("H7", "H6");
+    cout << endl;
 
-    // cb.submitMove("C1", "A3");
-    // cb.submitMove("B8", "D7");
-    // cout << endl;
+    cb.submitMove("C1", "A3");
+    cb.submitMove("B8", "D7");
+    cout << endl;
 
-    // cb.submitMove("D1", "E2");
-    // cb.submitMove("D5", "E4");
-    // cout << endl;
+    cb.submitMove("D1", "E2");
+    cb.submitMove("D5", "E4");
+    cout << endl;
 
-    // cb.submitMove("D3", "E4");
-    // cb.submitMove("G8", "F6");
-    // cout << endl;
+    cb.submitMove("D3", "E4");
+    cb.submitMove("G8", "F6");
+    cout << endl;
 
-    // cb.submitMove("E4", "D3");
+    cb.submitMove("E4", "D3");
     // cb.submitMove("B7", "B6");
     // cout << endl;
 
