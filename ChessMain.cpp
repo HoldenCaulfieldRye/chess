@@ -43,12 +43,12 @@ int main() {
     cout << endl;
 
     cb.submitMove("B1", "C3");
-    // cb.submitMove("F8", "B4");
-    // cout << endl;
+    cb.submitMove("F8", "B4");
+    cout << endl;
 
-    // cb.submitMove("F1", "D3");
-    // cb.submitMove("B4", "C3");
-    // cout << endl;
+    cb.submitMove("F1", "D3");
+    cb.submitMove("B4", "C3");
+    cout << endl;
 
     // cb.submitMove("B2", "C3");
     // cb.submitMove("H7", "H6");

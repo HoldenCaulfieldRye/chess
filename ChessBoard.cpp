@@ -57,8 +57,9 @@ void ChessBoard::initiate() {  //should I embed this in constructor?
 
 /*Note: a piece belonging to player whose turn it is will be referred to as a 'friendly piece' in the comments, and 'opponent piece' otherwise*/
 void ChessBoard::submitMove(const string sourceSquare, const string destSquare) {
-  //bool attack = false;
+  bool attack = false;
   string move[2] = {sourceSquare, destSquare};
+  string temp;
 
   /*check that source square exists*/
   if(!isValidSquare(sourceSquare)) {
@@ -99,11 +100,12 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
     cout << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move to" << destSquare << "!" << endl;
     return;
   }
-  else {
-    /*test whether move is an attack*/
-    // if(pieceOnSquare(destSquare, whoseTurn) == FOE)
-    //   attack = true;
-    cerr << "check 3: piece can get to destination square" << endl; 
+  else cerr << "check 3: piece can get to destination square" << endl; 
+
+  /*test whether move is an attack*/
+  if(pieceOnSquare(destSquare, whoseTurn) == FOE) {
+    attack = true;
+    temp =  boardMap[destSquare]->getType();
   }
 
 
@@ -120,7 +122,10 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
   else cerr << "check 4 FINAL: King won't be in check after this move" << endl;
 
   /*reach here iif move is completely valid, in which case it has been performed*/
-  cout << whoseTurn << "'s " << boardMap[destSquare]->getType() << " moves from " << sourceSquare << " to " << destSquare << " " << endl; //comment out 'endl' for final version
+  cout << whoseTurn << "'s " << boardMap[destSquare]->getType() << " moves from " << sourceSquare << " to " << destSquare;
+  if (attack) 
+    cout << " taking " << notPlayer() << "'s " << temp << endl;
+  cout << endl;
 
   cerr << endl << "boardMap after move: ";
   for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
@@ -139,6 +144,8 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
   }
   if (outcome == "check")
     cout << notPlayer() << " is in check" << endl;
+
+
 
   cout << endl;
   nextPlayer();
