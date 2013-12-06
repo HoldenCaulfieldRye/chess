@@ -5,7 +5,7 @@
 
 using namespace std;
 
-#define SINTINEL 10
+#define SINTINEL -10
 
 enum WhosePiece {NOPIECE, FRIEND, FOE};
 
@@ -24,10 +24,10 @@ typedef map<string, Piece*>::iterator MapIt;
 
 class ChessBoard {
  private:
-  map<string, Piece*> boardMap;
   string whoseTurn;
 
  public:
+  map<string, Piece*> boardMap; //MAKE PRIVATE!
   ChessBoard();
   void       initiate     ();
   void       submitMove   (Cnstring sourceSquare, Cnstring destSquare);

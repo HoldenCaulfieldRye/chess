@@ -125,7 +125,7 @@ void ChessBoard::submitMove(Cnstring sourceSquare, Cnstring destSquare) {
   /*reach here iif move is completely valid, in which case it has been performed*/
   cout << whoseTurn << "'s " << boardMap[destSquare]->getType() << " moves from " << sourceSquare << " to " << destSquare;
   if (attack) 
-    cout << " taking " << notPlayer() << "'s " << temp << endl;
+    cout << " taking " << notPlayer() << "'s " << temp;
   cout << endl;
 
   cerr << endl << "boardMap after move: ";
@@ -238,7 +238,7 @@ bool ChessBoard::entailsCheck(Cnstring move[], Cnstring player, const bool specu
 
 /*scratch for performMove()*/
 Piece* ChessBoard::performMove(Cnstring move[]) {
-  cerr << "performing move" << endl;
+  cerr << "performing move from " << move[0] << " to " << move[1] << endl;
   Piece *takenPiece = NULL, *movingPiece = boardMap[move[0]];
   if (pieceOnSquare(move[1], movingPiece->getOwner()) == FOE)
     takenPiece = boardMap[move[1]];       //if attack, save memory location of attacked piece
@@ -248,9 +248,8 @@ Piece* ChessBoard::performMove(Cnstring move[]) {
   cerr << "move performed" << endl;
   return takenPiece;
 }
-/*eo scratch for performMove()*/
 
-/*scratch for undoMove()*/
+
 void ChessBoard::undoMove(Cnstring move[], Piece *takenPiece) {
   cerr << "undoing move" << endl;
   boardMap[move[0]] = boardMap[move[1]];
@@ -260,44 +259,7 @@ void ChessBoard::undoMove(Cnstring move[], Piece *takenPiece) {
   else boardMap.erase(move[1]); //!attack so there was nothing in move[1] before move
   cerr << "move undone" << endl;
 }
-/*eo scratch for undoMove()*/
 
-
-// bool ChessBoard::entailsCheck(Cnstring move[], Cnstring checkedPlayer, bool attack) {
-//   Piece *temp = NULL;
-
-//   /*test whether move is an attack*/
-//   if (attack)
-//     temp = boardMap[move[1]];     //make copy of attacked piece
-
-//   /*perform move*/
-//   boardMap[move[1]] = boardMap[move[0]];
-//   boardMap[move[1]]->setPosition(move[1]);
-//   boardMap.erase(move[0]);        //erase but don't delete; piece still exists
-
-//   /*if friendly King is now in check, output error and undo the move*/
-//   string frKingPos = findKingPos(whoseTurn);
-//   if (kingInCheck(frKingPos)) {
-//     boardMap[move[0]] = boardMap[move[1]];
-//     boardMap[move[0]]->setPosition(move[0]);
-
-//     if (attack) {
-//       boardMap[move[1]] = temp;   //bring taken piece back to life
-//       temp = NULL;                //no longer need temp (but don't delete what's on heap)
-//     }
-//     else boardMap.erase(move[1]); //!attack so there was nothing in move[1] before move
-
-//     return false;
-//   }
-//   else {                          //reach here iif move doesn't put friendly king in check
-//     if (attack) {
-//       cout << " taking " << notPlayer() << "'s " << boardMap[move[1]]->getType() << endl;
-//       delete temp;                //permanently remove taken piece from heap
-//       temp = NULL; 
-//     }
-//     return true;
-//   }
-// }
 
 /*look for king among pieces belonging to active player*/
 string ChessBoard::findKingPos(Cnstring player) {
@@ -330,30 +292,30 @@ bool ChessBoard::kingInCheck(Cnstring kingPos) {
 
 /*checks whether opponent is in check, checkmate, stalemate, or nothing really*/
 string ChessBoard::checkOutcome() {
-  string opKingPos;                          //position of King of notPlayer()
+  string opKingPos = findKingPos(notPlayer());
   Piece *piece = NULL;
 
   cerr << "what is the outcome of this move? ";
 
   /*test whether any non-King pieces of opponent can validly move. When testing for stalemate or checkmate, need to look for moves that do not lead to check. criteria are the same for both, so better to look for such moves first.*/
   cerr << "can opponent's pieces move? (ignore next cerrs, just checking that potentially valid moves by opponent's pieces don't leave opponent's king in check)" << endl;
+
   for (MapIt it = boardMap.begin(); it!=boardMap.end(); it++) {
     piece = it->second;
-    if (piece->getOwner() != whoseTurn) {
-      if (piece->getType() != "King") { 
-	if (piece->canMove()) {
-	  cerr << "yes opponent's piece can move" << endl;
-	return "nothing really";
-	}
-      }
-      else opKingPos = it->first; //take the opportunity to save King's position
+    if (piece->getOwner() != whoseTurn && piece->getType() != "King" && piece->canMove()) {
+      cerr << "yes opponent's piece can move" << endl;
+      if (kingInCheck(opKingPos))
+	return "check";
+      return "nothing really";
     }
   }
   cerr << "no, opponent's piece can't move!\ncan opponent's king move?" << endl;
 
-  /*reach here iif opponent will be in check for any move of its non-King pieces*/
+  /*reach here iif none of opponent's non-King pieces can make truly valid moves*/
   if (boardMap[opKingPos]->canMove()) {
-    cerr << "yes, opponent's king can move" << endl;
+    cerr << "yes, opponent's king can move" << endl;      
+    if (kingInCheck(opKingPos))
+      return "check";
     return "nothing really";
   }
   else {

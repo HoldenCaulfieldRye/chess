@@ -17,14 +17,16 @@ Piece::Piece(string _owner, string _position, ChessBoard *_chboard) : owner(_own
 /*helper function for genValidMoves*/
 void Piece::classifyMoves(Length length, Direction dir, int *inc, string& move) {
   char r=rank, f=file; 
-  //int count=0;
   do {
     increment(dir, r, f, inc);
     move = concat(r, f);
-    //count++;
     if (chboard->isValidSquare(move) && chboard->pieceOnSquare(move, owner) == NOPIECE) {
       //cerr << move << " is a valid move" << endl;
-      validMoves.insert(validMoves.end(), move);
+      if (validMoves.empty()) {
+	cerr << "validMoves is empty" << endl;
+	validMoves.insert(validMoves.begin(), move);
+      }
+      else validMoves.insert(validMoves.end(), move);
     }
     else {
       //cerr << "no valid position from " << move << " onwards, in direction " << dir << endl;
@@ -78,8 +80,11 @@ bool Piece::canMove() {
   const bool speculative = true;
   genValidMoves();
 
+  cerr << "canMove() called in (" << position << ", " << getType() << ", " << owner << ")" << endl << "potValidMoves: "; printValidMoves();
+
   for (VecIt it=validMoves.begin(); it!=validMoves.end(); it++) {
     move[1] = *it;
+    cerr << "canMove: does move from " << move[0] << " to " << move[1] << " entail check?" << endl;
     if ( !(chboard->entailsCheck(move, owner, speculative)) )
       return true;
   }
@@ -120,6 +125,7 @@ void King::genValidMoves() {
 		    {1,-1},      //diagonal2
 		    {SINTINEL}};
 
+  validMoves.clear();
   for(int i=0; incr[i][0] != SINTINEL; i++) {
     classifyMoves(SHORT, FORWARDS, incr[i], move);
     classifyLastMove(move);
@@ -148,6 +154,7 @@ void Queen::genValidMoves() {
 		    {1,-1},      //diagonal2
 		    {SINTINEL}};
 
+  validMoves.clear();
   for(int i=0; incr[i][0] != SINTINEL; i++) {
     classifyMoves(LONG, FORWARDS, incr[i], move);
     classifyLastMove(move);
@@ -174,6 +181,7 @@ void Bishop::genValidMoves() {
 		    {1,-1},      //diagonal2
 		    {SINTINEL}};
 
+  validMoves.clear();
   for(int i=0; incr[i][0] != SINTINEL; i++) {
     classifyMoves(LONG, FORWARDS, incr[i], move);
     //cerr << "about to classify last move: " << move << endl;
@@ -201,6 +209,7 @@ void Knight::genValidMoves() {
   char r, f;
   string move;
 
+  validMoves.clear();
   for(int i=0; i<8; i++) {
     r = rank + incr[i][0]; 
     f = file + incr[i][1];
@@ -234,6 +243,7 @@ void Rook::genValidMoves() {
 		    {0, 1},      //horizontal
 		    {SINTINEL}};
 
+  validMoves.clear();
   for(int i=0; incr[i][0] != SINTINEL; i++) {
     classifyMoves(LONG, FORWARDS, incr[i], move);
     classifyLastMove(move);
@@ -262,6 +272,8 @@ void Pawn::genValidMoves() {
 			     {1, 1},      //diagonal1
 			     {1,-1},      //diagonal2
 			     {SINTINEL}};
+
+  validMoves.clear();
   do {
     increment(FORWARDS, r, f, incr[0]);
     move = concat(r, f);
