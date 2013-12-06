@@ -68,7 +68,7 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
   else cerr << "check 1: source square exists" << endl; 
 
   /*check that there is a friendly piece on source square*/
-  switch(pieceOnSquare(sourceSquare)) {
+  switch(pieceOnSquare(sourceSquare, whoseTurn)) {
   case NOPIECE:
     cout << "There is no piece at position " << sourceSquare << "!" << endl;
     return;
@@ -90,7 +90,7 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
     }
 
     /*check that there is no friendly piece on destination square*/
-    if (pieceOnSquare(destSquare) == FRIEND) {
+    if (pieceOnSquare(destSquare, whoseTurn) == FRIEND) {
       cout << whoseTurn << "'s " << boardMap[sourceSquare]->getType() << " cannot move to" << destSquare << " because he/she would be taking his/her own piece!" << endl;
       return;
     }
@@ -101,16 +101,16 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
   }
   else {
     /*test whether move is an attack*/
-    // if(pieceOnSquare(destSquare) == FOE)
+    // if(pieceOnSquare(destSquare, whoseTurn) == FOE)
     //   attack = true;
     cerr << "check 3: piece can get to destination square" << endl; 
   }
 
 
-  // cerr <<"boardMap before move: ";
-  // for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
-  //   cerr << "(" << it->first << "," << (it->second)->getType() << "), "; 
-  // cerr << endl;
+  cerr <<"boardMap before move: ";
+  for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
+    cerr << "(" << it->first << "," << (it->second)->getType() << "," << (it->second)->getOwner() << "), "; 
+  cerr << endl;
 
   /*test whether move puts friendly King in check. if not, perform move*/
   if (entailsCheck(move, whoseTurn)) {
@@ -120,13 +120,12 @@ void ChessBoard::submitMove(const string sourceSquare, const string destSquare) 
   else cerr << "check 4 FINAL: King won't be in check after this move" << endl;
 
   /*reach here iif move is completely valid, in which case it has been performed*/
-  cout << whoseTurn << "'s " << boardMap[destSquare]->getType() << " moves from " << sourceSquare << " to " << destSquare << " ";
-  cerr << whoseTurn << "'s " << boardMap[destSquare]->getType() << " moves from " << sourceSquare << " to " << destSquare << endl;;
+  cout << whoseTurn << "'s " << boardMap[destSquare]->getType() << " moves from " << sourceSquare << " to " << destSquare << " " << endl; //comment out 'endl' for final version
 
-  // cerr << endl << "boardMap after move: ";
-  // for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
-  //   cerr << "(" << it->first << "," << (it->second)->getType() << "), ";
-  // cerr << endl;
+  cerr << endl << "boardMap after move: ";
+  for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
+    cerr << "(" << it->first << "," << (it->second)->getType() << "," << (it->second)->getOwner() << "), ";
+  cerr << endl;
 
   /*test whether move puts opponent in check, checkmate, stalemate, or nothing really*/
   string outcome = checkOutcome();
@@ -177,11 +176,11 @@ bool ChessBoard::isValidSquare(const string square) const {
   return true;
 }
 
-WhosePiece ChessBoard::pieceOnSquare(const string square) {
+WhosePiece ChessBoard::pieceOnSquare(const string square, const string player) {
   MapIt it = boardMap.find(square);
   if (it == boardMap.end())
     return NOPIECE;
-  if (boardMap[square]->getOwner() == whoseTurn)
+  if (boardMap[square]->getOwner() == player)
     return FRIEND;
   return FOE;
 }
@@ -223,12 +222,12 @@ bool ChessBoard::entailsCheck(const string move[], const string player) {
 /*scratch for performMove()*/
 Piece* ChessBoard::performMove(const string move[]) {
   cerr << "performing move" << endl;
-  Piece *takenPiece = NULL;
-  if (pieceOnSquare(move[1]) == FOE) //if attack, save memory location of attacked piece
-    takenPiece = boardMap[move[1]];
-  boardMap[move[1]] = boardMap[move[0]];
+  Piece *takenPiece = NULL, *movingPiece = boardMap[move[0]];
+  if (pieceOnSquare(move[1], movingPiece->getOwner()) == FOE)
+    takenPiece = boardMap[move[1]];       //if attack, save memory location of attacked piece
+  boardMap[move[1]] = movingPiece;
   boardMap[move[1]]->setPosition(move[1]);
-  boardMap.erase(move[0]);           //erase but don't delete; piece still exists
+  boardMap.erase(move[0]);                //erase but don't delete; piece still exists
   cerr << "move performed" << endl;
   return takenPiece;
 }

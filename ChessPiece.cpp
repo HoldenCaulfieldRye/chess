@@ -22,7 +22,7 @@ void Piece::classifyMoves(Length length, Direction dir, int *inc, string& move) 
     increment(dir, r, f, inc);
     move = concat(r, f);
     //count++;
-    if (chboard->isValidSquare(move) && chboard->pieceOnSquare(move) == NOPIECE) {
+    if (chboard->isValidSquare(move) && chboard->pieceOnSquare(move, owner) == NOPIECE) {
       //cerr << move << " is a valid move" << endl;
       validMoves.insert(validMoves.end(), move);
     }
@@ -47,7 +47,7 @@ void Piece::increment(Direction dir, char &coordinate1, char &coordinate2, int *
 
 /*helper function for classifyMoves*/
 void Piece::classifyLastMove(string move) {
-  if (chboard->isValidSquare(move) && chboard->pieceOnSquare(move) == FOE) {
+  if (chboard->isValidSquare(move) && chboard->pieceOnSquare(move, owner) == FOE) {
     cerr << move << " is a valid attack move for " << getType() << " at " << position << "!" << endl;
     validMoves.insert(validMoves.begin(), move);
   }
@@ -204,7 +204,7 @@ void Knight::genValidMoves() {
     f = file + incr[i][1];
     move = concat(r, f);
     //cerr << "checking if Knight can reach " << move << " from " << file << rank << endl;
-    if (chboard->pieceOnSquare(move) != FRIEND && chboard->isValidSquare(move)) {
+    if (chboard->pieceOnSquare(move, owner) != FRIEND && chboard->isValidSquare(move)) {
       //cerr << move << " is a valid move for " << getType() << " from " << position << endl;
         validMoves.insert(validMoves.begin(), move);
       }
@@ -264,7 +264,7 @@ void Pawn::genValidMoves() {
     increment(FORWARDS, r, f, incr[0]);
     move = concat(r, f);
     count++;
-    if (chboard->isValidSquare(move) && chboard->pieceOnSquare(move) == NOPIECE) {
+    if (chboard->isValidSquare(move) && chboard->pieceOnSquare(move, owner) == NOPIECE) {
       //cerr << move << " is a valid move for " << getType() << " from " << position << endl;
       validMoves.insert(validMoves.end(), move);
     }

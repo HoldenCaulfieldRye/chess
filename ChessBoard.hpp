@@ -31,7 +31,7 @@ class ChessBoard {
   void       initiate     ();
   void       submitMove   (const string sourceSquare, const string destSquare);
   bool       isValidSquare(const string square) const;
-  WhosePiece pieceOnSquare(const string square);
+  WhosePiece pieceOnSquare(const string square, const string player);
   Piece*     performMove  (const string move[]);
   void       undoMove     (const string move[], Piece *takenPiece);
   bool       entailsCheck (const string move[], const string checkedPlayer);
