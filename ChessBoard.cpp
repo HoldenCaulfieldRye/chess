@@ -213,7 +213,8 @@ void ChessBoard::nextPlayer() {
 
 
 /*checks whether a specified move by a specified player puts player's own king in check*/ 
-bool ChessBoard::entailsCheck(Cnstring move[], Cnstring player, const bool speculative) {  Piece *temp = NULL;
+bool ChessBoard::entailsCheck(Cnstring move[], Cnstring player, const bool speculative) {  
+  Piece *temp = NULL;
   string kingPos;
 
   cerr << "does move entail check?";

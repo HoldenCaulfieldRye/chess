@@ -267,6 +267,8 @@ Pawn::Pawn(string _owner, string _position, ChessBoard *_chboard) : Piece(_owner
 
 void Pawn::genValidMoves() {
   //cerr << "genValidMoves called" << endl;
+  /*because a pawn can only go forward in rank, it is at starting rank iif it hasn't made a first move. I use this property to distinguish the case where it can move forward by 2 squares. Also need to make sure 'move forward by 1 square' is valid*/
+  bool firstMove = ((rank=='2' && owner=="White") || (rank=='7' && owner=="Black"));
   string move;
   char r, f;  
   int incr[4][2] = {{1, 0},      //vertical
@@ -276,16 +278,17 @@ void Pawn::genValidMoves() {
 
   validMoves.clear();
   classifyMoves(SHORT, FORWARDS, incr[0], move); //vertical
-  for (int i=1; i<3; i++) {                      //diagonals
+
+  /*if access to '1 square in front' is blocked, validMoves is empty*/
+  if(firstMove && !validMoves.empty())
+    classifyMoves(SHORT, FORWARDS, incr[3], move);
+
+  for (int i=1; i<3; i++) {      //diagonals
     r=rank, f=file;
     increment(FORWARDS, r, f, incr[i]);
     move = concat(r, f);
     classifyLastMove(move);
   }
-
-  /*because a pawn can only go forward in rank, it is at starting rank iif it hasn't made a first move. I use this property to distinguish the case where it can move forward by 2 squares*/
-  if((rank=='2' && owner=="White") || (rank=='7' && owner=="Black"))//vertical, first move
-    classifyMoves(SHORT, FORWARDS, incr[3], move);
 }
 
 string Pawn::getType() const {
