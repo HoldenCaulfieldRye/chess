@@ -24,7 +24,7 @@ void Piece::classifyMoves(Length length, Direction dir, int *inc, string& move) 
     if (chboard->isValidSquare(move) && chboard->pieceOnSquare(move, owner) == NOPIECE) {
       //cerr << move << " is a potentially valid move" << endl;
       if (validMoves.empty()) {
-	cerr << "validMoves is empty" << endl;
+	//cerr << "validMoves is empty" << endl;
 	validMoves.insert(validMoves.begin(), move);
       }
       else validMoves.insert(validMoves.end(), move);
@@ -54,8 +54,8 @@ void Piece::classifyLastMove(string move) {
     cerr << move << " is a valid attack move for " << getType() << " at " << position << "!" << endl;
     validMoves.insert(validMoves.begin(), move);
   }
-  else 
-    cerr << move << " is invalid because pieceOnSquare(" << move << ") = " << whosep(chboard->pieceOnSquare(move, owner)) << " or because isValidSquare(" << move << ") = " << chboard->isValidSquare(move) << endl;
+  // else 
+    // cerr << move << " is invalid because pieceOnSquare(" << move << ") = " << whosep(chboard->pieceOnSquare(move, owner)) << " or because isValidSquare(" << move << ") = " << chboard->isValidSquare(move) << endl;
 }
 
 void Piece::printValidMoves() {
