@@ -176,10 +176,10 @@ void Bishop::genValidMoves() {
 
   for(int i=0; incr[i][0] != SINTINEL; i++) {
     classifyMoves(LONG, FORWARDS, incr[i], move);
-    cerr << "about to classify last move: " << move << endl;
+    //cerr << "about to classify last move: " << move << endl;
     classifyLastMove(move);
     classifyMoves(LONG, BACKWARDS, incr[i], move);
-    cerr << "about to classify last move: " << move << endl;
+    //cerr << "about to classify last move: " << move << endl;
     classifyLastMove(move);
   }
 }

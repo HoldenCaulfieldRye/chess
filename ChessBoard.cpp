@@ -216,7 +216,12 @@ void ChessBoard::nextPlayer() {
 /*checks whether a specified move by a specified player puts player's own king in check*/ 
 bool ChessBoard::entailsCheck(Cnstring move[], Cnstring player, const bool speculative) {  Piece *temp = NULL;
   string kingPos;
-  cerr << "does move entail check?" << endl;
+
+  cerr << "does move entail check?";
+  if (speculative)
+    cerr << " let's speculate";
+  cerr << endl;
+
   temp = performMove(move); //if attack, returns pointer to taken piece
   kingPos = findKingPos(player);
 
