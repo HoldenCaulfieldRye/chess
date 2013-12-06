@@ -140,7 +140,7 @@ void ChessBoard::submitMove(Cnstring sourceSquare, Cnstring destSquare) {
     return;
   }
   if (outcome == "stalemate") {
-    cout << "stalemate" << endl;
+    cout << "stalemate (" << notPlayer() << " cannot make a move without putting itself in check, but at the moment it isn't in check" << endl;
     return;
   }
   if (outcome == "check")
