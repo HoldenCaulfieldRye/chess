@@ -76,6 +76,21 @@ bool Piece::isValidMove(string square) {
   return false;
 }
 
+/*tests whether piece can move without putting 'his/her' King in check*/
+bool Piece::canMove() {
+  bool attack = false;
+  string move[2] = {position};
+  genValidMoves();
+  for (VecIt it=validMoves.begin(); it!=validMoves.end(); it++) {
+    move[1] = *it;
+    if (chboard->pieceOnSquare(*it) == FOE)
+      attack = true;
+    if ( !(chboard->moveEntailsCheck(move, owner, attack)) )
+      return true;
+  }
+  return false;
+}
+
 Vecs Piece::getValidMoves() {
   Vecs moves;
   for(VecIt it=validMoves.begin(); it!=validMoves.end(); it++) {

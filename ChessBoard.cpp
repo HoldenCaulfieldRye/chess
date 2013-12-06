@@ -247,6 +247,7 @@ bool ChessBoard::moveEntailsCheck(const string move[], const string checkedPlaye
   }
 }
 
+
 /*look for king among pieces belonging to active player*/
 string ChessBoard::findKingPos(const string player) {
   for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++) {
@@ -271,56 +272,32 @@ bool ChessBoard::kingInCheck(const string kingPos) {
 string ChessBoard::checkOutcome() {
   bool anAttack = false;
   string opKingPos;                          //position of King of notPlayer()
+  Piece *piece = NULL, *king = NULL;
 
   /*test whether any non-King pieces of opponent can validly move. When testing for stalemate or checkmate, need to look for moves that do not lead to check. criteria are the same for both, so better to look for such moves first.*/
   for (MapIt it = boardMap.begin(); it!=boardMap.end(); it++) {
-    string pos = &(it->first);
-    Piece* piece = &(it->second);
-    if (pos != opKingPos && piece->getOwner() != whoseTurn) { //select an opponent piece which isn't King
-
-      Vecs moves = pos->getValidMoves();
-      for (VecIt it=moves.begin(); it!=moves.end(); it++) { //each_valid_Move_of_piece) {
-	if (pieceOnSquare(moves[i][1]==FOE))
-	  anAttack = true;
-	if (!moveEntailsCheck(moves[i], notPlayer(), anAttack) )
-	  return "nothing really";
+    &piece = it->second;
+    if (piece->getOwner() != whoseTurn) {
+      if (piece->getType() != "King") { 
+	if (piece->canMove())
+	return "nothing really";
       }
+      else opKingPos = it->first; //take the opportunity to save King's position
     }
   }
   cerr << "opponent will be in check for any move of its non-King pieces. but is opponent's King even in check?" << endl;
 
   /*reach here iif opponent will be in check for any move of its non-King pieces*/
-  opKingPos = findKingPos(notPlayer());
-  boardMap[opKingPos]->genValidMoves();
-
-  /*test whether opponent's king is in check only now. It may seem that loop above is a waste of time if opponent is not in check anyway. but if that's the case, it's very likely that opponent has a non-King piece which can validly move, so program will likely return from loop above anyway.*/
-  if (kingInCheck(notPlayer())) {
-    for (each_valid_Move_of_king) {         //need access to a move of piece
-      if (pieceOnSquare(move[i][1]==FOE))
-	anAttack = true;
-      if (!moveEntailsCheck(move[i], notPlayer(), anAttack) ) {
-	return "check";
-      }
-    }
-    return "checkmate";
-  }
-
-  cerr << "oh, no opponent's King isn't in check. But is it in stalemate?" << endl;
-
-  /*test whether opponent's King can move without putting itself into check*/
+  &king = boardMap[opKingPos];
+  if (king->canMove())
+    return "nothing really";
   else {
-    for (each_valid_Move_of_king) {         //need access to a move of piece
-      if (pieceOnSquare(move[i][1]==FOE))
-	anAttack = true;
-      if (!moveEntailsCheck(move[i], notPlayer(), anAttack) ) {
-	cerr << "oh, no opponent's King isn't in stalemate" << endl;
-	return "nothing really";
-      }
-    }
-    return "stalemate";
+    if (kingInCheck())
+      return "checkmate";    //king in check, can't move and neither can friend pieces
+    else return "stalemate"; //king not in check, can't move and neither can friend pieces
   }
 }
-  
+
 
 void ChessBoard::resetBoard() {
   boardMap.clear();

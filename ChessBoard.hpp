@@ -17,7 +17,7 @@ enum Length     {SHORT, LONG};
 
 class Piece;
 
-typedef vector<string> Vecs;
+typedef vector<string> Vecstr;
 typedef vector<string>::iterator VecIt;
 typedef map<string, Piece*>::iterator MapIt;
 
@@ -49,7 +49,7 @@ protected:
   ChessBoard *chboard;
   char file;
   char rank;
-  Vecs validMoves; //SENTINEL IS "'\0'"
+  Vecstr validMoves; //SENTINEL IS "'\0'"
 
 public:
   Piece();
@@ -59,7 +59,8 @@ public:
   void    increment         (Direction dir, char &coordinate1, char &coordinate2, int *inc);
   void    classifyLastMove  (string move);
   bool    isValidMove       (string square);
-  Vecs    getValidMoves     (); 
+  bool    canMove           ();
+  Vecstr  getValidMoves     (); 
   void    setPosition       (const string);
   string  getOwner          () const;
   void    printValidMoves   ();
