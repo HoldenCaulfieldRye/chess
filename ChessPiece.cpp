@@ -55,7 +55,7 @@ void Piece::classifyLastMove(string move) {
     validMoves.insert(validMoves.begin(), move);
   }
   else 
-    cerr << move << " is invalid because pieceOnSquare(" << move << ") = " << whosep(chboard->pieceOnSquare(move)) << " or because isValidSquare(" << move << ") = " << chboard->isValidSquare(move) << endl;
+    cerr << move << " is invalid because pieceOnSquare(" << move << ") = " << whosep(chboard->pieceOnSquare(move, owner)) << " or because isValidSquare(" << move << ") = " << chboard->isValidSquare(move) << endl;
 }
 
 void Piece::printValidMoves() {
@@ -268,16 +268,11 @@ Pawn::Pawn(string _owner, string _position, ChessBoard *_chboard) : Piece(_owner
 void Pawn::genValidMoves() {
   //cerr << "genValidMoves called" << endl;
   string move;
-  char r, f;
-  bool firstMove = ((rank=='2' && owner=="White") || (rank=='7' && owner=="Black"));
-
-  /*because a pawn can only go forward in rank, it is at starting rank iif it hasn't made a first move. I use this property to distinguish the case where it can move forward by 2 squares*/
-  if (firstMove)
-    incr[4][2] = {{1, 0},      //vertical
-		  {1, 1},      //diagonal1
-		  {1,-1},      //diagonal2
-		  {2, 0}};      //vertical, first move
-  else incr[3][2] = {{1,0}, {1,1}, {1,-1}};
+  char r, f;  
+  int incr[4][2] = {{1, 0},      //vertical
+		    {1, 1},      //diagonal1
+		    {1,-1},      //diagonal2
+		    {2, 0}};     //vertical, first move
 
   validMoves.clear();
   classifyMoves(SHORT, FORWARDS, incr[0], move); //vertical
@@ -287,7 +282,9 @@ void Pawn::genValidMoves() {
     move = concat(r, f);
     classifyLastMove(move);
   }
-  if(firstMove)                                  //vertical, first move
+
+  /*because a pawn can only go forward in rank, it is at starting rank iif it hasn't made a first move. I use this property to distinguish the case where it can move forward by 2 squares*/
+  if((rank=='2' && owner=="White") || (rank=='7' && owner=="Black"))//vertical, first move
     classifyMoves(SHORT, FORWARDS, incr[3], move);
 }
 
