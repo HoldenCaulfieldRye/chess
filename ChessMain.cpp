@@ -63,10 +63,10 @@ int main() {
     cout << endl;
 
     cb.submitMove("D3", "E4");
-    cb.submitMove("G8", "F6");
-    cout << endl;
+    // cb.submitMove("G8", "F6");
+    // cout << endl;
 
-    cb.submitMove("E4", "D3");
+    // cb.submitMove("E4", "D3");
     // cb.submitMove("B7", "B6");
     // cout << endl;
 

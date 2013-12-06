@@ -53,8 +53,8 @@ void Piece::classifyLastMove(string move) {
     cerr << move << " is a valid attack move for " << getType() << " at " << position << "!" << endl;
     validMoves.insert(validMoves.begin(), move);
   }
-  //else 
-    //cerr << move << " is invalid because pieceOnSquare(" << move << ") = " << whosep(chboard->pieceOnSquare(move)) << " or because isValidSquare(" << move << ") = " << chboard->isValidSquare(move) << endl; uncomment around too
+  else 
+    cerr << move << " is invalid because pieceOnSquare(" << move << ") = " << whosep(chboard->pieceOnSquare(move)) << " or because isValidSquare(" << move << ") = " << chboard->isValidSquare(move) << endl;
 }
 
 void Piece::printValidMoves() {
@@ -268,10 +268,20 @@ void Pawn::genValidMoves() {
   //cerr << "genValidMoves called" << endl;
   string move;
   char r=rank, f=file;
-  int count=0, incr[4][2] = {{1, 0},      //vertical
-			     {1, 1},      //diagonal1
-			     {1,-1},      //diagonal2
-			     {SINTINEL}};
+  int count=0;
+
+  /*because a pawn can only go forward in rank, it is at starting rank iif it hasn't made a first move. I use this property to distinguish the case where it can move forward by 2 squares*/
+  if ((rank=='2' && owner=="White") || (rank=='7' && owner=="Black"))
+    incr[5][2] = {{1, 0},      //vertical
+		  {2, 0},      //vertical, first move
+		  {1, 1},      //diagonal1
+		  {1,-1},      //diagonal2
+		  {SINTINEL}};
+  else 
+    incr[4][2] = {{1, 0},      //vertical
+		  {1, 1},      //diagonal1
+		  {1,-1},      //diagonal2
+		  {SINTINEL}};
 
   validMoves.clear();
   do {
@@ -279,11 +289,13 @@ void Pawn::genValidMoves() {
     move = concat(r, f);
     count++;
     if (chboard->isValidSquare(move) && chboard->pieceOnSquare(move, owner) == NOPIECE) {
-      //cerr << move << " is a valid move for " << getType() << " from " << position << endl;
-      validMoves.insert(validMoves.end(), move);
+      cerr << move << " is a valid move for " << getType() << " from " << position << endl;
+      if (validMoves.empty())
+	validMoves.insert(validMoves.begin(), move);
+      else validMoves.insert(validMoves.end(), move);
     }
     else {
-      //cerr << "for " << getType() << " at " << file << rank << ", no valid position from " << move << " in 0 direction" << endl;
+      cerr << "for " << getType() << " at " << file << rank << ", no valid position from " << move << " in 0 direction" << endl;
       return;
     }
   } while (count<2 && ( (rank=='2' && owner=="White") || (rank=='7' && owner=="Black") ));
