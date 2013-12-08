@@ -10,7 +10,7 @@ using namespace std;
 /*Piece definitions*/
 Piece::Piece() {}
 
-Piece::Piece(string _owner, string _position, ChessBoard *_chboard) : owner(_owner), position(_position), chboard(_chboard), file(_position[0]), rank(_position[1]) {
+Piece::Piece(string _colour, string _position, ChessBoard *_chboard) : colour(_colour), position(_position), chboard(_chboard), file(_position[0]), rank(_position[1]) {
   potValDestPos.insert(potValDestPos.begin(),  "'\0'");
 }
 
@@ -21,7 +21,7 @@ void Piece::classifyMoves(Length length, Direction dir, int *inc, string& move) 
     increment(dir, r, f, inc);
     move = concat(r, f);
     /*if move is potentially valid an not an attack, add it*/
-    if (chboard->isValidSquare(move) && chboard->pieceOnSquare(move, owner) == NOPIECE) {
+    if (chboard->isValidSquare(move) && chboard->pieceOnSquare(move, colour) == NOPIECE) {
       //cerr << move << " is a potentially valid move" << endl;
       if (potValDestPos.empty()) {
 	//cerr << "potValDestPos is empty" << endl;
@@ -38,7 +38,7 @@ void Piece::classifyMoves(Length length, Direction dir, int *inc, string& move) 
 
 /*given where to look, adds potentially valid move that is an attack (used by all subPieces apart from Knight)*/
 void Piece::increment(Direction dir, char &coordinate1, char &coordinate2, int *inc) {
-  if ( (dir == FORWARDS && owner == "White") || (dir == BACKWARDS && owner == "Black") ) {
+  if ( (dir == FORWARDS && colour == "White") || (dir == BACKWARDS && colour == "Black") ) {
     coordinate1 += inc[0];
     coordinate2 += inc[1];
   }
@@ -50,12 +50,12 @@ void Piece::increment(Direction dir, char &coordinate1, char &coordinate2, int *
 
 /*helper function for classifyMoves*/
 void Piece::classifyLastMove(string move) {
-  if (chboard->isValidSquare(move) && chboard->pieceOnSquare(move, owner) == FOE) {
+  if (chboard->isValidSquare(move) && chboard->pieceOnSquare(move, colour) == FOE) {
     cerr << move << " is a valid attack move for " << getType() << " at " << position << "!" << endl;
     potValDestPos.insert(potValDestPos.begin(), move);
   }
   // else 
-    // cerr << move << " is invalid because pieceOnSquare(" << move << ") = " << whosep(chboard->pieceOnSquare(move, owner)) << " or because isValidSquare(" << move << ") = " << chboard->isValidSquare(move) << endl;
+    // cerr << move << " is invalid because pieceOnSquare(" << move << ") = " << whosep(chboard->pieceOnSquare(move, colour)) << " or because isValidSquare(" << move << ") = " << chboard->isValidSquare(move) << endl;
 }
 
 void Piece::printPotValDestPos() {
@@ -81,19 +81,19 @@ bool Piece::canMove() {
   const bool speculative = true;
   genPotValDestPos();
 
-  cerr << "canMove() called in (" << position << ", " << getType() << ", " << owner << ")" << endl << "potValidMoves: "; printPotValDestPos();
+  cerr << "canMove() called in (" << position << ", " << getType() << ", " << colour << ")" << endl << "potValidMoves: "; printPotValDestPos();
 
   for (VecIt it=potValDestPos.begin(); it!=potValDestPos.end(); it++) {
     move[1] = *it;
     cerr << "canMove: does move from " << move[0] << " to " << move[1] << " entail check?" << endl;
-    if ( !(chboard->entailsCheck(move, owner, speculative)) )
+    if ( !(chboard->entailsCheck(move, colour, speculative)) )
       return true;
   }
   return false;
 }
 
-string Piece::getOwner() const {
-  return owner;
+string Piece::getColour() const {
+  return colour;
 }
 
 void Piece::setPosition(Cnstring newPos) {
@@ -107,7 +107,7 @@ Piece::~Piece() {}
 
 /*King definitions*/
 King::King() {}
-King::King(string _owner, string _position, ChessBoard *_chboard) : Piece::Piece(_owner, _position, _chboard) {}
+King::King(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {}
 
 void King::genPotValDestPos() {
   //cerr << "genPotValDestPos called" << endl;
@@ -136,7 +136,7 @@ King::~King() {}
 
 /*Queen definitions*/
 Queen::Queen() {}
-Queen::Queen(string _owner, string _position, ChessBoard *_chboard) : Piece::Piece(_owner, _position, _chboard) {}
+Queen::Queen(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {}
 
 void Queen::genPotValDestPos() {
   //cerr << "genPotValDestPos called" << endl;
@@ -165,7 +165,7 @@ Queen::~Queen() {}
 
 /* Bishop definitions*/
 Bishop::Bishop() {}
-Bishop::Bishop(string _owner, string _position, ChessBoard *_chboard) : Piece::Piece(_owner, _position, _chboard) {}
+Bishop::Bishop(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {}
 
 void Bishop::genPotValDestPos() {
   //cerr << "genPotValDestPos called" << endl;
@@ -194,7 +194,7 @@ Bishop::~Bishop() {}
 
 /* Knight definitions*/
 Knight::Knight() {}
-Knight::Knight(string _owner, string _position, ChessBoard *_chboard) : Piece::Piece(_owner, _position, _chboard) {}
+Knight::Knight(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {}
 
 void Knight::genPotValDestPos() {
   //cerr << "genPotValDestPos called" << endl;
@@ -208,7 +208,7 @@ void Knight::genPotValDestPos() {
     f = file + incr[i][1];
     move = concat(r, f);
     //cerr << "checking if Knight can reach " << move << " from " << file << rank << endl;
-    if (chboard->pieceOnSquare(move, owner) != FRIEND && chboard->isValidSquare(move)) {
+    if (chboard->pieceOnSquare(move, colour) != FRIEND && chboard->isValidSquare(move)) {
       //cerr << move << " is a valid move for " << getType() << " from " << position << endl;
         potValDestPos.insert(potValDestPos.begin(), move);
       }
@@ -227,7 +227,7 @@ Knight::~Knight() {}
 
 /*Rook definitions*/
 Rook::Rook() {}
-Rook::Rook(string _owner, string _position, ChessBoard *_chboard) : Piece::Piece(_owner, _position, _chboard) {}
+Rook::Rook(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {}
 
 void Rook::genPotValDestPos() {
   //cerr << "genPotValDestPos called" << endl;
@@ -255,12 +255,12 @@ Rook::~Rook() {}
 /*Pawn definitions*/
 Pawn::Pawn() {}
 
-Pawn::Pawn(string _owner, string _position, ChessBoard *_chboard) : Piece(_owner, _position, _chboard) {}
+Pawn::Pawn(string _colour, string _position, ChessBoard *_chboard) : Piece(_colour, _position, _chboard) {}
 
 void Pawn::genPotValDestPos() {
   //cerr << "genPotValDestPos called" << endl;
   /*because a pawn can only go forward in rank, it is at starting rank iif it hasn't made a first move. I use this property to distinguish the case where it can move forward by 2 squares. Also need to make sure 'move forward by 1 square' is valid*/
-  bool firstMove = ((rank=='2' && owner=="White") || (rank=='7' && owner=="Black"));
+  bool firstMove = ((rank=='2' && colour=="White") || (rank=='7' && colour=="Black"));
   string move;
   char r, f;  
   int incr[4][2] = {{1, 0},      //vertical

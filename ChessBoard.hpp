@@ -48,7 +48,7 @@ class ChessBoard {
 
 class Piece {
 protected:
-  string owner;
+  string colour;
   string position;
   ChessBoard *chboard;
   char file;
@@ -57,7 +57,7 @@ protected:
 
 public:
   Piece();
-  Piece                     (string _owner, string _position, ChessBoard *_chboard);
+  Piece                     (string _colour, string _position, ChessBoard *_chboard);
   virtual void genPotValDestPos() = 0; //generate potentially valid destination positions
   void    classifyMoves     (Length length, Direction dir, int* inc, string& move);
   void    classifyLastMove  (string move);
@@ -65,7 +65,7 @@ public:
   bool    isValidMove       (string square);
   bool    canMove           ();
   void    setPosition       (Cnstring);
-  string  getOwner          () const;
+  string  getColour          () const;
   void    printPotValDestPos   (); //delete
   virtual string getType    () const = 0;
   virtual ~Piece();
@@ -75,7 +75,7 @@ class King : public Piece {
 private:
 public:
   King();
-  King(string _owner, string _square, ChessBoard *_chboard);
+  King(string _colour, string _square, ChessBoard *_chboard);
   virtual void genPotValDestPos(); //EMBED A VIRTUAL FUNCTION
   string getType() const;
   ~King();
@@ -85,7 +85,7 @@ class Queen : public Piece {
 private:
 public:
   Queen();
-  Queen(string _owner, string _square, ChessBoard *_chboard);
+  Queen(string _colour, string _square, ChessBoard *_chboard);
   virtual void genPotValDestPos(); //EMBED A VIRTUAL FUNCTION
   string getType() const;
   ~Queen();
@@ -95,7 +95,7 @@ class Bishop : public Piece {
 private:
 public:
   Bishop();
-  Bishop(string _owner, string _square, ChessBoard *_chboard);
+  Bishop(string _colour, string _square, ChessBoard *_chboard);
   virtual void genPotValDestPos(); //EMBED A VIRTUAL FUNCTION
   string getType() const;
   ~Bishop();
@@ -105,7 +105,7 @@ class Knight : public Piece {
 private:
 public:
   Knight();
-  Knight(string _owner, string _square, ChessBoard *_chboard);
+  Knight(string _colour, string _square, ChessBoard *_chboard);
   void genPotValDestPos(); //EMBED A VIRTUAL FUNCTION
   string getType() const;
   ~Knight();
@@ -115,7 +115,7 @@ class Rook : public Piece {
 private:
 public:
   Rook();
-  Rook(string _owner, string _square, ChessBoard *_chboard);
+  Rook(string _colour, string _square, ChessBoard *_chboard);
   virtual void genPotValDestPos(); //EMBED A VIRTUAL FUNCTION
   string getType() const;
   ~Rook();
@@ -124,7 +124,7 @@ public:
 class Pawn : public Piece {
 public:
   Pawn();
-  Pawn(string _owner, string _square, ChessBoard *_chboard);
+  Pawn(string _colour, string _square, ChessBoard *_chboard);
   virtual void genPotValDestPos(); //EMBED A VIRTUAL FUNCTION
   string getType() const;
   ~Pawn();
