@@ -14,13 +14,13 @@ Piece::Piece(string _colour, string _position, ChessBoard *_chboard) : colour(_c
   potValDestPos.insert(potValDestPos.begin(),  "'\0'");
 }
 
-/*given where to look, adds potentially valid moves that are not an attack (used by all subPieces apart from Knight)*/
-void Piece::classifyMoves(Length length, Direction dir, int *inc, string& move) {
+/*Given where to look, adds potentially valid destination positions which do not currently host an opponent's piece. This method is used by all sub-Pieces apart from Knight*/
+void Piece::classifyDestPos(Length length, Direction dir, int *inc, string& move) {
   char r=rank, f=file; 
   do {
     increment(dir, r, f, inc);
     move = concat(r, f);
-    /*if move is potentially valid an not an attack, add it*/
+    /*if destination position is potentially valid an not an attack, add it*/
     if (chboard->isValidSquare(move) && chboard->pieceOnSquare(move, colour) == NOPIECE) {
       //cerr << move << " is a potentially valid move" << endl;
       if (potValDestPos.empty()) {
@@ -33,7 +33,7 @@ void Piece::classifyMoves(Length length, Direction dir, int *inc, string& move) 
       //cerr << "no valid position from " << move << " onwards, in direction " << dir << endl;
       return;
     }
-  } while (length == LONG /*&& count<20*/);
+  } while (length == LONG);
 }
 
 /*given where to look, adds potentially valid move that is an attack (used by all subPieces apart from Knight)*/
@@ -48,8 +48,8 @@ void Piece::increment(Direction dir, char &coordinate1, char &coordinate2, int *
   }
 }
 
-/*helper function for classifyMoves*/
-void Piece::classifyLastMove(string move) {
+/*helper function for classifyDestPos*/
+void Piece::classifyLastDestPos(string move) {
   if (chboard->isValidSquare(move) && chboard->pieceOnSquare(move, colour) == FOE) {
     cerr << move << " is a valid attack move for " << getType() << " at " << position << "!" << endl;
     potValDestPos.insert(potValDestPos.begin(), move);
@@ -64,7 +64,7 @@ cerr << *it << ", ";
 cerr << endl;
 }
 
-bool Piece::isValidMove(string square) {
+bool Piece::isPotValDestPos(string square) {
   genPotValDestPos();
   for (VecIt it = potValDestPos.begin(); it != potValDestPos.end(); it++) {
     if(*it == square) {
@@ -120,10 +120,10 @@ void King::genPotValDestPos() {
 
   potValDestPos.clear();
   for(int i=0; incr[i][0] != SINTINEL; i++) {
-    classifyMoves(SHORT, FORWARDS, incr[i], move);
-    classifyLastMove(move);
-    classifyMoves(SHORT, BACKWARDS, incr[i], move);
-    classifyLastMove(move);
+    classifyDestPos(SHORT, FORWARDS, incr[i], move);
+    classifyLastDestPos(move);
+    classifyDestPos(SHORT, BACKWARDS, incr[i], move);
+    classifyLastDestPos(move);
   }
 }
 
@@ -149,10 +149,10 @@ void Queen::genPotValDestPos() {
 
   potValDestPos.clear();
   for(int i=0; incr[i][0] != SINTINEL; i++) {
-    classifyMoves(LONG, FORWARDS, incr[i], move);
-    classifyLastMove(move);
-    classifyMoves(LONG, BACKWARDS, incr[i], move);
-    classifyLastMove(move);
+    classifyDestPos(LONG, FORWARDS, incr[i], move);
+    classifyLastDestPos(move);
+    classifyDestPos(LONG, BACKWARDS, incr[i], move);
+    classifyLastDestPos(move);
   }
 }
 
@@ -176,12 +176,12 @@ void Bishop::genPotValDestPos() {
 
   potValDestPos.clear();
   for(int i=0; incr[i][0] != SINTINEL; i++) {
-    classifyMoves(LONG, FORWARDS, incr[i], move);
+    classifyDestPos(LONG, FORWARDS, incr[i], move);
     //cerr << "about to classify last move: " << move << endl;
-    classifyLastMove(move);
-    classifyMoves(LONG, BACKWARDS, incr[i], move);
+    classifyLastDestPos(move);
+    classifyDestPos(LONG, BACKWARDS, incr[i], move);
     //cerr << "about to classify last move: " << move << endl;
-    classifyLastMove(move);
+    classifyLastDestPos(move);
   }
 }
 
@@ -238,10 +238,10 @@ void Rook::genPotValDestPos() {
 
   potValDestPos.clear();
   for(int i=0; incr[i][0] != SINTINEL; i++) {
-    classifyMoves(LONG, FORWARDS, incr[i], move);
-    classifyLastMove(move);
-    classifyMoves(LONG, BACKWARDS, incr[i], move);
-    classifyLastMove(move);
+    classifyDestPos(LONG, FORWARDS, incr[i], move);
+    classifyLastDestPos(move);
+    classifyDestPos(LONG, BACKWARDS, incr[i], move);
+    classifyLastDestPos(move);
   }
 }
 
@@ -269,17 +269,17 @@ void Pawn::genPotValDestPos() {
 		    {2, 0}};     //vertical, first move
 
   potValDestPos.clear();
-  classifyMoves(SHORT, FORWARDS, incr[0], move); //vertical
+  classifyDestPos(SHORT, FORWARDS, incr[0], move); //vertical
 
   /*if access to '1 square in front' is blocked, potValDestPos is empty*/
   if(firstMove && !potValDestPos.empty())
-    classifyMoves(SHORT, FORWARDS, incr[3], move);
+    classifyDestPos(SHORT, FORWARDS, incr[3], move);
 
   for (int i=1; i<3; i++) {      //diagonals
     r=rank, f=file;
     increment(FORWARDS, r, f, incr[i]);
     move = concat(r, f);
-    classifyLastMove(move);
+    classifyLastDestPos(move);
   }
 }
 

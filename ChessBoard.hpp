@@ -38,7 +38,7 @@ class ChessBoard {
   bool       entailsCheck (Cnstring move[], Cnstring checkedPlayer, const bool speculative);
   bool       kingInCheck  (Cnstring kingPos);
   string     checkOutcome ();
-  string     findKingPos  (Cnstring player); //DELETE?
+  string     findKingPos  (Cnstring player);
   string     notPlayer    () const;
   void       nextPlayer   ();
   void       resetBoard   ();
@@ -56,19 +56,19 @@ protected:
   Vecstr potValDestPos; //'potentially valid destination positions' ie moving to such a position is valid if it doesn't put friendly king in check
 
 public:
-  Piece();
-  Piece                     (string _colour, string _position, ChessBoard *_chboard);
+  Piece                        ();
+  Piece                        (string _colour, string _position, ChessBoard *_chboard);
   virtual void genPotValDestPos() = 0; //generate potentially valid destination positions
-  void    classifyMoves     (Length length, Direction dir, int* inc, string& move);
-  void    classifyLastMove  (string move);
-  void    increment         (Direction dir, char &coordinate1, char &coordinate2, int *inc);
-  bool    isValidMove       (string square);
-  bool    canMove           ();
-  void    setPosition       (Cnstring);
-  string  getColour          () const;
+  void    classifyDestPos      (Length length, Direction dir, int* inc, string& move);
+  void    classifyLastDestPos  (string move);
+  void    increment            (Direction dir, char &coordinate1, char &coordinate2, int *inc);
+  bool    isPotValDestPos      (string square);
+  bool    canMove              ();
+  void    setPosition          (Cnstring);
+  string  getColour            () const;
   void    printPotValDestPos   (); //delete
-  virtual string getType    () const = 0;
-  virtual ~Piece();
+  virtual string getType       () const = 0;
+  virtual ~Piece               ();
 };
 
 class King : public Piece {

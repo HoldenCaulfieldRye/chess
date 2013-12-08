@@ -14,15 +14,15 @@ ChessBoard::ChessBoard() {  //should I make constructor more elaborate?
 
 /*I would have preferred to initiate by reading initial piece positions from a configuration file rather than to hard code a single initial game setup. But I didn't implement this because the corrector could deduct marks from requiring an extra file*/
 void ChessBoard::initiate() {
-  string files = "ABCEDFGH", colour="White", position;
+  string files = "ABCEDFGH", owner="White", position;
 
-  for (char j='2'; j<'9'; j+=5, colour="Black") {
+  for (char j='2'; j<'9'; j+=5, owner="Black") {
     cerr << files << endl;
     for (int i=0; files[i]!='\0'; i++) {
       position = files[i];
       position += j;
       //cerr << "position = " << position << endl;
-      boardMap[position] = new Pawn(colour, position, this);
+      boardMap[position] = new Pawn(owner, position, this);
     }
   }
 
@@ -78,7 +78,7 @@ void ChessBoard::submitMove(Cnstring sourceSquare, Cnstring destSquare) {
   }  
 
   /*check that piece can get to destination square (excluding putting own king in check)*/
-  if ( !(boardMap[sourceSquare]->isValidMove(destSquare)) ) {
+  if ( !(boardMap[sourceSquare]->isPotValDestPos(destSquare)) ) {
     /*reach here iif it can't; enquire why*/
     /*check that destination square is valid*/
     if(!isValidSquare(destSquare)) {
@@ -107,7 +107,7 @@ void ChessBoard::submitMove(Cnstring sourceSquare, Cnstring destSquare) {
 
   cerr <<"boardMap before move: ";
   for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
-    cerr << "(" << it->first << "," << (it->second)->getType() << "," << (it->second)->getColour() << "), "; 
+    cerr << "(" << it->first << "," << (it->second)->getType() << "," << (it->second)->getOwner() << "), "; 
   cerr << endl;
 
   /*test whether move puts friendly King in check. if not, perform move*/
@@ -125,7 +125,7 @@ void ChessBoard::submitMove(Cnstring sourceSquare, Cnstring destSquare) {
 
   cerr << endl << "boardMap after move: ";
   for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
-    cerr << "(" << it->first << "," << (it->second)->getType() << "," << (it->second)->getColour() << "), ";
+    cerr << "(" << it->first << "," << (it->second)->getType() << "," << (it->second)->getOwner() << "), ";
   cerr << endl;
 
   /*test whether move puts opponent in check, checkmate, stalemate, or nothing really*/
@@ -143,7 +143,7 @@ void ChessBoard::submitMove(Cnstring sourceSquare, Cnstring destSquare) {
 
   cerr << endl << "boardMap after move: ";
   for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
-    cerr << "(" << it->first << "," << (it->second)->getType() << "," << (it->second)->getColour() << "), ";
+    cerr << "(" << it->first << "," << (it->second)->getType() << "," << (it->second)->getOwner() << "), ";
   cerr << endl;
 
   nextPlayer();
@@ -185,7 +185,7 @@ WhosePiece ChessBoard::pieceOnSquare(Cnstring square, Cnstring player) {
   MapIt it = boardMap.find(square);
   if (it == boardMap.end())
     return NOPIECE;
-  if (boardMap[square]->getColour() == player)
+  if (boardMap[square]->getOwner() == player)
     return FRIEND;
   return FOE;
 }
@@ -235,7 +235,7 @@ bool ChessBoard::entailsCheck(Cnstring move[], Cnstring player, const bool specu
 Piece* ChessBoard::performMove(Cnstring move[]) {
   cerr << "performing move from " << move[0] << " to " << move[1] << endl;
   Piece *takenPiece = NULL, *movingPiece = boardMap[move[0]];
-  if (pieceOnSquare(move[1], movingPiece->getColour()) == FOE)
+  if (pieceOnSquare(move[1], movingPiece->getOwner()) == FOE)
     takenPiece = boardMap[move[1]];       //if attack, save memory location of attacked piece
   boardMap[move[1]] = movingPiece;
   boardMap[move[1]]->setPosition(move[1]);
@@ -262,7 +262,7 @@ string ChessBoard::findKingPos(Cnstring player) {
   Piece *piece;
   for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++) {
     piece = it->second;
-    if (piece->getType()=="King" && piece->getColour()==player) {
+    if (piece->getType()=="King" && piece->getOwner()==player) {
       cerr << "kingPos found" << endl;
       return it->first;
     }
@@ -276,7 +276,7 @@ bool ChessBoard::kingInCheck(Cnstring kingPos) {
   Piece *piece, *king = boardMap[kingPos];
   for(MapIt it = boardMap.begin(); it != boardMap.end(); it++) {
     piece = it->second;
-    if (piece->getColour() != king->getColour() && piece->isValidMove(kingPos)) {
+    if (piece->getOwner() != king->getOwner() && piece->isPotValDestPos(kingPos)) {
       cerr << "yes, king is now in check!" << endl;
       return true;
     }
@@ -297,7 +297,7 @@ string ChessBoard::checkOutcome() {
 
   for (MapIt it = boardMap.begin(); it!=boardMap.end(); it++) {
     piece = it->second;
-    if (piece->getColour() != whoseTurn && piece->getType() != "King" && piece->canMove()) {
+    if (piece->getOwner() != whoseTurn && piece->getType() != "King" && piece->canMove()) {
       cerr << "yes opponent's piece can move" << endl;
       if (kingInCheck(opKingPos))
 	return "check";
