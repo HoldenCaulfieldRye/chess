@@ -107,7 +107,7 @@ void ChessBoard::submitMove(Cnstring sourceSquare, Cnstring destSquare) {
 
   cerr <<"boardMap before move: ";
   for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
-    cerr << "(" << it->first << "," << (it->second)->getType() << "," << (it->second)->getOwner() << "), "; 
+    cerr << "(" << it->first << "," << (it->second)->getType() << "," << (it->second)->getColour() << "), "; 
   cerr << endl;
 
   /*test whether move puts friendly King in check. if not, perform move*/
@@ -125,7 +125,7 @@ void ChessBoard::submitMove(Cnstring sourceSquare, Cnstring destSquare) {
 
   cerr << endl << "boardMap after move: ";
   for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
-    cerr << "(" << it->first << "," << (it->second)->getType() << "," << (it->second)->getOwner() << "), ";
+    cerr << "(" << it->first << "," << (it->second)->getType() << "," << (it->second)->getColour() << "), ";
   cerr << endl;
 
   /*test whether move puts opponent in check, checkmate, stalemate, or nothing really*/
@@ -143,7 +143,7 @@ void ChessBoard::submitMove(Cnstring sourceSquare, Cnstring destSquare) {
 
   cerr << endl << "boardMap after move: ";
   for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
-    cerr << "(" << it->first << "," << (it->second)->getType() << "," << (it->second)->getOwner() << "), ";
+    cerr << "(" << it->first << "," << (it->second)->getType() << "," << (it->second)->getColour() << "), ";
   cerr << endl;
 
   nextPlayer();
@@ -185,7 +185,7 @@ WhosePiece ChessBoard::pieceOnSquare(Cnstring square, Cnstring player) {
   MapIt it = boardMap.find(square);
   if (it == boardMap.end())
     return NOPIECE;
-  if (boardMap[square]->getOwner() == player)
+  if (boardMap[square]->getColour() == player)
     return FRIEND;
   return FOE;
 }
@@ -235,7 +235,7 @@ bool ChessBoard::entailsCheck(Cnstring move[], Cnstring player, const bool specu
 Piece* ChessBoard::performMove(Cnstring move[]) {
   cerr << "performing move from " << move[0] << " to " << move[1] << endl;
   Piece *takenPiece = NULL, *movingPiece = boardMap[move[0]];
-  if (pieceOnSquare(move[1], movingPiece->getOwner()) == FOE)
+  if (pieceOnSquare(move[1], movingPiece->getColour()) == FOE)
     takenPiece = boardMap[move[1]];       //if attack, save memory location of attacked piece
   boardMap[move[1]] = movingPiece;
   boardMap[move[1]]->setPosition(move[1]);
@@ -262,7 +262,7 @@ string ChessBoard::findKingPos(Cnstring player) {
   Piece *piece;
   for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++) {
     piece = it->second;
-    if (piece->getType()=="King" && piece->getOwner()==player) {
+    if (piece->getType()=="King" && piece->getColour()==player) {
       cerr << "kingPos found" << endl;
       return it->first;
     }
@@ -276,7 +276,7 @@ bool ChessBoard::kingInCheck(Cnstring kingPos) {
   Piece *piece, *king = boardMap[kingPos];
   for(MapIt it = boardMap.begin(); it != boardMap.end(); it++) {
     piece = it->second;
-    if (piece->getOwner() != king->getOwner() && piece->isPotValDestPos(kingPos)) {
+    if (piece->getColour() != king->getColour() && piece->isPotValDestPos(kingPos)) {
       cerr << "yes, king is now in check!" << endl;
       return true;
     }
@@ -297,7 +297,7 @@ string ChessBoard::checkOutcome() {
 
   for (MapIt it = boardMap.begin(); it!=boardMap.end(); it++) {
     piece = it->second;
-    if (piece->getOwner() != whoseTurn && piece->getType() != "King" && piece->canMove()) {
+    if (piece->getColour() != whoseTurn && piece->getType() != "King" && piece->canMove()) {
       cerr << "yes opponent's piece can move" << endl;
       if (kingInCheck(opKingPos))
 	return "check";
