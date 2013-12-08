@@ -46,25 +46,24 @@ class ChessBoard {
 };
 
 
-class Piece {  //no Position field, only chessboard need keep track of that
+class Piece {
 protected:
   string owner;
   string position;
   ChessBoard *chboard;
   char file;
   char rank;
-  Vecstr validMoves; //SENTINEL IS "'\0'"
+  Vecstr potValMoves; //'potentially valid moves' ie valid if they don't put friendly king in check
 
 public:
   Piece();
   Piece                     (string _owner, string _position, ChessBoard *_chboard);
-  virtual void genValidMoves() = 0;
+  virtual void genPotValMoves() = 0;
   void    classifyMoves     (Length length, Direction dir, int* inc, string& move);
   void    increment         (Direction dir, char &coordinate1, char &coordinate2, int *inc);
   void    classifyLastMove  (string move);
   bool    isValidMove       (string square);
   bool    canMove           ();
-  //  Vecstr  getValidMoves     ();  //DELETE?
   void    setPosition       (Cnstring);
   string  getOwner          () const;
   void    printValidMoves   (); //delete
@@ -77,7 +76,7 @@ private:
 public:
   King();
   King(string _owner, string _square, ChessBoard *_chboard);
-  virtual void genValidMoves(); //EMBED A VIRTUAL FUNCTION
+  virtual void genPotValMoves(); //EMBED A VIRTUAL FUNCTION
   string getType() const;
   ~King();
 };
@@ -87,7 +86,7 @@ private:
 public:
   Queen();
   Queen(string _owner, string _square, ChessBoard *_chboard);
-  virtual void genValidMoves(); //EMBED A VIRTUAL FUNCTION
+  virtual void genPotValMoves(); //EMBED A VIRTUAL FUNCTION
   string getType() const;
   ~Queen();
 };
@@ -97,7 +96,7 @@ private:
 public:
   Bishop();
   Bishop(string _owner, string _square, ChessBoard *_chboard);
-  virtual void genValidMoves(); //EMBED A VIRTUAL FUNCTION
+  virtual void genPotValMoves(); //EMBED A VIRTUAL FUNCTION
   string getType() const;
   ~Bishop();
 };
@@ -107,7 +106,7 @@ private:
 public:
   Knight();
   Knight(string _owner, string _square, ChessBoard *_chboard);
-  void genValidMoves(); //EMBED A VIRTUAL FUNCTION
+  void genPotValMoves(); //EMBED A VIRTUAL FUNCTION
   string getType() const;
   ~Knight();
 };
@@ -117,7 +116,7 @@ private:
 public:
   Rook();
   Rook(string _owner, string _square, ChessBoard *_chboard);
-  virtual void genValidMoves(); //EMBED A VIRTUAL FUNCTION
+  virtual void genPotValMoves(); //EMBED A VIRTUAL FUNCTION
   string getType() const;
   ~Rook();
 };
@@ -126,7 +125,7 @@ class Pawn : public Piece {
 public:
   Pawn();
   Pawn(string _owner, string _square, ChessBoard *_chboard);
-  virtual void genValidMoves(); //EMBED A VIRTUAL FUNCTION
+  virtual void genPotValMoves(); //EMBED A VIRTUAL FUNCTION
   string getType() const;
   ~Pawn();
 };
