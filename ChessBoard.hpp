@@ -66,7 +66,7 @@ public:
   bool    canMove           ();
   void    setPosition       (Cnstring);
   string  getOwner          () const;
-  void    printValidMoves   (); //delete
+  void    printPotValMoves   (); //delete
   virtual string getType    () const = 0;
   virtual ~Piece();
 };

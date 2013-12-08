@@ -58,7 +58,7 @@ void Piece::classifyLastMove(string move) {
     // cerr << move << " is invalid because pieceOnSquare(" << move << ") = " << whosep(chboard->pieceOnSquare(move, owner)) << " or because isValidSquare(" << move << ") = " << chboard->isValidSquare(move) << endl;
 }
 
-void Piece::printValidMoves() {
+void Piece::printPotValMoves() {
   for(VecIt it=potValMoves.begin(); it!=potValMoves.end(); it++)
 cerr << *it << ", ";
 cerr << endl;
@@ -81,7 +81,7 @@ bool Piece::canMove() {
   const bool speculative = true;
   genPotValMoves();
 
-  cerr << "canMove() called in (" << position << ", " << getType() << ", " << owner << ")" << endl << "potValidMoves: "; printValidMoves();
+  cerr << "canMove() called in (" << position << ", " << getType() << ", " << owner << ")" << endl << "potValidMoves: "; printPotValMoves();
 
   for (VecIt it=potValMoves.begin(); it!=potValMoves.end(); it++) {
     move[1] = *it;
