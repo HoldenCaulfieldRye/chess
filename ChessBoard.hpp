@@ -60,7 +60,7 @@ class ChessBoard {
   void       message      (int mcode, string move[2], string takenPieceType);
   void       resetBoard   ();
   static string whosep    (WhosePiece piece); //DELETE
-  //~ChessBoard();
+  ~ChessBoard();
 };
 
 

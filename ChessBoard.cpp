@@ -18,8 +18,10 @@ void ChessBoard::initiate() {
 
   for (int i=0; i<4; i++) {
     for (int j=0; files[j]!='\0'; j++) {
+
       if (i==2) colour = "Black";
       position = Piece::concat(ranks[i], files[j]);
+
       if (ranks[i]=='1' || ranks[i]=='8') {
 	switch(files[j]) {
 	case 'A': case 'H':
@@ -352,10 +354,11 @@ string ChessBoard::whosep(WhosePiece piece) { //DELETE
   return "ERROR"; 
 }
 
-// ChessBoard::~ChessBoard() {
-//   for(MapIt it = boardMap.begin(); it != boardMap.end(); it++) {
-//     delete it->second;
-//     it-> second = NULL;
-//   }
-// }
+ChessBoard::~ChessBoard() {
+  for(MapIt it = boardMap.begin(); it != boardMap.end(); it++) {
+    //cerr << "about to delete " << it->second << ", ie piece on " << it->first << endl;
+    delete it->second;
+    it-> second = NULL;
+  }
+}
 /*end of ChessBoard definitions*/

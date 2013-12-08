@@ -79,7 +79,7 @@ int main() {
 
 
 
-    cb.resetBoard();
+    // cb.resetBoard();
     cout << endl;
 
 
