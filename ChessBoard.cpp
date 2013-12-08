@@ -65,7 +65,7 @@ void ChessBoard::submitMove(Cnstring sourceSquare, Cnstring destSquare) {
   else cerr << "check 1: source square exists" << endl; 
 
   /*check that there is a friendly piece on source square*/
-  switch(pieceOnSquare(sourceSquare, whoseTurn)) {
+  switch(colourOnSquare(sourceSquare, whoseTurn)) {
   case NOPIECE:
     message(EMPTY_SOURCE_SQUARE, move);
     return;
@@ -87,7 +87,7 @@ void ChessBoard::submitMove(Cnstring sourceSquare, Cnstring destSquare) {
     }
 
     /*check that there is no friendly piece on destination square*/
-    if (pieceOnSquare(destSquare, whoseTurn) == FRIEND) {
+    if (colourOnSquare(destSquare, whoseTurn) == FRIEND) {
       message(FRIENDLY_FIRE, move);
       return;
     }
@@ -99,7 +99,7 @@ void ChessBoard::submitMove(Cnstring sourceSquare, Cnstring destSquare) {
   else cerr << "check 3: piece can get to destination square" << endl; 
 
   /*test whether move is an attack*/
-  if(pieceOnSquare(destSquare, whoseTurn) == FOE) {
+  if(colourOnSquare(destSquare, whoseTurn) == FOE) {
     attack = true;
     temp =  boardMap[destSquare]->getType();
   }
@@ -179,7 +179,7 @@ bool ChessBoard::isValidSquare(Cnstring square) const {
   return true;
 }
 
-WhosePiece ChessBoard::pieceOnSquare(Cnstring square, Cnstring player) {
+WhosePiece ChessBoard::colourOnSquare(Cnstring square, Cnstring player) {
   MapIt it = boardMap.find(square);
   if (it == boardMap.end())
     return NOPIECE;
@@ -233,7 +233,7 @@ bool ChessBoard::entailsCheck(Cnstring move[], Cnstring player, const bool specu
 Piece* ChessBoard::performMove(Cnstring move[]) {
   cerr << "performing move from " << move[0] << " to " << move[1] << endl;
   Piece *takenPiece = NULL, *movingPiece = boardMap[move[0]];
-  if (pieceOnSquare(move[1], movingPiece->getColour()) == FOE)
+  if (colourOnSquare(move[1], movingPiece->getColour()) == FOE)
     takenPiece = boardMap[move[1]];       //if attack, save memory location of attacked piece
   boardMap[move[1]] = movingPiece;
   boardMap[move[1]]->setPosition(move[1]);

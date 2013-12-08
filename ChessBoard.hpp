@@ -45,7 +45,7 @@ class ChessBoard {
   void       initiate     ();
   void       submitMove   (Cnstring sourceSquare, Cnstring destSquare);
   bool       isValidSquare(Cnstring square) const;
-  WhosePiece pieceOnSquare(Cnstring square, Cnstring player);
+  WhosePiece colourOnSquare(Cnstring square, Cnstring player);
   Piece*     performMove  (Cnstring move[]);
   void       undoMove     (Cnstring move[], Piece *takenPiece);
   bool       entailsCheck (Cnstring move[], Cnstring checkedPlayer, const bool speculative);

@@ -21,7 +21,7 @@ void Piece::classifyDestPos(Range range, Direction dir, int *inc, string &move) 
     increment(dir, r, f, inc);
     move = concat(r, f);
     /*if destination position is potentially valid an not an attack, add it*/
-    if (chboard->isValidSquare(move) && chboard->pieceOnSquare(move, colour) == NOPIECE) {
+    if (chboard->isValidSquare(move) && chboard->colourOnSquare(move, colour) == NOPIECE) {
       //cerr << move << " is a potentially valid move" << endl;
       if (potValDestPos.empty()) {
 	//cerr << "potValDestPos is empty" << endl;
@@ -50,12 +50,12 @@ void Piece::increment(Direction dir, char &coordinate1, char &coordinate2, int *
 
 /*given WHICH square to evaluate, adds AT MOST ONE potentially valid destination position which currently hosts an opponent's piece. This method is used by all sub-Pieces apart from Knight*/
 void Piece::classifyLastDestPos(string move) {
-  if (chboard->isValidSquare(move) && chboard->pieceOnSquare(move, colour) == FOE) {
+  if (chboard->isValidSquare(move) && chboard->colourOnSquare(move, colour) == FOE) {
     cerr << move << " is a valid attack move for " << getType() << " at " << position << "!" << endl;
     potValDestPos.insert(potValDestPos.begin(), move);
   }
   // else 
-    // cerr << move << " is invalid because pieceOnSquare(" << move << ") = " << whosep(chboard->pieceOnSquare(move, colour)) << " or because isValidSquare(" << move << ") = " << chboard->isValidSquare(move) << endl;
+    // cerr << move << " is invalid because colourOnSquare(" << move << ") = " << whosep(chboard->colourOnSquare(move, colour)) << " or because isValidSquare(" << move << ") = " << chboard->isValidSquare(move) << endl;
 }
 
 void Piece::printPotValDestPos() {
@@ -208,12 +208,12 @@ void Knight::genPotValDestPos() {
     f = file + incr[i][1];
     move = concat(r, f);
     //cerr << "checking if Knight can reach " << move << " from " << file << rank << endl;
-    if (chboard->pieceOnSquare(move, colour) != FRIEND && chboard->isValidSquare(move)) {
+    if (chboard->colourOnSquare(move, colour) != FRIEND && chboard->isValidSquare(move)) {
       //cerr << move << " is a valid move for " << getType() << " from " << position << endl;
         potValDestPos.insert(potValDestPos.begin(), move);
       }
     //else {
-        //cerr << "for " << getType() << ", "  << move << " is an invalid move from " << file << rank << " because pieceOnSquare(move) = " << chboard->pieceOnSquare(move) << " or because chboard->isValidSquare(move) = " << chboard->isValidSquare(move) << endl; uncomment around also
+        //cerr << "for " << getType() << ", "  << move << " is an invalid move from " << file << rank << " because colourOnSquare(move) = " << chboard->colourOnSquare(move) << " or because chboard->isValidSquare(move) = " << chboard->isValidSquare(move) << endl; uncomment around also
     //}
   }
 }
