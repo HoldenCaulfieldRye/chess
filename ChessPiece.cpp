@@ -14,8 +14,8 @@ Piece::Piece(string _colour, string _position, ChessBoard *_chboard) : colour(_c
   potValDestPos.insert(potValDestPos.begin(),  "'\0'");
 }
 
-/*Given where to look, adds potentially valid destination positions which do not currently host an opponent's piece. This method is used by all sub-Pieces apart from Knight*/
-void Piece::classifyDestPos(Length length, Direction dir, int *inc, string& move) {
+/*Given HOW to search, adds ALL potentially valid destination positions which do not currently host an opponent's piece. 'inc' gives values with which to increment rank and fileThis method is used by all sub-Pieces apart from Knight*/
+void Piece::classifyDestPos(Range range, Direction dir, int *inc, string &move) {
   char r=rank, f=file; 
   do {
     increment(dir, r, f, inc);
@@ -33,10 +33,10 @@ void Piece::classifyDestPos(Length length, Direction dir, int *inc, string& move
       //cerr << "no valid position from " << move << " onwards, in direction " << dir << endl;
       return;
     }
-  } while (length == LONG);
+  } while (range == LONG);
 }
 
-/*given where to look, adds potentially valid move that is an attack (used by all subPieces apart from Knight)*/
+/*helper function for classifyDestPos(). 'inc' gives values with which to increment rank and file*/
 void Piece::increment(Direction dir, char &coordinate1, char &coordinate2, int *inc) {
   if ( (dir == FORWARDS && colour == "White") || (dir == BACKWARDS && colour == "Black") ) {
     coordinate1 += inc[0];
@@ -48,7 +48,7 @@ void Piece::increment(Direction dir, char &coordinate1, char &coordinate2, int *
   }
 }
 
-/*helper function for classifyDestPos*/
+/*given WHICH square to evaluate, adds AT MOST ONE potentially valid destination position which currently hosts an opponent's piece. This method is used by all sub-Pieces apart from Knight*/
 void Piece::classifyLastDestPos(string move) {
   if (chboard->isValidSquare(move) && chboard->pieceOnSquare(move, colour) == FOE) {
     cerr << move << " is a valid attack move for " << getType() << " at " << position << "!" << endl;
@@ -75,7 +75,7 @@ bool Piece::isPotValDestPos(string square) {
   return false;
 }
 
-/*tests whether piece can move without putting 'his/her' King in check*/
+/*tests whether piece can move without putting 'his/her' King in check. computationally heavy.*/
 bool Piece::canMove() {
   string move[2] = {position};
   const bool speculative = true;

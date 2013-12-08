@@ -5,12 +5,25 @@
 
 using namespace std;
 
-#define SINTINEL -10
+#define SINTINEL                     -10
+
+#define INVALID_SOURCE_SQUARE          1
+#define INVALID_DESTINATION_SQUARE     2
+#define EMPTY_SOURCE_SQUARE            3
+#define WRONG_PLAYER                   5
+#define FRIENDLY_FIRE                  6
+#define IMPOSSIBLE_MOVE                7
+#define CHECKING_OWN_KING              8
+#define VALID_MOVE                     9
+#define VALID_ATTACK                  10
+#define CHECK                         11
+#define CHECKMATE                     12
+#define STALEMATE                     13
 
 enum WhosePiece {NOPIECE, FRIEND, FOE};
 
 enum Direction  {FORWARDS, BACKWARDS};
-enum Length     {SHORT, LONG};
+enum Range      {SHORT, LONG};
 
 
 //DYNAMIC MEMORY! DESTRUCTORS!
@@ -41,6 +54,8 @@ class ChessBoard {
   string     findKingPos  (Cnstring player);
   string     notPlayer    () const;
   void       nextPlayer   ();
+  void       message      (int mcode, string move[2]);
+  void       message      (int mcode, string move[2], string takenPieceType);
   void       resetBoard   ();
   //~ChessBoard();
 };
@@ -59,7 +74,7 @@ public:
   Piece                        ();
   Piece                        (string _colour, string _position, ChessBoard *_chboard);
   virtual void genPotValDestPos() = 0; //generate potentially valid destination positions
-  void    classifyDestPos      (Length length, Direction dir, int* inc, string& move);
+  void    classifyDestPos      (Range range, Direction dir, int* inc, string& move);
   void    classifyLastDestPos  (string move);
   void    increment            (Direction dir, char &coordinate1, char &coordinate2, int *inc);
   bool    isPotValDestPos      (string square);
