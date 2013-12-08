@@ -101,6 +101,15 @@ void Piece::setPosition(Cnstring newPos) {
   file = newPos[0];
   rank = newPos[1];
 }
+
+/*function for concatenating two chars into a string. strangely, there is no library function or one-line statement for doing so (string::append doesn't have an overload for 2 chars)*/
+string Piece::concat(char ch1, char ch2) {
+  string st;
+  st = ch2;   //yes it's confusing to put ch2 first,
+  st += ch1;  //but I like to see (row,column) in coordinates, 
+  return st;  //and with chess it's the other way around.
+}
+
 Piece::~Piece() {}
 /*end of Piece definitions*/
 

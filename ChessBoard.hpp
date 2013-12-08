@@ -57,6 +57,7 @@ class ChessBoard {
   void       message      (int mcode, string move[2]);
   void       message      (int mcode, string move[2], string takenPieceType);
   void       resetBoard   ();
+  static string whosep    (WhosePiece piece); //DELETE
   //~ChessBoard();
 };
 
@@ -83,6 +84,7 @@ public:
   string  getColour            () const;
   void    printPotValDestPos   (); //delete
   virtual string getType       () const = 0;
+  static  string concat        (char ch1, char ch2);
   virtual ~Piece               ();
 };
 

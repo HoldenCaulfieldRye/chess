@@ -229,7 +229,7 @@ bool ChessBoard::entailsCheck(Cnstring move[], Cnstring player, const bool specu
   }
 }
 
-/*scratch for performMove()*/
+
 Piece* ChessBoard::performMove(Cnstring move[]) {
   cerr << "performing move from " << move[0] << " to " << move[1] << endl;
   Piece *takenPiece = NULL, *movingPiece = boardMap[move[0]];
@@ -373,6 +373,17 @@ void ChessBoard::message(int mcode, string move[2], string takenPieceType) {
   if(mcode == VALID_ATTACK)
     cout << whoseTurn << "'s " << boardMap[move[0]]->getType() << " moves from " << move[0] << " to " << move[1] << " taking " << notPlayer() << "'s " << takenPieceType << endl;
 }
+
+string ChessBoard::whosep(WhosePiece piece) { //DELETE
+  if(piece == NOPIECE)
+    return "NOPIECE"; 
+  if(piece == FRIEND)
+    return "FRIEND"; 
+  if(piece == FOE)
+    return "FOE";
+  return "ERROR"; 
+}
+
 // ChessBoard::~ChessBoard() {
 //   for(MapIt it = boardMap.begin(); it != boardMap.end(); it++) {
 //     delete it->second;
