@@ -14,39 +14,32 @@ ChessBoard::ChessBoard() {  //should I make constructor more elaborate?
 
 /*I would have preferred to initiate by reading initial piece positions from a configuration file rather than to hard code a single initial game setup. But I didn't implement this because the corrector could deduct marks from requiring an extra file*/
 void ChessBoard::initiate() {
-  string files = "ABCEDFGH", owner="White", position;
+  string files = "ABCEDFGH", ranks = "1278", colour="White", position;
 
-  for (char j='2'; j<'9'; j+=5, owner="Black") {
-    cerr << files << endl;
-    for (int i=0; files[i]!='\0'; i++) {
-      position = files[i];
-      position += j;
-      //cerr << "position = " << position << endl;
-      boardMap[position] = new Pawn(owner, position, this);
+  for (int i=0; i<4; i++) {
+    for (int j=0; files[j]!='\0'; j++) {
+      if (i==2) colour = "Black";
+      position = Piece::concat(ranks[i], files[j]);
+      if (ranks[i]=='1' || ranks[i]=='8') {
+	switch(files[j]) {
+	case 'A': case 'H':
+	  boardMap[position] = new Rook(colour, position, this);   break;
+	case 'B': case 'G':
+	  boardMap[position] = new Knight(colour, position, this); break;
+	case 'C': case 'F':
+	  boardMap[position] = new Bishop(colour, position, this); break;
+	case 'D':
+	  boardMap[position] = new Queen(colour, position, this);  break;
+	case 'E':
+	  boardMap[position] = new King(colour, position, this);
+	}
+      }
+      else boardMap[position] = new Pawn(colour, position, this);
     }
   }
 
-  boardMap["A1"] = new Rook("White", "A1", this);
-  boardMap["B1"] = new Knight("White", "B1", this);
-  boardMap["C1"] = new Bishop("White", "C1", this);
-  boardMap["D1"] = new Queen("White", "D1", this);
-  boardMap["E1"] = new King("White", "E1", this);
-  boardMap["F1"] = new Bishop("White", "F1", this);
-  boardMap["G1"] = new Knight("White", "G1", this);
-  boardMap["H1"] = new Rook("White", "H1", this);
-
-  boardMap["A8"] = new Rook("Black", "A8", this);
-  boardMap["B8"] = new Knight("Black", "B8", this);
-  boardMap["C8"] = new Bishop("Black", "C8", this);
-  boardMap["D8"] = new Queen("Black", "D8", this);
-  boardMap["E8"] = new King("Black", "E8", this);
-  boardMap["F8"] = new Bishop("Black", "F8", this);
-  boardMap["G8"] = new Knight("Black", "G8", this);
-  boardMap["H8"] = new Rook("Black", "H8", this);
-
   whoseTurn = "White";
-
-  cout << "A new chess game is started!" << endl;
+  message(NEW_GAME);
 }
 
 
@@ -58,7 +51,7 @@ void ChessBoard::submitMove(Cnstring sourceSquare, Cnstring destSquare) {
   string temp;
 
   /*check that source square exists*/
-  if(!isValidSquare(sourceSquare)) {
+  if(!exists(sourceSquare)) {
     message(INVALID_SOURCE_SQUARE, move);
     return;
   }
@@ -81,7 +74,7 @@ void ChessBoard::submitMove(Cnstring sourceSquare, Cnstring destSquare) {
   if ( !(boardMap[sourceSquare]->isPotValDestPos(destSquare)) ) {
     /*reach here iif it can't; enquire why*/
     /*check that destination square is valid*/
-    if(!isValidSquare(destSquare)) {
+    if(!exists(destSquare)) {
       message(INVALID_DESTINATION_SQUARE, move);
       return; 
     }
@@ -150,32 +143,10 @@ void ChessBoard::submitMove(Cnstring sourceSquare, Cnstring destSquare) {
 }
 
 
-/*do we need isValid when boardMap.find in pieceSquare will fail if move invalid?*/
-bool ChessBoard::isValidSquare(Cnstring square) const {
-  if (square[0]<'A') {
-    //cerr << square[0] << "<'A' so ";
+/*tests whether 'square' exists (like testing for valid index)*/
+bool ChessBoard::exists(Cnstring square) const {
+  if (square[0]<'A' || square[0]>'H' || square[1]<'1' || square[1]>'8' || square[2]!='\0')
     return false;
-  }
-  if (square[0]>'H') {
-    //cerr << square[0] << ">'H' so ";
-    return false;
-  }
-  if (square[1]<'1') {
-    //cerr << square[1] << "<'1' so ";
-    return false;
-  }
-  if (square[1]>'8') {
-    //cerr << square[1] << ">'8' so ";
-    return false;
-  }
-  if (square[2]!='\0') {
-    //cerr << square[2] << "!='\0' so ";
-    return false;
-  }
-
-  // if (square[0]<'A' || square[0]>'H' || square[1]<'1' || square[1]>'8' || square[2]!='\0') {
-  //   return false;
-  // }
   return true;
 }
 
@@ -329,49 +300,46 @@ void ChessBoard::resetBoard() {
   initiate();
 }
 
+void ChessBoard::message(int mcode) {
+  if(mcode == NEW_GAME) cout << "A new game is started!" << endl;
+}
+
 void ChessBoard::message(int mcode, string move[2]) {
   switch (mcode) {
   case INVALID_SOURCE_SQUARE:
-    cout << move[0] << " is an invalid source square (rank or file not in range)!" << endl;
-    return;
+    cout << move[0] << " is an invalid source square (rank or file not in range)!" << endl; return;
   case INVALID_DESTINATION_SQUARE:
-    cout << move[1] << " is an invalid destination square (rank or file not in range) !" << endl;
-    return;
+    cout << move[1] << " is an invalid destination square (rank or file not in range) !" << endl; return;
   case EMPTY_SOURCE_SQUARE:
-    cout << "There is no piece at position " << move[0] << "!" << endl;
+    cout << "There is no piece at position " << move[0] << "!" << endl; return;
   case WRONG_PLAYER:
-    cout << "It is not " << notPlayer() << "'s turn to move!" << endl;
-    return;
+    cout << "It is not " << notPlayer() << "'s turn to move!" << endl; return;
   case FRIENDLY_FIRE:
-      cout << whoseTurn << "'s " << boardMap[move[0]]->getType() << " cannot move to " << move[1] << " because he/she would be taking his/her own piece!" << endl;
-    return;
+    cerr << "about to dereference boardMap in order to output error message FRIENDLY_FIRE" << endl;
+    cout << whoseTurn << "'s " << boardMap[move[0]]->getType() << " cannot move to " << move[1] << " because he/she would be taking his/her own piece!" << endl; return;
   case IMPOSSIBLE_MOVE:
-    cout << whoseTurn << "'s " << boardMap[move[0]]->getType() << " cannot move to " << move[1] << "!" << endl;
-    return;
+    cerr << "about to dereference boardMap in order to output error message IMPOSSIBLE_MOVE" << endl;
+    cout << whoseTurn << "'s " << boardMap[move[0]]->getType() << " cannot move to " << move[1] << "!" << endl; return;
   case CHECKING_OWN_KING:
-    cout << whoseTurn << "'s " << boardMap[move[0]]->getType() << " cannot move from " << move[0] << " to " << move[1] << " because this would put " << whoseTurn << "'s King in check!" << endl;
-    return;
+    cerr << "about to dereference boardMap in order to output error message CHECKING_OWN_KING" << endl;
+    cout << whoseTurn << "'s " << boardMap[move[0]]->getType() << " cannot move from " << move[0] << " to " << move[1] << " because this would put " << whoseTurn << "'s King in check!" << endl; return;
   case VALID_MOVE:
-    cout << whoseTurn << "'s " << boardMap[move[0]]->getType() << " moves from " << move[0] << " to " << move[1] << endl;
-    return;
-  case VALID_ATTACK:
-    cout << whoseTurn << "'s " << boardMap[move[0]]->getType() << " moves from " << move[0] << " to " << move[1] << " taking " << notPlayer() << "'s " << boardMap[move[1]]->getType() << endl;
-    return;
+    cerr << "about to dereference boardMap in order to output error message VALID_MOVE" << endl;
+    cout << whoseTurn << "'s " << boardMap[move[1]]->getType() << " moves from " << move[0] << " to " << move[1] << endl; return;
   case CHECK:
-    cout << notPlayer() << " is in check" << endl;
-    return;
+    cout << notPlayer() << " is in check" << endl; return;
   case CHECKMATE:
-    cout << notPlayer() << " is in checkmate" << endl;
-    return;
+    cout << notPlayer() << " is in checkmate" << endl; return;
   case STALEMATE:
-    cout << "stalemate (" << notPlayer() << " cannot make a move without putting itself in check, but at the moment he/she isn't in check" << endl;
-    return;
+    cout << "stalemate (" << notPlayer() << " cannot make a move without putting itself in check, but at the moment he/she isn't in check" << endl; return;
   }
 }
 
 void ChessBoard::message(int mcode, string move[2], string takenPieceType) {
-  if(mcode == VALID_ATTACK)
-    cout << whoseTurn << "'s " << boardMap[move[0]]->getType() << " moves from " << move[0] << " to " << move[1] << " taking " << notPlayer() << "'s " << takenPieceType << endl;
+  if(mcode == VALID_ATTACK) {
+    cerr << "about to dereference boardMap in order to output error message VALID_ATTACK" << endl;
+    cout << whoseTurn << "'s " << boardMap[move[1]]->getType() << " moves from " << move[0] << " to " << move[1] << " taking " << notPlayer() << "'s " << takenPieceType << endl;
+  }
 }
 
 string ChessBoard::whosep(WhosePiece piece) { //DELETE

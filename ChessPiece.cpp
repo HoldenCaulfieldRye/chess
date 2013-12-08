@@ -21,7 +21,7 @@ void Piece::classifyDestPos(Range range, Direction dir, int *inc, string &move) 
     increment(dir, r, f, inc);
     move = concat(r, f);
     /*if destination position is potentially valid an not an attack, add it*/
-    if (chboard->isValidSquare(move) && chboard->colourOnSquare(move, colour) == NOPIECE) {
+    if (chboard->exists(move) && chboard->colourOnSquare(move, colour) == NOPIECE) {
       //cerr << move << " is a potentially valid move" << endl;
       if (potValDestPos.empty()) {
 	//cerr << "potValDestPos is empty" << endl;
@@ -50,12 +50,12 @@ void Piece::increment(Direction dir, char &coordinate1, char &coordinate2, int *
 
 /*given WHICH square to evaluate, adds AT MOST ONE potentially valid destination position which currently hosts an opponent's piece. This method is used by all sub-Pieces apart from Knight*/
 void Piece::classifyLastDestPos(string move) {
-  if (chboard->isValidSquare(move) && chboard->colourOnSquare(move, colour) == FOE) {
+  if (chboard->exists(move) && chboard->colourOnSquare(move, colour) == FOE) {
     cerr << move << " is a valid attack move for " << getType() << " at " << position << "!" << endl;
     potValDestPos.insert(potValDestPos.begin(), move);
   }
   // else 
-    // cerr << move << " is invalid because colourOnSquare(" << move << ") = " << whosep(chboard->colourOnSquare(move, colour)) << " or because isValidSquare(" << move << ") = " << chboard->isValidSquare(move) << endl;
+    // cerr << move << " is invalid because colourOnSquare(" << move << ") = " << whosep(chboard->colourOnSquare(move, colour)) << " or because exists(" << move << ") = " << chboard->exists(move) << endl;
 }
 
 void Piece::printPotValDestPos() {
@@ -102,7 +102,7 @@ void Piece::setPosition(Cnstring newPos) {
   rank = newPos[1];
 }
 
-/*function for concatenating two chars into a string. strangely, there is no library function or one-line statement for doing so (string::append doesn't have an overload for 2 chars)*/
+/*function for concatenating two chars into a string. strangely, there is no library function or one-line statement for doing so (string::append doesn't have an overload for 2 chars). Also, admittedly, it's not very elegant for this function to be defined in a specific class, since it is intended to be used anywhere in the program. But because this is an object-oriented exercise, I didn't want to make it global. Nor did I want to create a utility class just for this function*/
 string Piece::concat(char ch1, char ch2) {
   string st;
   st = ch2;   //yes it's confusing to put ch2 first,
@@ -217,12 +217,12 @@ void Knight::genPotValDestPos() {
     f = file + incr[i][1];
     move = concat(r, f);
     //cerr << "checking if Knight can reach " << move << " from " << file << rank << endl;
-    if (chboard->colourOnSquare(move, colour) != FRIEND && chboard->isValidSquare(move)) {
+    if (chboard->colourOnSquare(move, colour) != FRIEND && chboard->exists(move)) {
       //cerr << move << " is a valid move for " << getType() << " from " << position << endl;
         potValDestPos.insert(potValDestPos.begin(), move);
       }
     //else {
-        //cerr << "for " << getType() << ", "  << move << " is an invalid move from " << file << rank << " because colourOnSquare(move) = " << chboard->colourOnSquare(move) << " or because chboard->isValidSquare(move) = " << chboard->isValidSquare(move) << endl; uncomment around also
+        //cerr << "for " << getType() << ", "  << move << " is an invalid move from " << file << rank << " because colourOnSquare(move) = " << chboard->colourOnSquare(move) << " or because chboard->exists(move) = " << chboard->exists(move) << endl; uncomment around also
     //}
   }
 }
