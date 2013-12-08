@@ -11,7 +11,7 @@ using namespace std;
 Piece::Piece() {}
 
 Piece::Piece(string _owner, string _position, ChessBoard *_chboard) : owner(_owner), position(_position), chboard(_chboard), file(_position[0]), rank(_position[1]) {
-  potValMoves.insert(potValMoves.begin(),  "'\0'");
+  potValDestPos.insert(potValDestPos.begin(),  "'\0'");
 }
 
 /*given where to look, adds potentially valid moves that are not an attack (used by all subPieces apart from Knight)*/
@@ -23,11 +23,11 @@ void Piece::classifyMoves(Length length, Direction dir, int *inc, string& move) 
     /*if move is potentially valid an not an attack, add it*/
     if (chboard->isValidSquare(move) && chboard->pieceOnSquare(move, owner) == NOPIECE) {
       //cerr << move << " is a potentially valid move" << endl;
-      if (potValMoves.empty()) {
-	//cerr << "potValMoves is empty" << endl;
-	potValMoves.insert(potValMoves.begin(), move);
+      if (potValDestPos.empty()) {
+	//cerr << "potValDestPos is empty" << endl;
+	potValDestPos.insert(potValDestPos.begin(), move);
       }
-      else potValMoves.insert(potValMoves.end(), move);
+      else potValDestPos.insert(potValDestPos.end(), move);
     }
     else {
       //cerr << "no valid position from " << move << " onwards, in direction " << dir << endl;
@@ -52,21 +52,21 @@ void Piece::increment(Direction dir, char &coordinate1, char &coordinate2, int *
 void Piece::classifyLastMove(string move) {
   if (chboard->isValidSquare(move) && chboard->pieceOnSquare(move, owner) == FOE) {
     cerr << move << " is a valid attack move for " << getType() << " at " << position << "!" << endl;
-    potValMoves.insert(potValMoves.begin(), move);
+    potValDestPos.insert(potValDestPos.begin(), move);
   }
   // else 
     // cerr << move << " is invalid because pieceOnSquare(" << move << ") = " << whosep(chboard->pieceOnSquare(move, owner)) << " or because isValidSquare(" << move << ") = " << chboard->isValidSquare(move) << endl;
 }
 
-void Piece::printPotValMoves() {
-  for(VecIt it=potValMoves.begin(); it!=potValMoves.end(); it++)
+void Piece::printPotValDestPos() {
+  for(VecIt it=potValDestPos.begin(); it!=potValDestPos.end(); it++)
 cerr << *it << ", ";
 cerr << endl;
 }
 
 bool Piece::isValidMove(string square) {
-  genPotValMoves();
-  for (VecIt it = potValMoves.begin(); it != potValMoves.end(); it++) {
+  genPotValDestPos();
+  for (VecIt it = potValDestPos.begin(); it != potValDestPos.end(); it++) {
     if(*it == square) {
       //cerr << "move is valid" << endl;
       return true;
@@ -79,11 +79,11 @@ bool Piece::isValidMove(string square) {
 bool Piece::canMove() {
   string move[2] = {position};
   const bool speculative = true;
-  genPotValMoves();
+  genPotValDestPos();
 
-  cerr << "canMove() called in (" << position << ", " << getType() << ", " << owner << ")" << endl << "potValidMoves: "; printPotValMoves();
+  cerr << "canMove() called in (" << position << ", " << getType() << ", " << owner << ")" << endl << "potValidMoves: "; printPotValDestPos();
 
-  for (VecIt it=potValMoves.begin(); it!=potValMoves.end(); it++) {
+  for (VecIt it=potValDestPos.begin(); it!=potValDestPos.end(); it++) {
     move[1] = *it;
     cerr << "canMove: does move from " << move[0] << " to " << move[1] << " entail check?" << endl;
     if ( !(chboard->entailsCheck(move, owner, speculative)) )
@@ -109,8 +109,8 @@ Piece::~Piece() {}
 King::King() {}
 King::King(string _owner, string _position, ChessBoard *_chboard) : Piece::Piece(_owner, _position, _chboard) {}
 
-void King::genPotValMoves() {
-  //cerr << "genPotValMoves called" << endl;
+void King::genPotValDestPos() {
+  //cerr << "genPotValDestPos called" << endl;
   string move;
   int incr[5][2] = {{1, 0},      //vertical
 		    {0, 1},      //horizontal
@@ -118,7 +118,7 @@ void King::genPotValMoves() {
 		    {1,-1},      //diagonal2
 		    {SINTINEL}};
 
-  potValMoves.clear();
+  potValDestPos.clear();
   for(int i=0; incr[i][0] != SINTINEL; i++) {
     classifyMoves(SHORT, FORWARDS, incr[i], move);
     classifyLastMove(move);
@@ -138,8 +138,8 @@ King::~King() {}
 Queen::Queen() {}
 Queen::Queen(string _owner, string _position, ChessBoard *_chboard) : Piece::Piece(_owner, _position, _chboard) {}
 
-void Queen::genPotValMoves() {
-  //cerr << "genPotValMoves called" << endl;
+void Queen::genPotValDestPos() {
+  //cerr << "genPotValDestPos called" << endl;
   string move;
   int incr[5][2] = {{1, 0},      //vertical
 		    {0, 1},      //horizontal
@@ -147,7 +147,7 @@ void Queen::genPotValMoves() {
 		    {1,-1},      //diagonal2
 		    {SINTINEL}};
 
-  potValMoves.clear();
+  potValDestPos.clear();
   for(int i=0; incr[i][0] != SINTINEL; i++) {
     classifyMoves(LONG, FORWARDS, incr[i], move);
     classifyLastMove(move);
@@ -167,14 +167,14 @@ Queen::~Queen() {}
 Bishop::Bishop() {}
 Bishop::Bishop(string _owner, string _position, ChessBoard *_chboard) : Piece::Piece(_owner, _position, _chboard) {}
 
-void Bishop::genPotValMoves() {
-  //cerr << "genPotValMoves called" << endl;
+void Bishop::genPotValDestPos() {
+  //cerr << "genPotValDestPos called" << endl;
   string move;
   int incr[3][2] = {{1, 1},      //diagonal1
 		    {1,-1},      //diagonal2
 		    {SINTINEL}};
 
-  potValMoves.clear();
+  potValDestPos.clear();
   for(int i=0; incr[i][0] != SINTINEL; i++) {
     classifyMoves(LONG, FORWARDS, incr[i], move);
     //cerr << "about to classify last move: " << move << endl;
@@ -196,13 +196,13 @@ Bishop::~Bishop() {}
 Knight::Knight() {}
 Knight::Knight(string _owner, string _position, ChessBoard *_chboard) : Piece::Piece(_owner, _position, _chboard) {}
 
-void Knight::genPotValMoves() {
-  //cerr << "genPotValMoves called" << endl;
+void Knight::genPotValDestPos() {
+  //cerr << "genPotValDestPos called" << endl;
   int incr[8][2] = {{2,1}, {1,2}, {-2,1}, {1,-2}, {2,-1}, {-1,2}, {-2,-1}, {-1,-2}};
   char r, f;
   string move;
 
-  potValMoves.clear();
+  potValDestPos.clear();
   for(int i=0; i<8; i++) {
     r = rank + incr[i][0]; 
     f = file + incr[i][1];
@@ -210,7 +210,7 @@ void Knight::genPotValMoves() {
     //cerr << "checking if Knight can reach " << move << " from " << file << rank << endl;
     if (chboard->pieceOnSquare(move, owner) != FRIEND && chboard->isValidSquare(move)) {
       //cerr << move << " is a valid move for " << getType() << " from " << position << endl;
-        potValMoves.insert(potValMoves.begin(), move);
+        potValDestPos.insert(potValDestPos.begin(), move);
       }
     //else {
         //cerr << "for " << getType() << ", "  << move << " is an invalid move from " << file << rank << " because pieceOnSquare(move) = " << chboard->pieceOnSquare(move) << " or because chboard->isValidSquare(move) = " << chboard->isValidSquare(move) << endl; uncomment around also
@@ -229,14 +229,14 @@ Knight::~Knight() {}
 Rook::Rook() {}
 Rook::Rook(string _owner, string _position, ChessBoard *_chboard) : Piece::Piece(_owner, _position, _chboard) {}
 
-void Rook::genPotValMoves() {
-  //cerr << "genPotValMoves called" << endl;
+void Rook::genPotValDestPos() {
+  //cerr << "genPotValDestPos called" << endl;
   string move;
   int incr[3][2] = {{1, 0},      //vertical
 		    {0, 1},      //horizontal
 		    {SINTINEL}};
 
-  potValMoves.clear();
+  potValDestPos.clear();
   for(int i=0; incr[i][0] != SINTINEL; i++) {
     classifyMoves(LONG, FORWARDS, incr[i], move);
     classifyLastMove(move);
@@ -257,8 +257,8 @@ Pawn::Pawn() {}
 
 Pawn::Pawn(string _owner, string _position, ChessBoard *_chboard) : Piece(_owner, _position, _chboard) {}
 
-void Pawn::genPotValMoves() {
-  //cerr << "genPotValMoves called" << endl;
+void Pawn::genPotValDestPos() {
+  //cerr << "genPotValDestPos called" << endl;
   /*because a pawn can only go forward in rank, it is at starting rank iif it hasn't made a first move. I use this property to distinguish the case where it can move forward by 2 squares. Also need to make sure 'move forward by 1 square' is valid*/
   bool firstMove = ((rank=='2' && owner=="White") || (rank=='7' && owner=="Black"));
   string move;
@@ -268,11 +268,11 @@ void Pawn::genPotValMoves() {
 		    {1,-1},      //diagonal2
 		    {2, 0}};     //vertical, first move
 
-  potValMoves.clear();
+  potValDestPos.clear();
   classifyMoves(SHORT, FORWARDS, incr[0], move); //vertical
 
-  /*if access to '1 square in front' is blocked, potValMoves is empty*/
-  if(firstMove && !potValMoves.empty())
+  /*if access to '1 square in front' is blocked, potValDestPos is empty*/
+  if(firstMove && !potValDestPos.empty())
     classifyMoves(SHORT, FORWARDS, incr[3], move);
 
   for (int i=1; i<3; i++) {      //diagonals
