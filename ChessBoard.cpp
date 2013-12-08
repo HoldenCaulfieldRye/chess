@@ -185,7 +185,7 @@ void ChessBoard::nextPlayer() {
 }
 
 
-/*checks whether a specified move by a specified player puts player's own king in check*/ 
+/*tests whether a specified move by a specified player puts player's own king in check*/ 
 bool ChessBoard::entailsCheck(Cnstring move[], Cnstring player, const bool speculative) {  
   Piece *temp = NULL;
   string kingPos;
@@ -234,7 +234,7 @@ void ChessBoard::undoMove(Cnstring move[], Piece *takenPiece) {
 }
 
 
-/*look for king among pieces belonging to active player*/
+/*look for king among pieces belonging to active player. this method is separate from kingIsChecked() because if it weren't, then we would run the risk of searching for a king's position multiple times in the checkOutcome() method; this would be inefficient*/
 string ChessBoard::findKingPos(Cnstring player) {
   cerr << "looking for kingPos" << endl;
   Piece *piece;
@@ -248,7 +248,7 @@ string ChessBoard::findKingPos(Cnstring player) {
   return "error";
 }
 
-/*checks whether in current state, a specified player's king is in check*/
+/*tests whether a specified king is in check. In a way, there is no need to specify which of the two kings' check statuses to evaluate, because at a given moment at most one king is in check. but if which king were not specified, the risk would be run on running heavy computation on the unchecked king, to realise that no opponent's piece is threatening it. So it's more efficient to specify which king. This can be done by giving a precise position, or a player type*/
 bool ChessBoard::kingIsChecked(Cnstring kingPos) {
   cerr << "is king now in check?" << endl;
   Piece *piece, *king = boardMap[kingPos];
@@ -263,7 +263,12 @@ bool ChessBoard::kingIsChecked(Cnstring kingPos) {
   return false;
 }
 
-/*checks whether opponent is in check, checkmate, stalemate, or nothing really*/
+/*tests whether a specified player is in check*/
+bool ChessBoard::kingIsChecked(string player) {
+  return kingIsChecked(findKingPos(player));
+}
+
+/*tests whether opponent is in check, checkmate, stalemate, or nothing really*/
 string ChessBoard::checkOutcome() {
   string opKingPos = findKingPos(notPlayer());
   Piece *piece = NULL;
