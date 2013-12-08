@@ -20,14 +20,12 @@ using namespace std;
 #define CHECK                         10
 #define CHECKMATE                     11
 #define STALEMATE                     12
+#DEFINE GAME_OVER                     13
 
 enum WhosePiece {NOPIECE, FRIEND, FOE};
 
 enum Direction  {FORWARDS, BACKWARDS};
 enum Range      {SHORT, LONG};
-
-
-//DYNAMIC MEMORY! DESTRUCTORS!
 
 class Piece;
 
@@ -38,6 +36,7 @@ typedef map<string, Piece*>::iterator MapIt;
 
 class ChessBoard {
  private:
+  bool gameOver;
   string whoseTurn;
   map<string, Piece*> boardMap;
 
@@ -50,7 +49,7 @@ class ChessBoard {
   Piece*     performMove  (Cnstring move[]);
   void       undoMove     (Cnstring move[], Piece *takenPiece);
   bool       entailsCheck (Cnstring move[], Cnstring checkedPlayer, const bool speculative);
-  bool       kingInCheck  (Cnstring kingPos);
+  bool       kingIsChecked  (Cnstring kingPos);
   string     checkOutcome ();
   string     findKingPos  (Cnstring player);
   string     notPlayer    () const;
@@ -71,7 +70,8 @@ protected:
   ChessBoard *chboard;
   char file;
   char rank;
-  Vecstr potValDestPos; //'potentially valid destination positions' ie moving to such a position is valid if it doesn't put friendly king in check
+  Vecstr potValDestPos;
+  /*'potentially valid destination positions', ie moving to such a position is valid if it doesn't put friendly king in check. sorry it's an awkward term, but qualifying it as 'valid' would be incorrect; qualifying it as 'moves' would also be incorrect because a move is a 2-uple of strings representing board squares, and this is not a vector of 2-uple strings*/
 
 public:
   Piece() {}
@@ -90,7 +90,6 @@ public:
   virtual ~Piece() {}
 };
 
-/*every sub-Piece destructor is empty because there are no class fields stored on the heap*/
 class King : public Piece {
 private:
 public:
@@ -98,7 +97,7 @@ public:
   King(string _colour, string _square, ChessBoard *_chboard);
   virtual void genPotValDestPos();
   string getType() const;
-  ~King() {}
+  ~King() {} //empty destructor; no class fields stored on the heap
 };
 
 class Queen : public Piece {
@@ -108,7 +107,7 @@ public:
   Queen(string _colour, string _square, ChessBoard *_chboard);
   virtual void genPotValDestPos();
   string getType() const;
-  ~Queen() {}
+  ~Queen() {} //empty destructor; no class fields stored on the heap
 };
 
 class Bishop : public Piece {
@@ -118,7 +117,7 @@ public:
   Bishop(string _colour, string _square, ChessBoard *_chboard);
   virtual void genPotValDestPos();
   string getType() const;
-  ~Bishop() {}
+  ~Bishop() {} //empty destructor; no class fields stored on the heap
 };
 
 class Knight : public Piece {
@@ -128,7 +127,7 @@ public:
   Knight(string _colour, string _square, ChessBoard *_chboard);
   void genPotValDestPos();
   string getType() const;
-  ~Knight() {}
+  ~Knight() {} //empty destructor; no class fields stored on the heap
 };
 
 class Rook : public Piece {
@@ -138,7 +137,7 @@ public:
   Rook(string _colour, string _square, ChessBoard *_chboard);
   virtual void genPotValDestPos();
   string getType() const;
-  ~Rook() {}
+  ~Rook() {} //empty destructor; no class fields stored on the heap
 };
 
 class Pawn : public Piece {
@@ -147,5 +146,5 @@ public:
   Pawn(string _colour, string _square, ChessBoard *_chboard);
   virtual void genPotValDestPos();
   string getType() const;
-  ~Pawn() {}
+  ~Pawn() {} //empty destructor; no class fields stored on the heap
 };

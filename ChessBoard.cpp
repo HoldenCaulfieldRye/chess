@@ -40,6 +40,7 @@ void ChessBoard::initiate() {
     }
   }
 
+  gameOver = false;
   whoseTurn = "White";
   message(NEW_GAME);
 }
@@ -51,6 +52,12 @@ void ChessBoard::submitMove(Cnstring sourceSquare, Cnstring destSquare) {
   const bool speculative = true;
   string move[2] = {sourceSquare, destSquare};
   string temp;
+
+  /*check that game is on (eg after checkmate, game is off*/
+  if (gameOver) {
+    message(GAME_OVER);
+    return;
+  }
 
   /*check that source square exists*/
   if(!exists(sourceSquare)) {
@@ -191,7 +198,7 @@ bool ChessBoard::entailsCheck(Cnstring move[], Cnstring player, const bool specu
   temp = performMove(move); //if attack, returns pointer to taken piece
   kingPos = findKingPos(player);
 
-  if (kingInCheck(kingPos)) {
+  if (kingIsChecked(kingPos)) {
     undoMove(move, temp);
     return true;
   }
@@ -242,7 +249,7 @@ string ChessBoard::findKingPos(Cnstring player) {
 }
 
 /*checks whether in current state, a specified player's king is in check*/
-bool ChessBoard::kingInCheck(Cnstring kingPos) {
+bool ChessBoard::kingIsChecked(Cnstring kingPos) {
   cerr << "is king now in check?" << endl;
   Piece *piece, *king = boardMap[kingPos];
   for(MapIt it = boardMap.begin(); it != boardMap.end(); it++) {
@@ -270,7 +277,7 @@ string ChessBoard::checkOutcome() {
     piece = it->second;
     if (piece->getColour() != whoseTurn && piece->getType() != "King" && piece->canMove()) {
       cerr << "yes opponent's piece can move" << endl;
-      if (kingInCheck(opKingPos))
+      if (kingIsChecked(opKingPos))
 	return "check";
       return "nothing really";
     }
@@ -280,13 +287,13 @@ string ChessBoard::checkOutcome() {
   /*reach here iif none of opponent's non-King pieces can make truly valid moves*/
   if (boardMap[opKingPos]->canMove()) {
     cerr << "yes, opponent's king can move" << endl;      
-    if (kingInCheck(opKingPos))
+    if (kingIsChecked(opKingPos))
       return "check";
     return "nothing really";
   }
   else {
     cerr << "no, opponent's king can't move!\nis it in check?" << endl;
-    if (kingInCheck(opKingPos)) {
+    if (kingIsChecked(opKingPos)) {
       cerr << "yes, opponent king is in check" << endl;
       return "checkmate";    //king in check, can't move and neither can friend pieces
     }
@@ -314,6 +321,8 @@ void ChessBoard::message(int mcode) {
     cout << notPlayer() << " is in checkmate" << endl; return;
   case STALEMATE:
     cout << "stalemate (" << notPlayer() << " cannot make a move without putting itself in check, but at the moment he/she isn't in check" << endl; return;
+  case GAME_OVER:
+    cout << "game over pal, face it" << endl; return;
   }
 }
 
