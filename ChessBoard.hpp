@@ -42,7 +42,7 @@ class ChessBoard {
   map<string, Piece*> boardMap;
 
  public:
-  ChessBoard();
+  ChessBoard              ();
   void       initiate     ();
   void       submitMove   (Cnstring sourceSquare, Cnstring destSquare);
   bool       exists       (Cnstring square) const;
@@ -74,81 +74,78 @@ protected:
   Vecstr potValDestPos; //'potentially valid destination positions' ie moving to such a position is valid if it doesn't put friendly king in check
 
 public:
-  Piece                        ();
+  Piece() {}
   Piece                        (string _colour, string _position, ChessBoard *_chboard);
   virtual void genPotValDestPos() = 0; //generate potentially valid destination positions
   void    classifyDestPos      (Range range, Direction dir, int* inc, string& move);
+  void    increment            (Direction dir, char &coordinate1, char &coordinate2, int *inc);
   void    classifyLastDestPos  (string move);
   bool    isPotValDestPos      (string square);
   bool    canMove              ();
   void    setPosition          (Cnstring);
   string  getColour            () const;
-  void    printPotValDestPos   (); //delete
+  void    printPotValDestPos   (); //DELETE!
   virtual string getType       () const = 0;
-  void    increment            (Direction dir, char &coordinate1, char &coordinate2, int *inc);
   static  string concat        (char ch1, char ch2);
-  virtual ~Piece               ();
+  virtual ~Piece() {}
 };
 
+/*every sub-Piece destructor is empty because there are no class fields stored on the heap*/
 class King : public Piece {
 private:
 public:
-  King();
+  King() {}
   King(string _colour, string _square, ChessBoard *_chboard);
-  virtual void genPotValDestPos(); //EMBED A VIRTUAL FUNCTION
+  virtual void genPotValDestPos();
   string getType() const;
-  ~King();
+  ~King() {}
 };
 
 class Queen : public Piece {
 private:
 public:
-  Queen();
+  Queen() {}
   Queen(string _colour, string _square, ChessBoard *_chboard);
-  virtual void genPotValDestPos(); //EMBED A VIRTUAL FUNCTION
+  virtual void genPotValDestPos();
   string getType() const;
-  ~Queen();
+  ~Queen() {}
 };
 
 class Bishop : public Piece {
 private:
 public:
-  Bishop();
+  Bishop() {}
   Bishop(string _colour, string _square, ChessBoard *_chboard);
-  virtual void genPotValDestPos(); //EMBED A VIRTUAL FUNCTION
+  virtual void genPotValDestPos();
   string getType() const;
-  ~Bishop();
+  ~Bishop() {}
 };
 
 class Knight : public Piece {
 private:
 public:
-  Knight();
+  Knight() {}
   Knight(string _colour, string _square, ChessBoard *_chboard);
-  void genPotValDestPos(); //EMBED A VIRTUAL FUNCTION
+  void genPotValDestPos();
   string getType() const;
-  ~Knight();
+  ~Knight() {}
 };
 
 class Rook : public Piece {
 private:
 public:
-  Rook();
+  Rook() {}
   Rook(string _colour, string _square, ChessBoard *_chboard);
-  virtual void genPotValDestPos(); //EMBED A VIRTUAL FUNCTION
+  virtual void genPotValDestPos();
   string getType() const;
-  ~Rook();
+  ~Rook() {}
 };
 
 class Pawn : public Piece {
 public:
-  Pawn();
+  Pawn() {}
   Pawn(string _colour, string _square, ChessBoard *_chboard);
-  virtual void genPotValDestPos(); //EMBED A VIRTUAL FUNCTION
+  virtual void genPotValDestPos();
   string getType() const;
-  ~Pawn();
+  ~Pawn() {}
 };
-
-string concat(char ch1, char ch2);
-
-string whosep(WhosePiece);

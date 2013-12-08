@@ -8,8 +8,6 @@ using namespace std;
 
 
 /*Piece definitions*/
-Piece::Piece() {}
-
 Piece::Piece(string _colour, string _position, ChessBoard *_chboard) : colour(_colour), position(_position), chboard(_chboard), file(_position[0]), rank(_position[1]) {
   potValDestPos.insert(potValDestPos.begin(),  "'\0'");
 }
@@ -58,6 +56,7 @@ void Piece::classifyLastDestPos(string move) {
     // cerr << move << " is invalid because colourOnSquare(" << move << ") = " << whosep(chboard->colourOnSquare(move, colour)) << " or because exists(" << move << ") = " << chboard->exists(move) << endl;
 }
 
+/*DELETE!*/
 void Piece::printPotValDestPos() {
   for(VecIt it=potValDestPos.begin(); it!=potValDestPos.end(); it++)
 cerr << *it << ", ";
@@ -92,14 +91,14 @@ bool Piece::canMove() {
   return false;
 }
 
-string Piece::getColour() const {
-  return colour;
-}
-
 void Piece::setPosition(Cnstring newPos) {
   position = newPos;
   file = newPos[0];
   rank = newPos[1];
+}
+
+string Piece::getColour() const {
+  return colour;
 }
 
 /*function for concatenating two chars into a string. strangely, there is no library function or one-line statement for doing so (string::append doesn't have an overload for 2 chars). Also, admittedly, it's not very elegant for this function to be defined in a specific class, since it is intended to be used anywhere in the program. But because this is an object-oriented exercise, I didn't want to make it global. Nor did I want to create a utility class just for this function*/
@@ -110,12 +109,11 @@ string Piece::concat(char ch1, char ch2) {
   return st;  //and with chess it's the other way around.
 }
 
-Piece::~Piece() {}
+//Piece::~Piece() {}
 /*end of Piece definitions*/
 
 
 /*King definitions*/
-King::King() {}
 King::King(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {}
 
 void King::genPotValDestPos() {
@@ -139,12 +137,9 @@ void King::genPotValDestPos() {
 string King::getType() const {
   return "King";
 }
-
-King::~King() {}
 /*end of King definitions*/
 
 /*Queen definitions*/
-Queen::Queen() {}
 Queen::Queen(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {}
 
 void Queen::genPotValDestPos() {
@@ -168,12 +163,9 @@ void Queen::genPotValDestPos() {
 string Queen::getType() const {
   return "Queen";
 }
-
-Queen::~Queen() {}
 /*end of Queen definitions*/
 
 /* Bishop definitions*/
-Bishop::Bishop() {}
 Bishop::Bishop(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {}
 
 void Bishop::genPotValDestPos() {
@@ -197,12 +189,9 @@ void Bishop::genPotValDestPos() {
 string Bishop::getType() const {
   return "Bishop";
 }
-
-Bishop::~Bishop() {}
 /*end of Bishop definitions*/
 
 /* Knight definitions*/
-Knight::Knight() {}
 Knight::Knight(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {}
 
 void Knight::genPotValDestPos() {
@@ -230,12 +219,9 @@ void Knight::genPotValDestPos() {
 string Knight::getType() const {
   return "Knight";
 }
-
-Knight::~Knight() {}
 /*end of Knight definitions*/
 
 /*Rook definitions*/
-Rook::Rook() {}
 Rook::Rook(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {}
 
 void Rook::genPotValDestPos() {
@@ -257,13 +243,9 @@ void Rook::genPotValDestPos() {
 string Rook::getType() const {
   return "Rook";
 }
-
-Rook::~Rook() {}
 /*end of Rook definitions*/
 
 /*Pawn definitions*/
-Pawn::Pawn() {}
-
 Pawn::Pawn(string _colour, string _position, ChessBoard *_chboard) : Piece(_colour, _position, _chboard) {}
 
 void Pawn::genPotValDestPos() {
@@ -295,6 +277,4 @@ void Pawn::genPotValDestPos() {
 string Pawn::getType() const {
   return "Pawn";
 }
-
-Pawn::~Pawn() {} 
 /*end of Pawn definitions*/
