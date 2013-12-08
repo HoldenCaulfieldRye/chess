@@ -65,7 +65,7 @@ void ChessBoard::submitMove(Cnstring sourceSquare, Cnstring destSquare) {
     message(EMPTY_SOURCE_SQUARE, move);
     return;
   case FOE:
-    message(WRONG_PLAYER, move);
+    message(WRONG_PLAYER);
     return;
   case FRIEND: 
     cerr << "check 2: there is one of " << whoseTurn << "'s pieces on " << sourceSquare << endl;
@@ -124,15 +124,15 @@ void ChessBoard::submitMove(Cnstring sourceSquare, Cnstring destSquare) {
   /*test whether move puts opponent in check, checkmate, stalemate, or nothing really*/
   string outcome = checkOutcome();
   if (outcome == "checkmate") {
-    message(CHECKMATE, move);
+    message(CHECKMATE);
     return;
   }
   if (outcome == "stalemate") {
-    message(STALEMATE, move);
+    message(STALEMATE);
     return;
   }
   if (outcome == "check")
-    message(CHECK, move);
+    message(CHECK);
 
   cerr << endl << "boardMap after move: ";
   for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
@@ -303,7 +303,18 @@ void ChessBoard::resetBoard() {
 }
 
 void ChessBoard::message(int mcode) {
-  if(mcode == NEW_GAME) cout << "A new game is started!" << endl;
+  switch (mcode) {
+  case NEW_GAME: 
+    cout << "A new game is started!" << endl; return;
+  case WRONG_PLAYER:
+    cout << "It is not " << notPlayer() << "'s turn to move!" << endl; return;
+  case CHECK:
+    cout << notPlayer() << " is in check" << endl; return;
+  case CHECKMATE:
+    cout << notPlayer() << " is in checkmate" << endl; return;
+  case STALEMATE:
+    cout << "stalemate (" << notPlayer() << " cannot make a move without putting itself in check, but at the moment he/she isn't in check" << endl; return;
+  }
 }
 
 void ChessBoard::message(int mcode, string move[2]) {
@@ -314,8 +325,6 @@ void ChessBoard::message(int mcode, string move[2]) {
     cout << move[1] << " is an invalid destination square (rank or file not in range) !" << endl; return;
   case EMPTY_SOURCE_SQUARE:
     cout << "There is no piece at position " << move[0] << "!" << endl; return;
-  case WRONG_PLAYER:
-    cout << "It is not " << notPlayer() << "'s turn to move!" << endl; return;
   case FRIENDLY_FIRE:
     cerr << "about to dereference boardMap in order to output error message FRIENDLY_FIRE" << endl;
     cout << whoseTurn << "'s " << boardMap[move[0]]->getType() << " cannot move to " << move[1] << " because he/she would be taking his/her own piece!" << endl; return;
@@ -328,12 +337,6 @@ void ChessBoard::message(int mcode, string move[2]) {
   case VALID_MOVE:
     cerr << "about to dereference boardMap in order to output error message VALID_MOVE" << endl;
     cout << whoseTurn << "'s " << boardMap[move[1]]->getType() << " moves from " << move[0] << " to " << move[1] << endl; return;
-  case CHECK:
-    cout << notPlayer() << " is in check" << endl; return;
-  case CHECKMATE:
-    cout << notPlayer() << " is in checkmate" << endl; return;
-  case STALEMATE:
-    cout << "stalemate (" << notPlayer() << " cannot make a move without putting itself in check, but at the moment he/she isn't in check" << endl; return;
   }
 }
 
@@ -358,7 +361,7 @@ ChessBoard::~ChessBoard() {
   for(MapIt it = boardMap.begin(); it != boardMap.end(); it++) {
     //cerr << "about to delete " << it->second << ", ie piece on " << it->first << endl;
     delete it->second;
-    it-> second = NULL;
+    it->second = NULL;
   }
 }
 /*end of ChessBoard definitions*/
