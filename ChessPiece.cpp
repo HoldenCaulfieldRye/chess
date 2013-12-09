@@ -118,11 +118,12 @@ King::King(string _colour, string _position, ChessBoard *_chboard) :  Piece::Pie
 void King::genPotValDestPos() {
   //cerr << "genPotValDestPos called" << endl;
   string move;
-  int incr[5][2] = {{1, 0},
-		    {0, 1},
-		    {1, 1},
-		    {1,-1},
-		    {SINTINEL}};
+  int incr[8][2] = Utility::matrify(howMove);
+  // int incr[5][2] = {{1, 0},
+  // 		    {0, 1},
+  // 		    {1, 1},
+  // 		    {1,-1},
+  // 		    {SINTINEL}};
 
   potValDestPos.clear();
   for(int i=0; incr[i][0] != SINTINEL; i++) {
