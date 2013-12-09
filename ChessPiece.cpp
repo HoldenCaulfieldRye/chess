@@ -8,11 +8,11 @@ using namespace std;
 
 
 /*Piece definitions*/
-Piece::Piece(string _colour, string _position, ChessBoard *_chboard) : colour(_colour), position(_position), chboard(_chboard), file(_position[0]), rank(_position[1]) {
-  for (int i=0; i<2; i++) {
-    for (int j=0; j<8; j++)
-      howMove[j][i]=0;
-  }
+Piece::Piece(string _colour, string _position, ChessBoard *_chboard) : colour(_colour), position(_position), chboard(_chboard), file(_position[0]), rank(_position[1], howMove({0})) {
+  // for (int i=0; i<2; i++) {
+  //   for (int j=0; j<8; j++)
+  //     howMove[j][i]=0;
+  // }
   potValDestPos.insert(potValDestPos.begin(),  "'\0'");
 }
 
@@ -118,7 +118,13 @@ string Piece::concat(char ch1, char ch2) {
 
 
 /*King definitions*/
-King::King(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {}
+King::King(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {
+  howMove[0] = {1, 0};
+  howMove[1] = {0, 1};
+  howMove[2] = {1, 1};
+  howMove[3] = {1,-1};
+  howMove[4] = {SINTINEL};
+}
 
 void King::genPotValDestPos() {
   //cerr << "genPotValDestPos called" << endl;
@@ -144,7 +150,16 @@ string King::getType() const {
 /*end of King definitions*/
 
 /*Queen definitions*/
-Queen::Queen(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {}
+Queen::Queen(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {
+  howMove[0][0] = 1;
+  howMove[0][1] = 0;
+  howMove[1][0] = 0;
+  howMove[1][1] = 1;
+  howMove[2][0] = 1;
+  howMove[2][1] = 1;
+  howMove[3][0] = 1;
+  howMove[3][1] = -1;
+}
 
 void Queen::genPotValDestPos() {
   //cerr << "genPotValDestPos called" << endl;
