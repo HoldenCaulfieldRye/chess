@@ -45,7 +45,6 @@ void ChessBoard::initiate() {
   message(NEW_GAME);
 }
 
-
 /*Note: a piece belonging to player whose turn it is will be referred to as a 'friendly piece' in the comments, and 'opponent piece' otherwise. also, a move that seems valid but we don't know if it will put friendly king in check is referred to as a "potentially valid" move. a move that is valid in every respect is called a "fully valid" move*/
 void ChessBoard::submitMove(Cnstring sourceSquare, Cnstring destSquare) {
   bool attack = false;
@@ -150,7 +149,6 @@ void ChessBoard::nextPlayer() {
   whoseTurn = "White";
 }
 
-
 /*Tests whether a specified move by a specified player puts player's own king in check. Test is done by performing move and evaluating the outcome, so if the move turns out to be valid, it would be nice to keep it, but if move turns out to be invalid, we need to undo it. 'speculative' parameter grants us this flexibility. But it also means that this method can be used to cheat from main: eg it could be called to evaluate a valid move by White after White has played. To prevent this, the method is private. However, Piece needs to call this method in canMove(). I have therefore also defined an underloaded version with 'speculative' set to 'true'*/ 
 bool ChessBoard::entailsCheck(Cnstring move[], Cnstring player, const bool speculative) {  
   Piece *temp = NULL;
@@ -205,57 +203,41 @@ string ChessBoard::findKingPos(Cnstring player) {
 
 /*Tests whether a specified king is in check. In a way, there is no need to specify which of the two kings' check statuses to evaluate, because at a given moment at most one king is in check. but if which king were not specified, the risk would be run on running heavy computation on the unchecked king, to realise that no opponent's piece is threatening it. So it's more efficient to specify which king. This can be done by giving a precise position, or a player type*/
 bool ChessBoard::kingIsChecked(Cnstring kingPos) {
-  cerr << "is king now in check?" << endl;
   Piece *piece, *king = boardMap[kingPos];
   for(MapIt it = boardMap.begin(); it != boardMap.end(); it++) {
     piece = it->second;
-    if (piece->getColour() != king->getColour() && piece->isPotValDestPos(kingPos)) {
-      cerr << "yes, king is now in check!" << endl;
+    if (piece->getColour() != king->getColour() && piece->isPotValDestPos(kingPos))
       return true;
-    }
   }
-  cerr << "no, king isn't in check" << endl;
   return false;
 }
 
-/*tests whether opponent is in check, checkmate, stalemate, or nothing really*/
+/*Tests whether opponent is in check, checkmate, stalemate, or nothing really*/
 string ChessBoard::checkOutcome() {
   string opKingPos = findKingPos(notPlayer());
   Piece *piece = NULL;
 
-  cerr << "what is the outcome of this move? ";
-
   /*test whether any non-King pieces of opponent can validly move. When testing for stalemate or checkmate, need to look for moves that do not lead to check. criteria are the same for both, so better to look for such moves first.*/
-  cerr << "can opponent's pieces move? (ignore next cerrs, just checking that potentially valid moves by opponent's pieces don't leave opponent's king in check)" << endl;
-
   for (MapIt it = boardMap.begin(); it!=boardMap.end(); it++) {
     piece = it->second;
     if (piece->getColour() != whoseTurn && piece->getType() != "King" && piece->canMove()) {
-      cerr << "yes opponent's piece can move" << endl;
       if (kingIsChecked(opKingPos))
 	return "check";
       return "nothing really";
     }
   }
-  cerr << "no, opponent's piece can't move!\ncan opponent's king move?" << endl;
 
   /*reach here iif none of opponent's non-King pieces can make truly valid moves*/
   if (boardMap[opKingPos]->canMove()) {
-    cerr << "yes, opponent's king can move" << endl;      
     if (kingIsChecked(opKingPos))
       return "check";
     return "nothing really";
   }
   else {
-    cerr << "no, opponent's king can't move!\nis it in check?" << endl;
-    if (kingIsChecked(opKingPos)) {
-      cerr << "yes, opponent king is in check" << endl;
+    if (kingIsChecked(opKingPos))
       return "checkmate";    //king in check, can't move and neither can friend pieces
-    }
-    else {
-      cerr << "no, opponent's king isn't in check" << endl;
-      return "stalemate"; //king not in check, can't move and neither can friend pieces
-    }
+    else 
+      return "stalemate";    //king not in check, can't move and neither can friend pieces
   }
 }
 
@@ -290,23 +272,18 @@ void ChessBoard::message(int mcode, string move[2]) {
   case EMPTY_SOURCE_SQUARE:
     cout << "There is no piece at position " << move[0] << "!" << endl; return;
   case FRIENDLY_FIRE:
-    cerr << "about to dereference boardMap in order to output error message FRIENDLY_FIRE" << endl;
     cout << whoseTurn << "'s " << boardMap[move[0]]->getType() << " cannot move to " << move[1] << " because he/she would be taking his/her own piece!" << endl; return;
   case IMPOSSIBLE_MOVE:
-    cerr << "about to dereference boardMap in order to output error message IMPOSSIBLE_MOVE" << endl;
     cout << whoseTurn << "'s " << boardMap[move[0]]->getType() << " cannot move to " << move[1] << "!" << endl; return;
   case CHECKING_OWN_KING:
-    cerr << "about to dereference boardMap in order to output error message CHECKING_OWN_KING" << endl;
     cout << whoseTurn << "'s " << boardMap[move[0]]->getType() << " cannot move from " << move[0] << " to " << move[1] << " because this would put " << whoseTurn << "'s King in check!" << endl; return;
   case VALID_MOVE:
-    cerr << "about to dereference boardMap in order to output error message VALID_MOVE" << endl;
     cout << whoseTurn << "'s " << boardMap[move[1]]->getType() << " moves from " << move[0] << " to " << move[1] << endl; return;
   }
 }
 
 void ChessBoard::message(int mcode, string move[2], string takenPieceType) {
   if(mcode == VALID_ATTACK) {
-    cerr << "about to dereference boardMap in order to output error message VALID_ATTACK" << endl;
     cout << whoseTurn << "'s " << boardMap[move[1]]->getType() << " moves from " << move[0] << " to " << move[1] << " taking " << notPlayer() << "'s " << takenPieceType << endl;
   }
 }
@@ -323,7 +300,6 @@ string ChessBoard::whosep(WhosePiece piece) { //DELETE
 
 ChessBoard::~ChessBoard() {
   for(MapIt it = boardMap.begin(); it != boardMap.end(); it++) {
-    //cerr << "about to delete " << it->second << ", ie piece on " << it->first << endl;
     delete it->second;
     it->second = NULL;
   }
