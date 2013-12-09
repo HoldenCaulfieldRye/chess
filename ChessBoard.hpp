@@ -77,7 +77,6 @@ class ChessBoard {
 
 class Utility {
 public:
-  static int** matrify  (const int*);
   static string concat  (char ch1, char ch2);
 };
 
@@ -91,7 +90,6 @@ protected:
   ChessBoard *chboard;
   char file;
   char rank;
-  Vecint howMove[17];
   Vecstr potValDestPos;
   /*'potentially valid destination positions', ie moving to such a position is valid if it doesn't put friendly king in check. sorry it's an awkward term, but qualifying it as 'valid' would be incorrect; qualifying it as 'moves' would also be incorrect because a move is a 2-uple of strings representing board squares, and this is not a vector of 2-uple strings*/
 

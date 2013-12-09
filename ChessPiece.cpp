@@ -111,17 +111,16 @@ string Piece::getColour() const {
 
 
 /*King definitions. Extended initialiser lists only allowd from c++11 onwards, so out of precaution, howMove is set in this ugly way*/
-King::King(string _colour, string _position, ChessBoard *_chboard) : howMove(kqMove,17), Piece::Piece(_colour, _position, _chboard) {}
+King::King(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {}
 
 void King::genPotValDestPos() {
   //cerr << "genPotValDestPos called" << endl;
   string move;
-  int incr[8][2] = Utility::matrify(howMove);
-  // int incr[5][2] = {{1, 0},
-  // 		    {0, 1},
-  // 		    {1, 1},
-  // 		    {1,-1},
-  // 		    {SINTINEL}};
+  int incr[5][2] = {{1, 0},
+  		    {0, 1},
+  		    {1, 1},
+  		    {1,-1},
+  		    {SINTINEL}};
 
   potValDestPos.clear();
   for(int i=0; incr[i][0] != SINTINEL; i++) {
@@ -138,9 +137,7 @@ string King::getType() const {
 /*end of King definitions*/
 
 /*Queen definitions*/
-Queen::Queen(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {
-  howMove = &kqMove[0];
-}
+Queen::Queen(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {}
 
 void Queen::genPotValDestPos() {
   //cerr << "genPotValDestPos called" << endl;
@@ -166,9 +163,7 @@ string Queen::getType() const {
 /*end of Queen definitions*/
 
 /* Bishop definitions*/
-Bishop::Bishop(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {
-  howMove = &bMove[0];
-}
+Bishop::Bishop(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {}
 
 void Bishop::genPotValDestPos() {
   //cerr << "genPotValDestPos called" << endl;
@@ -194,9 +189,7 @@ string Bishop::getType() const {
 /*end of Bishop definitions*/
 
 /* Knight definitions*/
-Knight::Knight(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {
-  howMove = &nMove[0];
-}
+Knight::Knight(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {}
 
 void Knight::genPotValDestPos() {
   //cerr << "genPotValDestPos called" << endl;
@@ -226,9 +219,7 @@ string Knight::getType() const {
 /*end of Knight definitions*/
 
 /*Rook definitions*/
-Rook::Rook(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {
-  howMove = &rMove[0];
-}
+Rook::Rook(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {}
 
 void Rook::genPotValDestPos() {
   //cerr << "genPotValDestPos called" << endl;
@@ -252,9 +243,7 @@ string Rook::getType() const {
 /*end of Rook definitions*/
 
 /*Pawn definitions*/
-Pawn::Pawn(string _colour, string _position, ChessBoard *_chboard) : Piece(_colour, _position, _chboard) {
-  howMove = &pMove[0];
-}
+Pawn::Pawn(string _colour, string _position, ChessBoard *_chboard) : Piece(_colour, _position, _chboard) {}
 
 void Pawn::genPotValDestPos() {
   //cerr << "genPotValDestPos called" << endl;
