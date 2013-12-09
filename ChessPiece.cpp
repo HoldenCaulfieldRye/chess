@@ -111,9 +111,7 @@ string Piece::getColour() const {
 
 
 /*King definitions. Extended initialiser lists only allowd from c++11 onwards, so out of precaution, howMove is set in this ugly way*/
-King::King(string _colour, string _position, ChessBoard *_chboard) :  Piece::Piece(_colour, _position, _chboard) {
-  howMove = &kqMove[0];
-}
+King::King(string _colour, string _position, ChessBoard *_chboard) : howMove(kqMove,17), Piece::Piece(_colour, _position, _chboard) {}
 
 void King::genPotValDestPos() {
   //cerr << "genPotValDestPos called" << endl;
