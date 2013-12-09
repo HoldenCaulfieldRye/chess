@@ -245,7 +245,7 @@ string ChessBoard::findKingPos(Cnstring player) {
       return it->first;
     }
   }
-  return "error";
+  return "error"; //could output error message, 
 }
 
 /*tests whether a specified king is in check. In a way, there is no need to specify which of the two kings' check statuses to evaluate, because at a given moment at most one king is in check. but if which king were not specified, the risk would be run on running heavy computation on the unchecked king, to realise that no opponent's piece is threatening it. So it's more efficient to specify which king. This can be done by giving a precise position, or a player type*/

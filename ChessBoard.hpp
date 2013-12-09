@@ -20,7 +20,7 @@ using namespace std;
 #define CHECK                         10
 #define CHECKMATE                     11
 #define STALEMATE                     12
-#DEFINE GAME_OVER                     13
+#define GAME_OVER                     13
 
 enum WhosePiece {NOPIECE, FRIEND, FOE};
 
@@ -42,23 +42,23 @@ class ChessBoard {
   map<string, Piece*> boardMap;
 
   /*private methods*/
-  void       initiate     ();
-  bool       exists       (Cnstring square) const;
+  void       initiate      ();
+  bool       exists        (Cnstring square) const;
   WhosePiece colourOnSquare(Cnstring square, Cnstring player);
-  Piece*     performMove  (Cnstring move[]);
-  void       undoMove     (Cnstring move[], Piece *takenPiece);
-  string     findKingPos  (Cnstring player);
-  bool       entailsCheck (Cnstring move[], Cnstring checkedPlayer, const bool speculative);
-  bool       kingIsChecked  (Cnstring kingPos);
-  string     checkOutcome ();
-  string     notPlayer    () const;
-  void       nextPlayer   ();
-  void       message      (int mcode);
-  void       message      (int mcode, string move[2]);
-  void       message      (int mcode, string move[2], string takenPieceType);
+  Piece*     performMove   (Cnstring move[]);
+  void       undoMove      (Cnstring move[], Piece *takenPiece);
+  string     findKingPos   (Cnstring player);
+  bool       entailsCheck  (Cnstring move[], Cnstring checkedPlayer, const bool speculative);
+  bool       kingIsChecked (Cnstring kingPos);
+  string     checkOutcome  ();
+  string     notPlayer     () const;
+  void       nextPlayer    ();
+  void       message       (int mcode);
+  void       message       (int mcode, string move[2]);
+  void       message       (int mcode, string move[2], string takenPieceType);
 
-  /*very few methods are public to ensure no cheating*/
- public:
+
+ public:  //very few methods are public to ensure no cheating
   ChessBoard              ();
   void       submitMove   (Cnstring sourceSquare, Cnstring destSquare);
   void       resetBoard   ();
@@ -75,6 +75,7 @@ protected:
   ChessBoard *chboard;
   char file;
   char rank;
+  int howMove[8][2];
   Vecstr potValDestPos;
   /*'potentially valid destination positions', ie moving to such a position is valid if it doesn't put friendly king in check. sorry it's an awkward term, but qualifying it as 'valid' would be incorrect; qualifying it as 'moves' would also be incorrect because a move is a 2-uple of strings representing board squares, and this is not a vector of 2-uple strings*/
 
