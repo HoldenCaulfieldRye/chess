@@ -62,6 +62,11 @@ void ChessBoard::submitMove(Cnstring sourceSquare, Cnstring destSquare) {
     message(INVALID_SOURCE_SQUARE, move); return;
   }
 
+ cerr <<"boardMap before move: ";
+  for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
+    cerr << "(" << it->first << "," << (it->second)->getType() << "," << (it->second)->getColour() << "), "; 
+  cerr << endl << endl << endl;
+
   /*check that there is a friendly piece on source square*/
   switch(colourOnSquare(sourceSquare, whoseTurn)) {
   case NOPIECE:
@@ -131,9 +136,9 @@ WhosePiece ChessBoard::colourOnSquare(Cnstring square, Cnstring player) {
   CMapIt it = boardMap.find(square);
   if (it == boardMap.end())
     return NOPIECE;
-  if (boardMap[square]->getColour() == player)
+  else if (boardMap[square]->getColour() == player)
     return FRIEND;
-  return FOE;
+  else return FOE;
 }
 
 string ChessBoard::notPlayer() const {
@@ -143,10 +148,7 @@ string ChessBoard::notPlayer() const {
 }
 
 void ChessBoard::nextPlayer() {
-  if (whoseTurn == "White") {
-    whoseTurn = "Black"; return;
-  }
-  whoseTurn = "White";
+  whoseTurn = notPlayer();
 }
 
 /*Tests whether a specified move by a specified player puts player's own king in check. Test is done by performing move and evaluating the outcome, so if the move turns out to be valid, it would be nice to keep it, but if move turns out to be invalid, we need to undo it. 'speculative' parameter grants us this flexibility. But it also means that this method can be used to cheat from main: eg it could be called to evaluate a valid move by White after White has played. To prevent this, the method is private. However, Piece needs to call this method in canMove(). I have therefore also defined an underloaded version with 'speculative' set to 'true'*/ 
