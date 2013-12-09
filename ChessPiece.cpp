@@ -115,12 +115,13 @@ string Piece::concat(char ch1, char ch2) {
 
 
 /*King definitions. Extended initialiser lists only allowd from c++11 onwards, so out of precaution, howMove is set in this ugly way*/
-King::King(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {
-  howMove[0][0] = 1; howMove[0][1] = 0;      //vertical
-  howMove[1][0] = 0; howMove[1][1] = 1;      //horizontal
-  howMove[2][0] = 1; howMove[2][1] = 1;      //diagonal1
-  howMove[3][0] = 1; howMove[3][1] =-1;      //diagonal2
-  howMove[4][0] = SINTINEL;
+King::King(string _colour, string _position, ChessBoard *_chboard) :  Piece::Piece(_colour, _position, _chboard) {
+  howMove = &kMove[0];
+  // howMove[0][0] = 1; howMove[0][1] = 0;      //vertical
+  // howMove[1][0] = 0; howMove[1][1] = 1;      //horizontal
+  // howMove[2][0] = 1; howMove[2][1] = 1;      //diagonal1
+  // howMove[3][0] = 1; howMove[3][1] =-1;      //diagonal2
+  // howMove[4][0] = SINTINEL;
 }
 
 void King::genPotValDestPos() {
@@ -148,10 +149,10 @@ string King::getType() const {
 
 /*Queen definitions*/
 Queen::Queen(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {
-  howMove[0][0] = 1; howMove[0][1] = 0;      //vertical
-  howMove[1][0] = 0; howMove[1][1] = 1;      //horizontal
-  howMove[2][0] = 1; howMove[2][1] = 1;      //diagonal1
-  howMove[3][0] = 1; howMove[3][1] =-1;      //diagonal2
+  // howMove[0][0] = 1; howMove[0][1] = 0;      //vertical
+  // howMove[1][0] = 0; howMove[1][1] = 1;      //horizontal
+  // howMove[2][0] = 1; howMove[2][1] = 1;      //diagonal1
+  // howMove[3][0] = 1; howMove[3][1] =-1;      //diagonal2
 }
 
 void Queen::genPotValDestPos() {
@@ -179,9 +180,9 @@ string Queen::getType() const {
 
 /* Bishop definitions*/
 Bishop::Bishop(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {
-  howMove[0][0] = 1; howMove[0][1] = 1;      //diagonal1
-  howMove[1][0] = 1; howMove[1][1] =-1;      //diagonal2
-  howMove[2][0] = SINTINEL;
+  // howMove[0][0] = 1; howMove[0][1] = 1;      //diagonal1
+  // howMove[1][0] = 1; howMove[1][1] =-1;      //diagonal2
+  // howMove[2][0] = SINTINEL;
 }
 
 void Bishop::genPotValDestPos() {
@@ -209,15 +210,15 @@ string Bishop::getType() const {
 
 /* Knight definitions*/
 Knight::Knight(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {
-howMove =  {{2,1}, {1,2}, {-2,1}, {1,-2}, {2,-1}, {-1,2}, {-2,-1}, {-1,-2}};
-  howMove[0][0] = 1; howMove[0][1] = 0;      //vertical
-  howMove[1][0] = 0; howMove[1][1] = 1;      //horizontal
-  howMove[2][0] = 1; howMove[2][1] = 1;      //diagonal1
-  howMove[3][0] = 1; howMove[3][1] =-1;      //diagonal2
-  howMove[4][0] = 1; howMove[4][1] = 0;      //vertical
-  howMove[5][0] = 0; howMove[5][1] = 1;      //horizontal
-  howMove[6][0] = 1; howMove[6][1] = 1;      //diagonal1
-  howMove[7][0] = 1; howMove[7][1] =-1;      //diagonal2
+// howMove =  {{2,1}, {1,2}, {-2,1}, {1,-2}, {2,-1}, {-1,2}, {-2,-1}, {-1,-2}};
+//   howMove[0][0] = 1; howMove[0][1] = 0;      //vertical
+//   howMove[1][0] = 0; howMove[1][1] = 1;      //horizontal
+//   howMove[2][0] = 1; howMove[2][1] = 1;      //diagonal1
+//   howMove[3][0] = 1; howMove[3][1] =-1;      //diagonal2
+//   howMove[4][0] = 1; howMove[4][1] = 0;      //vertical
+//   howMove[5][0] = 0; howMove[5][1] = 1;      //horizontal
+//   howMove[6][0] = 1; howMove[6][1] = 1;      //diagonal1
+//   howMove[7][0] = 1; howMove[7][1] =-1;      //diagonal2
 }
 
 void Knight::genPotValDestPos() {
@@ -273,10 +274,10 @@ string Rook::getType() const {
 
 /*Pawn definitions*/
 Pawn::Pawn(string _colour, string _position, ChessBoard *_chboard) : Piece(_colour, _position, _chboard) {
-  howMove[0][0] = 1; howMove[0][1] = 0;      //vertical
-  howMove[2][0] = 1; howMove[2][1] = 1;      //diagonal1
-  howMove[3][0] = 1; howMove[3][1] =-1;      //diagonal2
-  howMove[4][0] = 2; howMove[4][1] = 0;      //vertical, first move
+  // howMove[0][0] = 1; howMove[0][1] = 0;      //vertical
+  // howMove[2][0] = 1; howMove[2][1] = 1;      //diagonal1
+  // howMove[3][0] = 1; howMove[3][1] =-1;      //diagonal2
+  // howMove[4][0] = 2; howMove[4][1] = 0;      //vertical, first move
 }
 
 void Pawn::genPotValDestPos() {

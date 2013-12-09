@@ -23,9 +23,11 @@ using namespace std;
 #define GAME_OVER                     13
 
 enum WhosePiece {NOPIECE, FRIEND, FOE};
-
 enum Direction  {FORWARDS, BACKWARDS};
 enum Range      {SHORT, LONG};
+
+const int kMove[16] = {1,0,0,1,1,1,1,-1,SINTINEL};
+
 
 class Piece;
 
@@ -79,7 +81,7 @@ protected:
   ChessBoard *chboard;
   char file;
   char rank;
-  int howMove[8][2];
+  const int *howMove;
   Vecstr potValDestPos;
   /*'potentially valid destination positions', ie moving to such a position is valid if it doesn't put friendly king in check. sorry it's an awkward term, but qualifying it as 'valid' would be incorrect; qualifying it as 'moves' would also be incorrect because a move is a 2-uple of strings representing board squares, and this is not a vector of 2-uple strings*/
 
