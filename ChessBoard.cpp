@@ -263,11 +263,6 @@ bool ChessBoard::kingIsChecked(Cnstring kingPos) {
   return false;
 }
 
-/*tests whether a specified player is in check*/
-bool ChessBoard::kingIsChecked(string player) {
-  return kingIsChecked(findKingPos(player));
-}
-
 /*tests whether opponent is in check, checkmate, stalemate, or nothing really*/
 string ChessBoard::checkOutcome() {
   string opKingPos = findKingPos(notPlayer());
