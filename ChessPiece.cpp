@@ -7,13 +7,13 @@ using namespace std;
 #include "ChessBoard.hpp"
 
 
-/*Piece definitions*/
+/*Piece definitions.  Extended initialiser lists only allowd from c++11 onwards, so out of precaution, howMove is set in this ugly way*/
 Piece::Piece(string _colour, string _position, ChessBoard *_chboard) : colour(_colour), position(_position), chboard(_chboard), file(_position[0]), rank(_position[1]) {
-  for (int i=0; i<2; i++) {
-    for (int j=0; j<8; j++)
-      howMove[j][i]=0;
-  }
-  potValDestPos.insert(potValDestPos.begin(),  "'\0'");
+  // for (int i=0; i<2; i++) {
+  //   for (int j=0; j<8; j++)
+  //     howMove[j][i]=0;
+  // }
+  potValDestPos.insert(potValDestPos.begin(), "'\0'");
 }
 
 /*Given HOW to search, adds ALL potentially valid destination positions which do not currently host an opponent's piece. 'inc' gives values with which to increment rank and fileThis method is used by all sub-Pieces apart from Knight*/
@@ -78,10 +78,9 @@ bool Piece::isPotValDestPos(string square) {
   return false;
 }
 
-/*tests whether piece can move without putting 'his/her' King in check. computationally heavy.*/
+/*tests whether piece can move without putting 'his/her' King in check. computationally heavy. Notice entailsCheck() is called, so it has to be public. But when 'speculative' parameter of entailsCheck() is set to 'false', a move is made, so having this method be public would enable 'cheating from main'. Hence the existence of an underload with 'speculative' set to 'true', which is called in this method*/
 bool Piece::canMove() {
   string move[2] = {position};
-  const bool speculative = true;
   genPotValDestPos();
 
   cerr << "canMove() called in (" << position << ", " << getType() << ", " << colour << ")" << endl << "potValidMoves: "; printPotValDestPos();
@@ -89,7 +88,7 @@ bool Piece::canMove() {
   for (VecIt it=potValDestPos.begin(); it!=potValDestPos.end(); it++) {
     move[1] = *it;
     cerr << "canMove: does move from " << move[0] << " to " << move[1] << " entail check?" << endl;
-    if ( !(chboard->entailsCheck(move, colour, speculative)) )
+    if ( !(chboard->entailsCheck(move, colour)) )
       return true;
   }
   return false;
@@ -112,27 +111,25 @@ string Piece::concat(char ch1, char ch2) {
   st += ch1;  //but I like to see (row,column) in coordinates, 
   return st;  //and with chess it's the other way around.
 }
-
-//Piece::~Piece() {}
 /*end of Piece definitions*/
 
 
-/*King definitions*/
+/*King definitions. Extended initialiser lists only allowd from c++11 onwards, so out of precaution, howMove is set in this ugly way*/
 King::King(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {
-  howMove[0] = {1, 0};
-  howMove[1] = {0, 1};
-  howMove[2] = {1, 1};
-  howMove[3] = {1,-1};
-  howMove[4] = {SINTINEL};
+  howMove[0][0] = 1; howMove[0][1] = 0;      //vertical
+  howMove[1][0] = 0; howMove[1][1] = 1;      //horizontal
+  howMove[2][0] = 1; howMove[2][1] = 1;      //diagonal1
+  howMove[3][0] = 1; howMove[3][1] =-1;      //diagonal2
+  howMove[4][0] = SINTINEL;
 }
 
 void King::genPotValDestPos() {
   //cerr << "genPotValDestPos called" << endl;
   string move;
-  int incr[5][2] = {{1, 0},      //vertical
-		    {0, 1},      //horizontal
-		    {1, 1},      //diagonal1
-		    {1,-1},      //diagonal2
+  int incr[5][2] = {{1, 0},
+		    {0, 1},
+		    {1, 1},
+		    {1,-1},
 		    {SINTINEL}};
 
   potValDestPos.clear();
@@ -151,23 +148,19 @@ string King::getType() const {
 
 /*Queen definitions*/
 Queen::Queen(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {
-  howMove[0][0] = 1;
-  howMove[0][1] = 0;
-  howMove[1][0] = 0;
-  howMove[1][1] = 1;
-  howMove[2][0] = 1;
-  howMove[2][1] = 1;
-  howMove[3][0] = 1;
-  howMove[3][1] = -1;
+  howMove[0][0] = 1; howMove[0][1] = 0;      //vertical
+  howMove[1][0] = 0; howMove[1][1] = 1;      //horizontal
+  howMove[2][0] = 1; howMove[2][1] = 1;      //diagonal1
+  howMove[3][0] = 1; howMove[3][1] =-1;      //diagonal2
 }
 
 void Queen::genPotValDestPos() {
   //cerr << "genPotValDestPos called" << endl;
   string move;
-  int incr[5][2] = {{1, 0},      //vertical
-		    {0, 1},      //horizontal
-		    {1, 1},      //diagonal1
-		    {1,-1},      //diagonal2
+  int incr[5][2] = {{1, 0},
+		    {0, 1},
+		    {1, 1},
+		    {1,-1},
 		    {SINTINEL}};
 
   potValDestPos.clear();
@@ -185,7 +178,11 @@ string Queen::getType() const {
 /*end of Queen definitions*/
 
 /* Bishop definitions*/
-Bishop::Bishop(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {}
+Bishop::Bishop(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {
+  howMove[0][0] = 1; howMove[0][1] = 1;      //diagonal1
+  howMove[1][0] = 1; howMove[1][1] =-1;      //diagonal2
+  howMove[2][0] = SINTINEL;
+}
 
 void Bishop::genPotValDestPos() {
   //cerr << "genPotValDestPos called" << endl;
@@ -211,7 +208,17 @@ string Bishop::getType() const {
 /*end of Bishop definitions*/
 
 /* Knight definitions*/
-Knight::Knight(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {}
+Knight::Knight(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {
+howMove =  {{2,1}, {1,2}, {-2,1}, {1,-2}, {2,-1}, {-1,2}, {-2,-1}, {-1,-2}};
+  howMove[0][0] = 1; howMove[0][1] = 0;      //vertical
+  howMove[1][0] = 0; howMove[1][1] = 1;      //horizontal
+  howMove[2][0] = 1; howMove[2][1] = 1;      //diagonal1
+  howMove[3][0] = 1; howMove[3][1] =-1;      //diagonal2
+  howMove[4][0] = 1; howMove[4][1] = 0;      //vertical
+  howMove[5][0] = 0; howMove[5][1] = 1;      //horizontal
+  howMove[6][0] = 1; howMove[6][1] = 1;      //diagonal1
+  howMove[7][0] = 1; howMove[7][1] =-1;      //diagonal2
+}
 
 void Knight::genPotValDestPos() {
   //cerr << "genPotValDestPos called" << endl;
@@ -265,7 +272,12 @@ string Rook::getType() const {
 /*end of Rook definitions*/
 
 /*Pawn definitions*/
-Pawn::Pawn(string _colour, string _position, ChessBoard *_chboard) : Piece(_colour, _position, _chboard) {}
+Pawn::Pawn(string _colour, string _position, ChessBoard *_chboard) : Piece(_colour, _position, _chboard) {
+  howMove[0][0] = 1; howMove[0][1] = 0;      //vertical
+  howMove[2][0] = 1; howMove[2][1] = 1;      //diagonal1
+  howMove[3][0] = 1; howMove[3][1] =-1;      //diagonal2
+  howMove[4][0] = 2; howMove[4][1] = 0;      //vertical, first move
+}
 
 void Pawn::genPotValDestPos() {
   //cerr << "genPotValDestPos called" << endl;
@@ -276,7 +288,7 @@ void Pawn::genPotValDestPos() {
   int incr[4][2] = {{1, 0},      //vertical
 		    {1, 1},      //diagonal1
 		    {1,-1},      //diagonal2
-		    {2, 0}};     //vertical, first move
+		    {2, 0}};
 
   potValDestPos.clear();
   classifyDestPos(SHORT, FORWARDS, incr[0], move); //vertical

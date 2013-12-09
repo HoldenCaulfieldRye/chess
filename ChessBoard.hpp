@@ -33,6 +33,7 @@ typedef const string Cnstring;
 typedef vector<string> Vecstr;
 typedef vector<string>::iterator VecIt;
 typedef map<string, Piece*>::iterator MapIt;
+typedef map<string, Piece*>::const_iterator CMapIt;
 
 class ChessBoard {
  private:
@@ -43,8 +44,6 @@ class ChessBoard {
 
   /*private methods*/
   void       initiate      ();
-  bool       exists        (Cnstring square) const;
-  WhosePiece colourOnSquare(Cnstring square, Cnstring player);
   Piece*     performMove   (Cnstring move[]);
   void       undoMove      (Cnstring move[], Piece *takenPiece);
   string     findKingPos   (Cnstring player);
@@ -59,11 +58,14 @@ class ChessBoard {
 
 
  public:  //very few methods are public to ensure no cheating
-  ChessBoard              ();
-  void       submitMove   (Cnstring sourceSquare, Cnstring destSquare);
-  void       resetBoard   ();
-  static string whosep    (WhosePiece piece); //DELETE
-  ~ChessBoard();
+  ChessBoard               ();
+  bool       entailsCheck  (Cnstring move[], Cnstring checkedPlayer);
+  bool       exists        (Cnstring square) const;
+  WhosePiece colourOnSquare(Cnstring square, Cnstring player);
+  void       submitMove    (Cnstring sourceSquare, Cnstring destSquare);
+  void       resetBoard    ();
+  static string whosep     (WhosePiece piece); //DELETE
+  ~ChessBoard              ();
 };
 
 

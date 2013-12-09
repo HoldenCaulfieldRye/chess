@@ -160,7 +160,7 @@ bool ChessBoard::exists(Cnstring square) const {
 }
 
 WhosePiece ChessBoard::colourOnSquare(Cnstring square, Cnstring player) {
-  MapIt it = boardMap.find(square);
+  CMapIt it = boardMap.find(square);
   if (it == boardMap.end())
     return NOPIECE;
   if (boardMap[square]->getColour() == player)
@@ -209,6 +209,10 @@ bool ChessBoard::entailsCheck(Cnstring move[], Cnstring player, const bool specu
   }
 }
 
+/*returns entailsCheck() with 'speculative' parameter set to 'true', so it cannot be used to cheat, so it can be public. */
+bool ChessBoard::entailsCheck(Cnstring move[], Cnstring player) {
+  return entailsCheck(move, player, true);
+}
 
 Piece* ChessBoard::performMove(Cnstring move[]) {
   cerr << "performing move from " << move[0] << " to " << move[1] << endl;
