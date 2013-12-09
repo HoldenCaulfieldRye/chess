@@ -68,6 +68,8 @@ class ChessBoard {
 
 
 class Piece {
+  friend class ChessBoard;
+
 protected:
   /*protected fields*/
   string colour;
@@ -88,7 +90,7 @@ protected:
   void    setPosition          (Cnstring);
   void    printPotValDestPos   (); //DELETE!
 
-public:
+  //public:
   bool    isPotValDestPos      (string square);
   bool    canMove              ();
   virtual string getType       () const = 0;
@@ -96,7 +98,6 @@ public:
   void    increment            (Direction dir, char &coordinate1, char &coordinate2, int *inc);
   static  string concat        (char ch1, char ch2);
   virtual ~Piece() {}
-
 };
 
 class King : public Piece {
