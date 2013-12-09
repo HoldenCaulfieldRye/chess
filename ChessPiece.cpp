@@ -9,10 +9,6 @@ using namespace std;
 
 /*Piece definitions.  Extended initialiser lists only allowd from c++11 onwards, so out of precaution, howMove is set in this ugly way*/
 Piece::Piece(string _colour, string _position, ChessBoard *_chboard) : colour(_colour), position(_position), chboard(_chboard), file(_position[0]), rank(_position[1]) {
-  // for (int i=0; i<2; i++) {
-  //   for (int j=0; j<8; j++)
-  //     howMove[j][i]=0;
-  // }
   potValDestPos.insert(potValDestPos.begin(), "'\0'");
 }
 
@@ -21,7 +17,7 @@ void Piece::classifyDestPos(Range range, Direction dir, int *inc, string &move) 
   char r=rank, f=file; 
   do {
     increment(dir, r, f, inc);
-    move = concat(r, f);
+    move = Utility::concat(r, f);
     /*if destination position is potentially valid an not an attack, add it*/
     if (chboard->exists(move) && chboard->colourOnSquare(move, colour) == NOPIECE) {
       //cerr << move << " is a potentially valid move" << endl;
@@ -105,23 +101,18 @@ string Piece::getColour() const {
 }
 
 /*function for concatenating two chars into a string. strangely, there is no library function or one-line statement for doing so (string::append doesn't have an overload for 2 chars). Also, admittedly, it's not very elegant for this function to be defined in a specific class, since it is intended to be used anywhere in the program. But because this is an object-oriented exercise, I didn't want to make it global. Nor did I want to create a utility class just for this function*/
-string Piece::concat(char ch1, char ch2) {
-  string st;
-  st = ch2;   //yes it's confusing to put ch2 first,
-  st += ch1;  //but I like to see (row,column) in coordinates, 
-  return st;  //and with chess it's the other way around.
-}
+// string Piece::concat(char ch1, char ch2) {
+//   string st;
+//   st = ch2;   //yes it's confusing to put ch2 first,
+//   st += ch1;  //but I like to see (row,column) in coordinates, 
+//   return st;  //and with chess it's the other way around.
+// }
 /*end of Piece definitions*/
 
 
 /*King definitions. Extended initialiser lists only allowd from c++11 onwards, so out of precaution, howMove is set in this ugly way*/
 King::King(string _colour, string _position, ChessBoard *_chboard) :  Piece::Piece(_colour, _position, _chboard) {
-  howMove = &kMove[0];
-  // howMove[0][0] = 1; howMove[0][1] = 0;      //vertical
-  // howMove[1][0] = 0; howMove[1][1] = 1;      //horizontal
-  // howMove[2][0] = 1; howMove[2][1] = 1;      //diagonal1
-  // howMove[3][0] = 1; howMove[3][1] =-1;      //diagonal2
-  // howMove[4][0] = SINTINEL;
+  howMove = &kqMove[0];
 }
 
 void King::genPotValDestPos() {
@@ -149,10 +140,7 @@ string King::getType() const {
 
 /*Queen definitions*/
 Queen::Queen(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {
-  // howMove[0][0] = 1; howMove[0][1] = 0;      //vertical
-  // howMove[1][0] = 0; howMove[1][1] = 1;      //horizontal
-  // howMove[2][0] = 1; howMove[2][1] = 1;      //diagonal1
-  // howMove[3][0] = 1; howMove[3][1] =-1;      //diagonal2
+  howMove = &kqMove[0];
 }
 
 void Queen::genPotValDestPos() {
@@ -180,9 +168,7 @@ string Queen::getType() const {
 
 /* Bishop definitions*/
 Bishop::Bishop(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {
-  // howMove[0][0] = 1; howMove[0][1] = 1;      //diagonal1
-  // howMove[1][0] = 1; howMove[1][1] =-1;      //diagonal2
-  // howMove[2][0] = SINTINEL;
+  howMove = &bMove[0];
 }
 
 void Bishop::genPotValDestPos() {
@@ -210,15 +196,7 @@ string Bishop::getType() const {
 
 /* Knight definitions*/
 Knight::Knight(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {
-// howMove =  {{2,1}, {1,2}, {-2,1}, {1,-2}, {2,-1}, {-1,2}, {-2,-1}, {-1,-2}};
-//   howMove[0][0] = 1; howMove[0][1] = 0;      //vertical
-//   howMove[1][0] = 0; howMove[1][1] = 1;      //horizontal
-//   howMove[2][0] = 1; howMove[2][1] = 1;      //diagonal1
-//   howMove[3][0] = 1; howMove[3][1] =-1;      //diagonal2
-//   howMove[4][0] = 1; howMove[4][1] = 0;      //vertical
-//   howMove[5][0] = 0; howMove[5][1] = 1;      //horizontal
-//   howMove[6][0] = 1; howMove[6][1] = 1;      //diagonal1
-//   howMove[7][0] = 1; howMove[7][1] =-1;      //diagonal2
+  howMove = &nMove[0];
 }
 
 void Knight::genPotValDestPos() {
@@ -231,7 +209,7 @@ void Knight::genPotValDestPos() {
   for(int i=0; i<8; i++) {
     r = rank + incr[i][0]; 
     f = file + incr[i][1];
-    move = concat(r, f);
+    move = Utility::concat(r, f);
     //cerr << "checking if Knight can reach " << move << " from " << file << rank << endl;
     if (chboard->colourOnSquare(move, colour) != FRIEND && chboard->exists(move)) {
       //cerr << move << " is a valid move for " << getType() << " from " << position << endl;
@@ -249,7 +227,9 @@ string Knight::getType() const {
 /*end of Knight definitions*/
 
 /*Rook definitions*/
-Rook::Rook(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {}
+Rook::Rook(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {
+  howMove = &rMove[0];
+}
 
 void Rook::genPotValDestPos() {
   //cerr << "genPotValDestPos called" << endl;
@@ -274,10 +254,7 @@ string Rook::getType() const {
 
 /*Pawn definitions*/
 Pawn::Pawn(string _colour, string _position, ChessBoard *_chboard) : Piece(_colour, _position, _chboard) {
-  // howMove[0][0] = 1; howMove[0][1] = 0;      //vertical
-  // howMove[2][0] = 1; howMove[2][1] = 1;      //diagonal1
-  // howMove[3][0] = 1; howMove[3][1] =-1;      //diagonal2
-  // howMove[4][0] = 2; howMove[4][1] = 0;      //vertical, first move
+  howMove = &pMove[0];
 }
 
 void Pawn::genPotValDestPos() {
@@ -301,12 +278,12 @@ void Pawn::genPotValDestPos() {
   for (int i=1; i<3; i++) {      //diagonals
     r=rank, f=file;
     increment(FORWARDS, r, f, incr[i]);
-    move = concat(r, f);
+    move = Utility::concat(r, f);
     classifyLastDestPos(move);
   }
 }
 
-string Rook::getType() const {
-  return "Rook";
+string Pawn::getType() const {
+  return "Pawn";
 }
 /*end of Pawn definitions*/

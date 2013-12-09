@@ -26,10 +26,15 @@ enum WhosePiece {NOPIECE, FRIEND, FOE};
 enum Direction  {FORWARDS, BACKWARDS};
 enum Range      {SHORT, LONG};
 
-const int kMove[16] = {1,0,0,1,1,1,1,-1,SINTINEL};
-
+/*to be assigned to howMove field. it may seem unnecessary to declare them globally here, but before c++11, extended initialiser lists are not permitted, so to maintain backward compatibility I would have to assign values one by one in the constructors, which would be inelegant.*/
+const int kqMove[17] = {1,0,0,1,1,1,1,-1,SINTINEL};
+const int bMove[17]  = {1,1,1,-1,SINTINEL};
+const int nMove[17]  = {2,1,1,2,-2,1,1,-2,2,-1,-1,2,-2,-1,-1,-2, SINTINEL};
+const int rMove[17]  = {1,0,0,1,SINTINEL};
+const int pMove[17]  = {1,0,1,1,1,-1,2,0,SINTINEL};
 
 class Piece;
+class Utility;
 
 typedef const string Cnstring;
 typedef vector<string> Vecstr;
@@ -45,19 +50,18 @@ class ChessBoard {
   map<string, Piece*> boardMap;
 
   /*private methods*/
-  void       initiate      ();
-  Piece*     performMove   (Cnstring move[]);
-  void       undoMove      (Cnstring move[], Piece *takenPiece);
-  string     findKingPos   (Cnstring player);
-  bool       entailsCheck  (Cnstring move[], Cnstring checkedPlayer, const bool speculative);
-  bool       kingIsChecked (Cnstring kingPos);
-  string     checkOutcome  ();
-  string     notPlayer     () const;
-  void       nextPlayer    ();
-  void       message       (int mcode);
-  void       message       (int mcode, string move[2]);
-  void       message       (int mcode, string move[2], string takenPieceType);
-
+  void        initiate     ();
+  Piece*      performMove  (Cnstring move[]);
+  void        undoMove     (Cnstring move[], Piece *takenPiece);
+  string      findKingPos  (Cnstring player);
+  bool        entailsCheck (Cnstring move[], Cnstring checkedPlayer, const bool speculative);
+  bool        kingIsChecked(Cnstring kingPos);
+  string      checkOutcome ();
+  string      notPlayer    () const;
+  void        nextPlayer   ();
+  void message      (int mcode);
+  void message      (int mcode, string move[2]);
+  void message      (int mcode, string move[2], string takenPieceType);
 
  public:  //very few methods are public to ensure no cheating
   ChessBoard               ();
@@ -70,6 +74,11 @@ class ChessBoard {
   ~ChessBoard              ();
 };
 
+class Utility {
+public:
+  static int** matrify  (int*);
+  static string concat  (char ch1, char ch2);
+};
 
 class Piece {
   friend class ChessBoard;
@@ -89,18 +98,17 @@ protected:
   Piece() {}
   Piece                        (string _colour, string _position, ChessBoard *_chboard);
   virtual void genPotValDestPos() = 0; //generate potentially valid destination positions
-  void    classifyDestPos      (Range range, Direction dir, int* inc, string& move);
+  void    classifyDestPos      (Range, Direction, int*, string&);
   void    classifyLastDestPos  (string move);
   void    setPosition          (Cnstring);
   void    printPotValDestPos   (); //DELETE!
+  void    increment            (Direction, char&, char&, int*);
 
   //public:
   bool    isPotValDestPos      (string square);
   bool    canMove              ();
   virtual string getType       () const = 0;
   string  getColour            () const;
-  void    increment            (Direction dir, char &coordinate1, char &coordinate2, int *inc);
-  static  string concat        (char ch1, char ch2);
   virtual ~Piece() {}
 };
 

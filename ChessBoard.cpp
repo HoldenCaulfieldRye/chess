@@ -20,7 +20,7 @@ void ChessBoard::initiate() {
     for (int j=0; files[j]!='\0'; j++) {
 
       if (i==2) colour = "Black";
-      position = Piece::concat(ranks[i], files[j]);
+      position = Utility::concat(ranks[i], files[j]);
 
       if (ranks[i]=='1' || ranks[i]=='8') {
 	switch(files[j]) {
