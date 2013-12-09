@@ -7,7 +7,7 @@ using namespace std;
 #include "ChessBoard.hpp"
 
 
-/*Piece definitions.  Extended initialiser lists only allowd from c++11 onwards, so out of precaution, howMove is set in this ugly way*/
+/*Piece definitions*/
 Piece::Piece(string _colour, string _position, ChessBoard *_chboard) : colour(_colour), position(_position), chboard(_chboard), file(_position[0]), rank(_position[1]) {
   potValDestPos.insert(potValDestPos.begin(), "'\0'");
 }
@@ -20,17 +20,12 @@ void Piece::classifyDestPos(Range range, Direction dir, int *inc, string &move) 
     move = Utility::concat(r, f);
     /*if destination position is potentially valid an not an attack, add it*/
     if (chboard->exists(move) && chboard->colourOnSquare(move, colour) == NOPIECE) {
-      //cerr << move << " is a potentially valid move" << endl;
       if (potValDestPos.empty()) {
-	//cerr << "potValDestPos is empty" << endl;
 	potValDestPos.insert(potValDestPos.begin(), move);
       }
       else potValDestPos.insert(potValDestPos.end(), move);
     }
-    else {
-      //cerr << "no valid position from " << move << " onwards, in direction " << dir << endl;
-      return;
-    }
+    else return;
   } while (range == LONG);
 }
 
@@ -48,26 +43,14 @@ void Piece::increment(Direction dir, char &coordinate1, char &coordinate2, int *
 
 /*given WHICH square to evaluate, adds AT MOST ONE potentially valid destination position which currently hosts an opponent's piece. This method is used by all sub-Pieces apart from Knight*/
 void Piece::classifyLastDestPos(string move) {
-  if (chboard->exists(move) && chboard->colourOnSquare(move, colour) == FOE) {
-    cerr << move << " is a valid attack move for " << getType() << " at " << position << "!" << endl;
+  if (chboard->exists(move) && chboard->colourOnSquare(move, colour) == FOE) 
     potValDestPos.insert(potValDestPos.begin(), move);
-  }
-  // else 
-    // cerr << move << " is invalid because colourOnSquare(" << move << ") = " << whosep(chboard->colourOnSquare(move, colour)) << " or because exists(" << move << ") = " << chboard->exists(move) << endl;
-}
-
-/*DELETE!*/
-void Piece::printPotValDestPos() {
-  for(VecIt it=potValDestPos.begin(); it!=potValDestPos.end(); it++)
-cerr << *it << ", ";
-cerr << endl;
 }
 
 bool Piece::isPotValDestPos(string square) {
   genPotValDestPos();
   for (VecIt it = potValDestPos.begin(); it != potValDestPos.end(); it++) {
     if(*it == square) {
-      //cerr << "move is valid" << endl;
       return true;
     }
   }
@@ -79,11 +62,8 @@ bool Piece::canMove() {
   string move[2] = {position};
   genPotValDestPos();
 
-  cerr << "canMove() called in (" << position << ", " << getType() << ", " << colour << ")" << endl << "potValidMoves: "; printPotValDestPos();
-
   for (VecIt it=potValDestPos.begin(); it!=potValDestPos.end(); it++) {
     move[1] = *it;
-    cerr << "canMove: does move from " << move[0] << " to " << move[1] << " entail check?" << endl;
     if ( !(chboard->entailsCheck(move, colour)) )
       return true;
   }
@@ -99,22 +79,12 @@ void Piece::setPosition(Cnstring newPos) {
 string Piece::getColour() const {
   return colour;
 }
-
-/*function for concatenating two chars into a string. strangely, there is no library function or one-line statement for doing so (string::append doesn't have an overload for 2 chars). Also, admittedly, it's not very elegant for this function to be defined in a specific class, since it is intended to be used anywhere in the program. But because this is an object-oriented exercise, I didn't want to make it global. Nor did I want to create a utility class just for this function*/
-// string Piece::concat(char ch1, char ch2) {
-//   string st;
-//   st = ch2;   //yes it's confusing to put ch2 first,
-//   st += ch1;  //but I like to see (row,column) in coordinates, 
-//   return st;  //and with chess it's the other way around.
-// }
 /*end of Piece definitions*/
-
 
 /*King definitions. Extended initialiser lists only allowd from c++11 onwards, so out of precaution, howMove is set in this ugly way*/
 King::King(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {}
 
 void King::genPotValDestPos() {
-  //cerr << "genPotValDestPos called" << endl;
   string move;
   int incr[5][2] = {{1, 0},
   		    {0, 1},
@@ -140,7 +110,6 @@ string King::getType() const {
 Queen::Queen(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {}
 
 void Queen::genPotValDestPos() {
-  //cerr << "genPotValDestPos called" << endl;
   string move;
   int incr[5][2] = {{1, 0},
 		    {0, 1},
@@ -166,7 +135,6 @@ string Queen::getType() const {
 Bishop::Bishop(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {}
 
 void Bishop::genPotValDestPos() {
-  //cerr << "genPotValDestPos called" << endl;
   string move;
   int incr[3][2] = {{1, 1},      //diagonal1
 		    {1,-1},      //diagonal2
@@ -175,10 +143,8 @@ void Bishop::genPotValDestPos() {
   potValDestPos.clear();
   for(int i=0; incr[i][0] != SINTINEL; i++) {
     classifyDestPos(LONG, FORWARDS, incr[i], move);
-    //cerr << "about to classify last move: " << move << endl;
     classifyLastDestPos(move);
     classifyDestPos(LONG, BACKWARDS, incr[i], move);
-    //cerr << "about to classify last move: " << move << endl;
     classifyLastDestPos(move);
   }
 }
@@ -192,7 +158,6 @@ string Bishop::getType() const {
 Knight::Knight(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {}
 
 void Knight::genPotValDestPos() {
-  //cerr << "genPotValDestPos called" << endl;
   int incr[8][2] = {{2,1}, {1,2}, {-2,1}, {1,-2}, {2,-1}, {-1,2}, {-2,-1}, {-1,-2}};
   char r, f;
   string move;
@@ -202,14 +167,9 @@ void Knight::genPotValDestPos() {
     r = rank + incr[i][0]; 
     f = file + incr[i][1];
     move = Utility::concat(r, f);
-    //cerr << "checking if Knight can reach " << move << " from " << file << rank << endl;
     if (chboard->colourOnSquare(move, colour) != FRIEND && chboard->exists(move)) {
-      //cerr << move << " is a valid move for " << getType() << " from " << position << endl;
-        potValDestPos.insert(potValDestPos.begin(), move);
-      }
-    //else {
-        //cerr << "for " << getType() << ", "  << move << " is an invalid move from " << file << rank << " because colourOnSquare(move) = " << chboard->colourOnSquare(move) << " or because chboard->exists(move) = " << chboard->exists(move) << endl; uncomment around also
-    //}
+      potValDestPos.insert(potValDestPos.begin(), move);
+    }
   }
 }
 
@@ -222,7 +182,6 @@ string Knight::getType() const {
 Rook::Rook(string _colour, string _position, ChessBoard *_chboard) : Piece::Piece(_colour, _position, _chboard) {}
 
 void Rook::genPotValDestPos() {
-  //cerr << "genPotValDestPos called" << endl;
   string move;
   int incr[3][2] = {{1, 0},      //vertical
 		    {0, 1},      //horizontal
@@ -245,9 +204,8 @@ string Rook::getType() const {
 /*Pawn definitions*/
 Pawn::Pawn(string _colour, string _position, ChessBoard *_chboard) : Piece(_colour, _position, _chboard) {}
 
+/*because a pawn can only go forward in rank, it is at starting rank iif it hasn't made a first move. I use this property to distinguish the case where it can move forward by 2 squares. Also need to make sure 'move forward by 1 square' is valid*/
 void Pawn::genPotValDestPos() {
-  //cerr << "genPotValDestPos called" << endl;
-  /*because a pawn can only go forward in rank, it is at starting rank iif it hasn't made a first move. I use this property to distinguish the case where it can move forward by 2 squares. Also need to make sure 'move forward by 1 square' is valid*/
   bool firstMove = ((rank=='2' && colour=="White") || (rank=='7' && colour=="Black"));
   string move;
   char r, f;  

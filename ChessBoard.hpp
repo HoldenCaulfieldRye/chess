@@ -26,18 +26,10 @@ enum WhosePiece {NOPIECE, FRIEND, FOE};
 enum Direction  {FORWARDS, BACKWARDS};
 enum Range      {SHORT, LONG};
 
-/*to be assigned to howMove field. it may seem unnecessary to declare them globally here, but before c++11, extended initialiser lists are not permitted, so to maintain backward compatibility I would have to assign values one by one in the constructors, which would be inelegant.*/
-const int kqMove[17] = {1,0,0,1,1,1,1,-1,SINTINEL};
-const int bMove[17]  = {1,1,1,-1,SINTINEL};
-const int nMove[17]  = {2,1,1,2,-2,1,1,-2,2,-1,-1,2,-2,-1,-1,-2, SINTINEL};
-const int rMove[17]  = {1,0,0,1,SINTINEL};
-const int pMove[17]  = {1,0,1,1,1,-1,2,0,SINTINEL};
-
 class Piece;
 class Utility;
 
 typedef const string Cnstring;
-typedef vector<int> Vecint;
 typedef vector<string> Vecstr;
 typedef vector<string>::iterator VecIt;
 typedef map<string, Piece*>::iterator MapIt;
@@ -45,12 +37,12 @@ typedef map<string, Piece*>::const_iterator CMapIt;
 
 class ChessBoard {
  private:
-  /*private fields*/
+  /*fields*/
   bool gameOver;
   string whoseTurn;
   map<string, Piece*> boardMap;
 
-  /*private methods*/
+  /*methods*/
   void        initiate     ();
   Piece*      performMove  (Cnstring move[]);
   void        undoMove     (Cnstring move[], Piece *takenPiece);
@@ -75,12 +67,16 @@ class ChessBoard {
   ~ChessBoard              ();
 };
 
+
+/*this class may seem pointless because it just contains a method, which could be defined in ChessBoard or Piece since it is public static. however, it seems neater to me to put it in a Utility class, to indicate that it does not belong to ChessBoard or Piece in particular*/
 class Utility {
 public:
   static string concat  (char ch1, char ch2);
 };
 
+
 class Piece {
+  /*ChessBoard is a friend so that it can access protected Piece fields and methods. Otherwise, I would have to make some methods public, so they would be callable from main, and cheating from main could occur, eg with setPosition()*/
   friend class ChessBoard;
 
 protected:
@@ -90,10 +86,10 @@ protected:
   ChessBoard *chboard;
   char file;
   char rank;
+/*'potentially valid destination positions', ie moving to such a position is valid if it doesn't put friendly king in check. sorry it's an awkward term, but qualifying it as 'valid' would be incorrect; qualifying it as 'moves' would also be incorrect because a move is a 2-uple of strings representing board squares, and this is not a vector of 2-uple strings*/
   Vecstr potValDestPos;
-  /*'potentially valid destination positions', ie moving to such a position is valid if it doesn't put friendly king in check. sorry it's an awkward term, but qualifying it as 'valid' would be incorrect; qualifying it as 'moves' would also be incorrect because a move is a 2-uple of strings representing board squares, and this is not a vector of 2-uple strings*/
 
-  /*protected methods - not public to ensure no 'cheating from main'*/
+  /*protected methods - not public to ensure no 'cheating from main'. Admittedly, not all of these methods can be used to cheat. But apparently it is good practice to make a method public only if there is a good reason to make the method callable from everywhere. Since ChessBoard is a friend, I see no such reason.*/
   Piece() {}
   Piece                        (string _colour, string _position, ChessBoard *_chboard);
   virtual void genPotValDestPos() = 0; //generate potentially valid destination positions
@@ -102,14 +98,13 @@ protected:
   void    setPosition          (Cnstring);
   void    printPotValDestPos   (); //DELETE!
   void    increment            (Direction, char&, char&, int*);
-
-  //public:
   bool    isPotValDestPos      (string square);
   bool    canMove              ();
   virtual string getType       () const = 0;
   string  getColour            () const;
   virtual ~Piece() {}
 };
+
 
 class King : public Piece {
 private:
@@ -118,8 +113,9 @@ public:
   King(string _colour, string _square, ChessBoard *_chboard);
   virtual void genPotValDestPos();
   string getType() const;
-  ~King() {} //empty destructor; no class fields stored on the heap
+  ~King() {} //empty destructor because no class fields stored on the heap
 };
+
 
 class Queen : public Piece {
 private:
@@ -128,8 +124,9 @@ public:
   Queen(string _colour, string _square, ChessBoard *_chboard);
   virtual void genPotValDestPos();
   string getType() const;
-  ~Queen() {} //empty destructor; no class fields stored on the heap
+  ~Queen() {} //empty destructor because no class fields stored on the heap
 };
+
 
 class Bishop : public Piece {
 private:
@@ -138,8 +135,9 @@ public:
   Bishop(string _colour, string _square, ChessBoard *_chboard);
   virtual void genPotValDestPos();
   string getType() const;
-  ~Bishop() {} //empty destructor; no class fields stored on the heap
+  ~Bishop() {} //empty destructor because no class fields stored on the heap
 };
+
 
 class Knight : public Piece {
 private:
@@ -148,8 +146,9 @@ public:
   Knight(string _colour, string _square, ChessBoard *_chboard);
   void genPotValDestPos();
   string getType() const;
-  ~Knight() {} //empty destructor; no class fields stored on the heap
+  ~Knight() {} //empty destructor because no class fields stored on the heap
 };
+
 
 class Rook : public Piece {
 private:
@@ -158,8 +157,9 @@ public:
   Rook(string _colour, string _square, ChessBoard *_chboard);
   virtual void genPotValDestPos();
   string getType() const;
-  ~Rook() {} //empty destructor; no class fields stored on the heap
+  ~Rook() {} //empty destructor because no class fields stored on the heap
 };
+
 
 class Pawn : public Piece {
 public:
@@ -167,5 +167,5 @@ public:
   Pawn(string _colour, string _square, ChessBoard *_chboard);
   virtual void genPotValDestPos();
   string getType() const;
-  ~Pawn() {} //empty destructor; no class fields stored on the heap
+  ~Pawn() {} //empty destructor because no class fields stored on the heap
 };

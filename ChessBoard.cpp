@@ -55,28 +55,21 @@ void ChessBoard::submitMove(Cnstring sourceSquare, Cnstring destSquare) {
 
   /*check that game is on (eg after checkmate, game is off*/
   if (gameOver) {
-    message(GAME_OVER);
-    return;
+    message(GAME_OVER); return;
   }
 
   /*check that source square exists*/
   if(!exists(sourceSquare)) {
-    message(INVALID_SOURCE_SQUARE, move);
-    return;
+    message(INVALID_SOURCE_SQUARE, move); return;
   }
-  else cerr << "check 1: source square exists" << endl; 
 
   /*check that there is a friendly piece on source square*/
   switch(colourOnSquare(sourceSquare, whoseTurn)) {
   case NOPIECE:
-    message(EMPTY_SOURCE_SQUARE, move);
-    return;
+    message(EMPTY_SOURCE_SQUARE, move); return;
   case FOE:
-    message(WRONG_PLAYER);
-    return;
-  case FRIEND: 
-    cerr << "check 2: there is one of " << whoseTurn << "'s pieces on " << sourceSquare << endl;
-    break;
+    message(WRONG_PLAYER); return;
+  case FRIEND: return;
   }  
 
   /*check that piece can get to destination square (excluding putting own king in check)*/
@@ -84,21 +77,17 @@ void ChessBoard::submitMove(Cnstring sourceSquare, Cnstring destSquare) {
     /*reach here iif it can't; enquire why*/
     /*check that destination square is valid*/
     if(!exists(destSquare)) {
-      message(INVALID_DESTINATION_SQUARE, move);
-      return; 
+      message(INVALID_DESTINATION_SQUARE, move); return; 
     }
 
     /*check that there is no friendly piece on destination square*/
     if (colourOnSquare(destSquare, whoseTurn) == FRIEND) {
-      message(FRIENDLY_FIRE, move);
-      return;
+      message(FRIENDLY_FIRE, move); return;
     }
 
     /*reach here iif piece is just not capable of making such a move*/
-    message(IMPOSSIBLE_MOVE, move);
-    return;
+    message(IMPOSSIBLE_MOVE, move); return;
   }
-  else cerr << "check 3: piece can get to destination square" << endl; 
 
   /*test whether move is an attack*/
   if(colourOnSquare(destSquare, whoseTurn) == FOE) {
@@ -106,53 +95,33 @@ void ChessBoard::submitMove(Cnstring sourceSquare, Cnstring destSquare) {
     temp =  boardMap[destSquare]->getType();
   }
 
-  cerr <<"boardMap before move: ";
-  for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
-    cerr << "(" << it->first << "," << (it->second)->getType() << "," << (it->second)->getColour() << "), "; 
-  cerr << endl;
-
   /*test whether move puts friendly King in check. if not, perform move*/
   if (entailsCheck(move, whoseTurn, !speculative)) {
     message(CHECKING_OWN_KING, move);
     return; 
   }
-  else cerr << "check 4 FINAL: King won't be in check after this move" << endl;
 
-  /*reach here iif move is completely valid, in which case it has been performed*/
+  /*reach here iif move is completely valid, in which case it has been performed by entailsCheck()*/
   if (attack) 
     message(VALID_ATTACK, move, temp);
   else message(VALID_MOVE, move);
 
-  cerr << endl << "boardMap after move: ";
-  for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
-    cerr << "(" << it->first << "," << (it->second)->getType() << "," << (it->second)->getColour() << "), ";
-  cerr << endl;
-
   /*test whether move puts opponent in check, checkmate, stalemate, or nothing really*/
   string outcome = checkOutcome();
   if (outcome == "checkmate") {
-    message(CHECKMATE);
-    return;
+    message(CHECKMATE); return;
   }
   if (outcome == "stalemate") {
-    message(STALEMATE);
-    return;
+    message(STALEMATE); return;
   }
   if (outcome == "check")
     message(CHECK);
 
-  cerr << endl << "boardMap after move: ";
-  for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
-    cerr << "(" << it->first << "," << (it->second)->getType() << "," << (it->second)->getColour() << "), ";
-  cerr << endl;
-
   nextPlayer();
-
   return;
 }
 
-
-/*tests whether 'square' exists (like testing for valid index)*/
+/*Tests whether 'square' exists (like testing for valid index)*/
 bool ChessBoard::exists(Cnstring square) const {
   if (square[0]<'A' || square[0]>'H' || square[1]<'1' || square[1]>'8' || square[2]!='\0')
     return false;
@@ -176,83 +145,65 @@ string ChessBoard::notPlayer() const {
 
 void ChessBoard::nextPlayer() {
   if (whoseTurn == "White") {
-    cerr << endl << "White has played, now it's Black's turn" <<  endl;
-    whoseTurn = "Black";
-    return;
+    whoseTurn = "Black"; return;
   }
   whoseTurn = "White";
-  cerr << endl << "Black has played, now it's White's turn" << endl;
 }
 
 
-/*tests whether a specified move by a specified player puts player's own king in check*/ 
+/*Tests whether a specified move by a specified player puts player's own king in check. Test is done by performing move and evaluating the outcome, so if the move turns out to be valid, it would be nice to keep it, but if move turns out to be invalid, we need to undo it. 'speculative' parameter grants us this flexibility. But it also means that this method can be used to cheat from main: eg it could be called to evaluate a valid move by White after White has played. To prevent this, the method is private. However, Piece needs to call this method in canMove(). I have therefore also defined an underloaded version with 'speculative' set to 'true'*/ 
 bool ChessBoard::entailsCheck(Cnstring move[], Cnstring player, const bool speculative) {  
   Piece *temp = NULL;
   string kingPos;
 
-  cerr << "does move entail check?";
-  if (speculative)
-    cerr << " let's speculate";
-  cerr << endl;
-
-  temp = performMove(move); //if attack, returns pointer to taken piece
+  temp = performMove(move); //need to remember taken piece in case move is an invalid attack
   kingPos = findKingPos(player);
 
   if (kingIsChecked(kingPos)) {
-    undoMove(move, temp);
-    return true;
+    undoMove(move, temp); return true;
   }
   else {
     if (speculative)
-      undoMove(move, temp);
-    return false;
+      undoMove(move, temp); return false;
   }
 }
 
-/*returns entailsCheck() with 'speculative' parameter set to 'true', so it cannot be used to cheat, so it can be public. */
+/*Returns entailsCheck() with 'speculative' parameter set to 'true', so it cannot be used to cheat, so it can be public. */
 bool ChessBoard::entailsCheck(Cnstring move[], Cnstring player) {
   return entailsCheck(move, player, true);
 }
 
 Piece* ChessBoard::performMove(Cnstring move[]) {
-  cerr << "performing move from " << move[0] << " to " << move[1] << endl;
   Piece *takenPiece = NULL, *movingPiece = boardMap[move[0]];
   if (colourOnSquare(move[1], movingPiece->getColour()) == FOE)
     takenPiece = boardMap[move[1]];       //if attack, save memory location of attacked piece
   boardMap[move[1]] = movingPiece;
   boardMap[move[1]]->setPosition(move[1]);
   boardMap.erase(move[0]);                //erase but don't delete; piece still exists
-  cerr << "move performed" << endl;
   return takenPiece;
 }
 
-
 void ChessBoard::undoMove(Cnstring move[], Piece *takenPiece) {
-  cerr << "undoing move" << endl;
   boardMap[move[0]] = boardMap[move[1]];
   boardMap[move[0]]->setPosition(move[0]);
   if (takenPiece)
     boardMap[move[1]] = takenPiece;   //bring taken piece back to life
-  else boardMap.erase(move[1]); //!attack so there was nothing in move[1] before move
-  cerr << "move undone" << endl;
+  else boardMap.erase(move[1]);       //!attack so there was nothing in move[1] before move
 }
 
-
-/*look for king among pieces belonging to active player. this method is separate from kingIsChecked() because if it weren't, then we would run the risk of searching for a king's position multiple times in the checkOutcome() method; this would be inefficient*/
+/*Looks for king among pieces belonging to active player. this method is separate from kingIsChecked() because if it weren't, then we would run the risk of searching for a king's position multiple times in the checkOutcome() method; this would be inefficient*/
 string ChessBoard::findKingPos(Cnstring player) {
-  cerr << "looking for kingPos" << endl;
   Piece *piece;
   for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++) {
     piece = it->second;
     if (piece->getType()=="King" && piece->getColour()==player) {
-      cerr << "kingPos found" << endl;
       return it->first;
     }
   }
   return "error"; //could output error message, 
 }
 
-/*tests whether a specified king is in check. In a way, there is no need to specify which of the two kings' check statuses to evaluate, because at a given moment at most one king is in check. but if which king were not specified, the risk would be run on running heavy computation on the unchecked king, to realise that no opponent's piece is threatening it. So it's more efficient to specify which king. This can be done by giving a precise position, or a player type*/
+/*Tests whether a specified king is in check. In a way, there is no need to specify which of the two kings' check statuses to evaluate, because at a given moment at most one king is in check. but if which king were not specified, the risk would be run on running heavy computation on the unchecked king, to realise that no opponent's piece is threatening it. So it's more efficient to specify which king. This can be done by giving a precise position, or a player type*/
 bool ChessBoard::kingIsChecked(Cnstring kingPos) {
   cerr << "is king now in check?" << endl;
   Piece *piece, *king = boardMap[kingPos];
