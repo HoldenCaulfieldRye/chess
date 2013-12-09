@@ -62,11 +62,6 @@ void ChessBoard::submitMove(Cnstring sourceSquare, Cnstring destSquare) {
     message(INVALID_SOURCE_SQUARE, move); return;
   }
 
- cerr <<"boardMap before move: ";
-  for(MapIt it = boardMap.begin(); it!=boardMap.end(); it++)
-    cerr << "(" << it->first << "," << (it->second)->getType() << "," << (it->second)->getColour() << "), "; 
-  cerr << endl << endl << endl;
-
   /*check that there is a friendly piece on source square*/
   switch(colourOnSquare(sourceSquare, whoseTurn)) {
   case NOPIECE:
@@ -288,16 +283,6 @@ void ChessBoard::message(int mcode, string move[2], string takenPieceType) {
   if(mcode == VALID_ATTACK) {
     cout << whoseTurn << "'s " << boardMap[move[1]]->getType() << " moves from " << move[0] << " to " << move[1] << " taking " << notPlayer() << "'s " << takenPieceType << endl;
   }
-}
-
-string ChessBoard::whosep(WhosePiece piece) { //DELETE
-  if(piece == NOPIECE)
-    return "NOPIECE"; 
-  if(piece == FRIEND)
-    return "FRIEND"; 
-  if(piece == FOE)
-    return "FOE";
-  return "ERROR"; 
 }
 
 ChessBoard::~ChessBoard() {

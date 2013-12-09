@@ -63,7 +63,6 @@ class ChessBoard {
   WhosePiece colourOnSquare(Cnstring square, Cnstring player);
   void       submitMove    (Cnstring sourceSquare, Cnstring destSquare);
   void       resetBoard    ();
-  static string whosep     (WhosePiece piece); //DELETE
   ~ChessBoard              ();
 };
 
@@ -96,7 +95,6 @@ protected:
   void    classifyDestPos      (Range, Direction, int*, string&);
   void    classifyLastDestPos  (string move);
   void    setPosition          (Cnstring);
-  void    printPotValDestPos   (); //DELETE!
   void    increment            (Direction, char&, char&, int*);
   bool    isPotValDestPos      (string square);
   bool    canMove              ();
