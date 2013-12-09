@@ -73,7 +73,7 @@ void ChessBoard::submitMove(Cnstring sourceSquare, Cnstring destSquare) {
     message(EMPTY_SOURCE_SQUARE, move); return;
   case FOE:
     message(WRONG_PLAYER); return;
-  case FRIEND: return;
+  case FRIEND: break;
   }  
 
   /*check that piece can get to destination square (excluding putting own king in check)*/
