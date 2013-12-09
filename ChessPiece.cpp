@@ -8,7 +8,7 @@ using namespace std;
 
 
 /*Piece definitions*/
-Piece::Piece(string _colour, string _position, ChessBoard *_chboard) : colour(_colour), position(_position), chboard(_chboard), file(_position[0]), rank(_position[1], howMove({0})) {
+Piece::Piece(string _colour, string _position, ChessBoard *_chboard) : colour(_colour), position(_position), chboard(_chboard), file(_position[0]), rank(_position[1], howMove({0}) {
   // for (int i=0; i<2; i++) {
   //   for (int j=0; j<8; j++)
   //     howMove[j][i]=0;

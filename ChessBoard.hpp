@@ -79,21 +79,24 @@ protected:
   Vecstr potValDestPos;
   /*'potentially valid destination positions', ie moving to such a position is valid if it doesn't put friendly king in check. sorry it's an awkward term, but qualifying it as 'valid' would be incorrect; qualifying it as 'moves' would also be incorrect because a move is a 2-uple of strings representing board squares, and this is not a vector of 2-uple strings*/
 
-  /*protected methods - no methods are public to ensure no cheating*/
+  /*protected methods - not public to ensure no 'cheating from main'*/
   Piece() {}
   Piece                        (string _colour, string _position, ChessBoard *_chboard);
   virtual void genPotValDestPos() = 0; //generate potentially valid destination positions
   void    classifyDestPos      (Range range, Direction dir, int* inc, string& move);
-  void    increment            (Direction dir, char &coordinate1, char &coordinate2, int *inc);
   void    classifyLastDestPos  (string move);
+  void    setPosition          (Cnstring);
+  void    printPotValDestPos   (); //DELETE!
+
+public:
   bool    isPotValDestPos      (string square);
   bool    canMove              ();
-  void    setPosition          (Cnstring);
-  string  getColour            () const;
-  void    printPotValDestPos   (); //DELETE!
   virtual string getType       () const = 0;
+  string  getColour            () const;
+  void    increment            (Direction dir, char &coordinate1, char &coordinate2, int *inc);
   static  string concat        (char ch1, char ch2);
   virtual ~Piece() {}
+
 };
 
 class King : public Piece {
