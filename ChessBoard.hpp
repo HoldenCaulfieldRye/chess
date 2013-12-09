@@ -43,18 +43,18 @@ class ChessBoard {
   map<string, Piece*> boardMap;
 
   /*methods*/
-  void        initiate     ();
-  Piece*      performMove  (Cnstring move[]);
-  void        undoMove     (Cnstring move[], Piece *takenPiece);
-  string      findKingPos  (Cnstring player);
-  bool        entailsCheck (Cnstring move[], Cnstring checkedPlayer, const bool speculative);
-  bool        kingIsChecked(Cnstring kingPos);
-  string      checkOutcome ();
-  string      notPlayer    () const;
-  void        nextPlayer   ();
-  void message      (int mcode);
-  void message      (int mcode, string move[2]);
-  void message      (int mcode, string move[2], string takenPieceType);
+  void    initiate     ();
+  Piece*  performMove  (Cnstring move[]);
+  void    undoMove     (Cnstring move[], Piece *takenPiece);
+  string  findKingPos  (Cnstring player);
+  bool    entailsCheck (Cnstring move[], Cnstring checkedPlayer, const bool speculative);
+  bool    kingIsChecked(Cnstring kingPos);
+  string  checkOutcome ();
+  string  notPlayer    () const;
+  void    nextPlayer   ();
+  void    message      (int mcode);
+  void    message      (int mcode, string move[2]);
+  void    message      (int mcode, string move[2], string takenPieceType);
 
  public:  //very few methods are public to ensure no cheating
   ChessBoard               ();
@@ -89,7 +89,7 @@ protected:
   Vecstr potValDestPos;
 
   /*protected methods - not public to ensure no 'cheating from main'. Admittedly, not all of these methods can be used to cheat. But apparently it is good practice to make a method public only if there is a good reason to make the method callable from everywhere. Since ChessBoard is a friend, I see no such reason.*/
-  Piece() {}
+  Piece                        () {}
   Piece                        (string _colour, string _position, ChessBoard *_chboard);
   virtual void genPotValDestPos() = 0; //generate potentially valid destination positions
   void    classifyDestPos      (Range, Direction, int*, string&);
